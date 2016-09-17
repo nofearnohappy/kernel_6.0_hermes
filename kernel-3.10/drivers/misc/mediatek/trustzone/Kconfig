@@ -1,0 +1,10 @@
+config HAVE_MTK_IN_HOUSE_TEE_SUPPORT
+	bool "Enable MTK in-house TEE Solution"
+	def_bool n
+
+config MTK_IN_HOUSE_TEE_SUPPORT
+	bool "Enable MTK In House TEE Support"
+	depends on HAVE_MTK_IN_HOUSE_TEE_SUPPORT
+	default n
+	help
+	  This enable MTK TEE support.

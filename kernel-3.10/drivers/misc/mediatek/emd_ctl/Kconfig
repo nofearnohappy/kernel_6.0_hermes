@@ -1,0 +1,5 @@
+config CUSTOM_KERNEL_EXTMD
+	string "CUSTOM_KERNEL_EXTMD"
+	default ""
+	help
+	  Config external md type. Possible choice can be "mt6261" or "mt6261_x2".

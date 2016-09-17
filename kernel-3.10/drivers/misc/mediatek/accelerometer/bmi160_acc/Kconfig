@@ -1,0 +1,4 @@
+
+config MTK_BMI160_ACC
+        bool "bmi160_acc for MediaTek package"
+        default n

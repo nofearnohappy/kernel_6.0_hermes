@@ -1,0 +1,324 @@
+menuconfig MEDIATEK_SOLUTION
+	bool "MediaTek Properitary Configuration"
+	help
+	  Check this to enable MediaTek properity configuration.
+
+if MEDIATEK_SOLUTION
+
+config MTK_PLATFORM
+	string "MTK platform name"
+
+config ARCH_MTK_PROJECT
+	string "MTK project name"
+
+config MTK_INTERNAL
+	bool "Enable MTK internal debug feature"
+	help
+	  Identify if codebase is built with MTK internal debug
+	  (Don't modify this feature option setting.)
+
+source "drivers/misc/mediatek/cirq/Kconfig"
+
+source "drivers/misc/mediatek/systracker/Kconfig"
+
+source "drivers/misc/mediatek/l2c_share/Kconfig"
+
+config HAVE_AEE_FEATURE
+	bool "HAVE_AEE_FEATURE"
+	help
+	  AEE (Android Exception Engine) that designed by  Mediatek is an
+	  exception catching and debugging information generation mechanism.
+	  It can collect and dump information to filesystem
+	  (/sdcard/mtklog/aee_exp)  when fatel occur(E.g. kernel
+	  panic/android system server crash and ..)
+
+config HAVE_XLOG_SUPPORT
+	bool "HAVE_XLOG_SUPPORT"
+	help
+	  It decide whether the system has XLOG mechanism. XLOG is a log
+	  filter mechanism which can filter the logs by tag before they are
+	  written to log buffer
+
+config HAVE_XLOG_PRINTK
+	bool "HAVE_XLOG_PRINTK"
+	help
+	  It decide whether the system has kernel XLOG printk mechanism. XLOG is a log
+	  filter mechanism which can filter the logs by tag before they are
+	  written to log buffer
+
+config FPGA_EARLY_PORTING
+	bool "FPGA_EARLY_PORTING"
+	help
+	  Used for FPGA early porting to separate code segments between FPGA
+	  platform and non-FPGA platform
+
+config MTK_NEW_COMBO_EMMC_SUPPORT
+	bool "MTK_NEW_COMBO_EMMC_SUPPORT"
+	help
+	  Add option for new combo-emmc
+
+config MTK_SHARED_SDCARD
+	bool "MTK_SHARED_SDCARD"
+	help
+	  sdcard will be a folder of /data
+
+config MTK_MULTI_STORAGE_SUPPORT
+	bool "MTK_MULTI_STORAGE_SUPPORT"
+	help
+	  Support more than 1 SD. Some write app can save to one of the
+	  storages. Ex: Camera,recorder,browser,BT,ATV,CMMB.  Mount service
+	  can mount multi-storage. And Media scanner will scan all storages.
+
+config MTK_MULTI_PARTITION_MOUNT_ONLY_SUPPORT
+	bool "MTK_MULTI_PARTITION_MOUNT_ONLY_SUPPORT"
+	help
+	  Enable/disable USB OTG to mount multi-partition USB disk
+
+config MTK_SECURITY_SW_SUPPORT
+	bool "Enable MTK SECURITY SW Support"
+	default n
+	help
+	  If yes, All security function in preloader/LK/kernel/android will
+	  be built into software images
+
+source "drivers/misc/mediatek/trustzone/Kconfig"
+
+config MTK_SEC_VIDEO_PATH_SUPPORT
+	bool "Enable MTK Secure Video Path Support"
+	depends on (MTK_IN_HOUSE_TEE_SUPPORT) || (TRUSTONIC_TEE_SUPPORT)
+	default n
+	help
+	  This enable MTK Secure Video Path Support. (depending on MTK In-House TEE Support or Trustonic TEE Support)
+
+config MTK_THERMAL_STATUS_COLLECTION
+	bool "MTK Thermal Status Information Collection"
+	default n
+
+
+config MD32_SUPPORT
+	bool "Specifiy If Platform Support MD32"
+	default n
+
+config MTK_MEM
+	bool "Support platform memory information"
+	default y
+
+config MTK_MEMCFG
+	bool "Support enhanced memory configurations"
+	depends on MTK_MEM
+	default n
+
+config MTK_DT_SUPPORT
+	bool "MTK_DT_SUPPORT"
+	default n
+
+config MTK_TELEPHONY_BOOTUP_MODE_SLOT1
+    int "MTK_TELEPHONY_BOOTUP_MODE_SLOT1"
+    depends on EVDO_DT_SUPPORT
+    default 0
+    help
+      EVDO devcie telephony slot1 boot up mode
+
+config MTK_TELEPHONY_BOOTUP_MODE_SLOT2
+    int "MTK_TELEPHONY_BOOTUP_MODE_SLOT2"
+    depends on EVDO_DT_SUPPORT
+    default 1
+    help
+      EVDO devcie telephony slot2 boot up mode
+
+config MTK_SMARTBOOK_SUPPORT
+	bool "MTK_SMARTBOOK_SUPPORT"
+	help
+	  Smartbook feature enables phone to connect with a smartbook
+	  device. A smartbook device is something like a notebook, it has
+	  screen, keyboard, touchpad, speaker, dual usb port, led light, yet
+	  it doesn't have a internal storage, ram or CPU. Once smartbook-
+	  feature-enabled phone is connected to a smartbook, all content on
+	  phone screen is shown on smartbook screen, and user can operate
+	  the phone via smartbook's keyboard, touchpad or plugged usb mouse.
+
+config MTK_SENSOR_SUPPORT
+	bool "MTK_SENSOR_SUPPORT"
+	help
+	  sensor config to sensor port sensor feature in project
+
+# Custom
+
+config CUSTOM_SEC_AUTH_SUPPORT
+	bool "CUSTOM_SEC_AUTH_SUPPORT"
+	help
+	  Support customer to implement and apply their own RSA security
+	  functions
+
+config MTK_SENSOR_HUB_SUPPORT
+	bool "MTK_SENSOR_HUB_SUPPORT"
+	help
+	  To enable MTK sensor hub
+
+config CUSTOM_KERNEL_IMGSENSOR
+	string "CUSTOM_KERNEL_IMGSENSOR"
+	help
+	  Kernel space image sensor driver. Define  project used all image
+	  sensors .The value is combination of CUSTOM_KERNEL_MAIN_IMGSENSOR,
+	  CUSTOM_KERNEL_MAIN_BACKUP_IMGSENSOR, CUSTOM_KERNEL_SUB_IMGSENSOR,
+	  and CUSTOM_KERNEL_SUB_BACKUP_IMGSENSOR
+
+config CUSTOM_KERNEL_CAM_CAL_DRV
+	string "CUSTOM_KERNEL_CAM_CAL_DRV"
+	help
+	  Kernel space camera calibration driver. Define  project used cam_cal
+	  driver .
+
+config CUSTOM_KERNEL_LCM
+	string "CUSTOM_KERNEL_LCM"
+	help
+	  To choose kernel LCM driver name
+
+config CUSTOM_KERNEL_FLASHLIGHT
+	string "CUSTOM_KERNEL_FLASHLIGHT"
+	help
+	  Kernel space cameara flashlight driver. You can use this driver
+	  choose cameara flashlight type.
+
+config MTK_FORCE_CLUSTER1
+	bool "MTK_FORCE_CLUSTER1"
+	help
+	  This option is used to forcing system to run on CPU cluster 1,
+	  e.g. big cores on BIG.LITTLE system. MTK_FORCE_CLUSTER1 = "yes"
+	  means enable this feature and "no" disable.
+
+config MTK_MMPROFILE_SUPPORT
+	bool "MTK_MMPROFILE_SUPPORT"
+	help
+	  Multimedia profiling mechanism
+
+config MTK_HIBERNATION
+	bool "MTK Hibernation support (IPOH)"
+	depends on TOI
+	default y
+	---help---
+	  MTK Hibernation is the improved hibernation
+	  in kernel for IPOH.
+
+config CUSTOM_KERNEL_CHARGEPUMP
+	bool "CUSTOM_KERNEL_CHARGEPUMP"
+	default n
+
+config MTK_TC1_FEATURE
+	bool "MTK_TC1_FEATURE"
+	default n
+
+config MTK_TC7_FEATURE
+	bool "MTK_TC7_FEATURE"
+	default n
+
+config MTK_TC1_FM_AT_SUSPEND
+	bool "MTK_TC1_FM_AT_SUSPEND"
+	default n
+
+config MTK_CLKMGR
+	bool "Mediatek proprietary clock management"
+	default n
+	---help---
+	  Mediatek proprietary clock management is used to operate
+          the clocks. The clocks are composed of CG, MUX, PLL,
+          non-MTCMOS. The operations of clocks are enabling,
+          disabling, and querying status. If this config is not set,
+          system will use COMMON_CLK instead.
+
+config MTK_LTR559
+	bool "CONFIG_MTK_LTR559"
+	default y
+
+config MTK_YAS537
+	bool "CONFIG_MTK_YAS537"
+	default y
+
+source "drivers/misc/mediatek/Kconfig.kernel"
+source "drivers/misc/mediatek/Kconfig.drivers"
+source "drivers/misc/mediatek/smartpa/Kconfig"
+
+ 
+source "drivers/misc/mediatek/lastpc/Kconfig"
+source "drivers/misc/mediatek/fmradio/Kconfig"
+source "drivers/misc/mediatek/hwmon/Kconfig"
+source "drivers/misc/mediatek/cmdq/Kconfig"
+source "drivers/misc/mediatek/mt_logger/Kconfig"
+source "drivers/misc/mediatek/boot/Kconfig"
+source "drivers/misc/mediatek/boot_reason/Kconfig"
+source "drivers/misc/mediatek/chip/Kconfig"
+source "drivers/misc/mediatek/conn_md/Kconfig"
+source "drivers/misc/mediatek/lens/Kconfig"
+source "drivers/misc/mediatek/imgsensor/Kconfig"
+source "drivers/misc/mediatek/cam_cal/Kconfig"
+source "drivers/misc/mediatek/flashlight/Kconfig"
+source "drivers/misc/mediatek/dum-char/Kconfig"
+source "drivers/misc/mediatek/sysenv/Kconfig"
+source "drivers/misc/mediatek/partition/Kconfig"
+source "drivers/misc/mediatek/smi/Kconfig"
+source "drivers/misc/mediatek/btcvsd/Kconfig"
+source "drivers/misc/mediatek/sound/Kconfig"
+source "drivers/misc/mediatek/spm/Kconfig"
+source "drivers/misc/mediatek/power_gs/Kconfig"
+source "drivers/misc/mediatek/video/Kconfig"
+source "drivers/misc/mediatek/mrdump/Kconfig"
+source "drivers/misc/mediatek/wmt_ccci/Kconfig"
+source "drivers/misc/mediatek/vcorefs/Kconfig"
+source "drivers/misc/mediatek/emi_mpu/Kconfig"
+source "drivers/misc/mediatek/emi_bwl/Kconfig"
+source "drivers/misc/mediatek/gpio/Kconfig"
+source "drivers/misc/mediatek/uart/Kconfig"
+source "drivers/misc/mediatek/dbg_dump/Kconfig"
+source "drivers/misc/mediatek/connectivity/Kconfig"
+source "drivers/misc/mediatek/gps/Kconfig"
+source "drivers/misc/mediatek/nfc/Kconfig"
+source "drivers/misc/mediatek/i2c/Kconfig"
+source "drivers/misc/mediatek/keypad/Kconfig"
+source "drivers/misc/mediatek/leds/Kconfig"
+source "drivers/misc/mediatek/pwm/Kconfig"
+source "drivers/misc/mediatek/irtx/Kconfig"
+source "drivers/misc/mediatek/auxadc/Kconfig"
+source "drivers/misc/mediatek/spi/Kconfig"
+source "drivers/misc/mediatek/mmc-host/Kconfig"
+source "drivers/misc/mediatek/power-loss-test/Kconfig"
+source "drivers/misc/mediatek/mjc/Kconfig"
+source "drivers/misc/mediatek/vdec/Kconfig"
+source "drivers/misc/mediatek/videocodec/Kconfig"
+source "drivers/misc/mediatek/multibridge/Kconfig"
+source "drivers/misc/mediatek/ccci_util/Kconfig"
+source "drivers/misc/mediatek/dual_ccci/Kconfig"
+source "drivers/misc/mediatek/eccci/Kconfig"
+source "drivers/misc/mediatek/ssw/Kconfig"
+source "drivers/misc/mediatek/gpu/Kconfig"
+source "drivers/misc/mediatek/jpeg/Kconfig"
+source "drivers/misc/mediatek/almk/Kconfig"
+source "drivers/misc/mediatek/sched/Kconfig"
+source "drivers/misc/mediatek/gud/Kconfig"
+source "drivers/misc/mediatek/sync/Kconfig"
+source "drivers/misc/mediatek/sw_tx_power/Kconfig"
+source "drivers/misc/mediatek/accelerometer/Kconfig"
+source "drivers/misc/mediatek/activity_sensor/Kconfig"
+source "drivers/misc/mediatek/alsps/Kconfig"
+source "drivers/misc/mediatek/barometer/Kconfig"
+source "drivers/misc/mediatek/bringtosee/Kconfig"
+source "drivers/misc/mediatek/face_down_sensor/Kconfig"
+source "drivers/misc/mediatek/gamerotationvector/Kconfig"
+source "drivers/misc/mediatek/geomagneticrotationvector/Kconfig"
+source "drivers/misc/mediatek/glance_gesture_sensor/Kconfig"
+source "drivers/misc/mediatek/gravity/Kconfig"
+source "drivers/misc/mediatek/gyroscope/Kconfig"
+source "drivers/misc/mediatek/heart_rate_sensor/Kconfig"
+source "drivers/misc/mediatek/in_pocket_sensor/Kconfig"
+source "drivers/misc/mediatek/linearacceleration/Kconfig"
+source "drivers/misc/mediatek/magnetometer/Kconfig"
+source "drivers/misc/mediatek/pedometer/Kconfig"
+source "drivers/misc/mediatek/pick_up_sensor/Kconfig"
+source "drivers/misc/mediatek/rotationvector/Kconfig"
+source "drivers/misc/mediatek/sensorHub/Kconfig"
+source "drivers/misc/mediatek/shake_sensor/Kconfig"
+source "drivers/misc/mediatek/step_counter/Kconfig"
+source "drivers/misc/mediatek/tilt_detector_sensor/Kconfig"
+source "drivers/misc/mediatek/wake_gesture_sensor/Kconfig"
+source "drivers/misc/mediatek/selinux_warning/Kconfig"
+source "drivers/misc/mediatek/usb2jtag/Kconfig"
+endif

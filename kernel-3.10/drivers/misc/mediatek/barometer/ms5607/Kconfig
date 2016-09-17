@@ -1,0 +1,4 @@
+
+config MTK_MS5607
+	bool "MS5607 for MediaTek package"
+	default n

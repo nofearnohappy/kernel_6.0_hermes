@@ -1,0 +1,148 @@
+total: 0 errors, 0 warnings, 176 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/extd_debug.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 367 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/extd_epd.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 329 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/extd_factory.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 1269 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/extd_hdmi.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 461 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/extd_multi_control.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 57 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/extd_utils.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 494 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mtk_extd_mgr.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 1293 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6795/external_display.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 170 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6755/extd_debug.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 1417 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6755/external_display.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 1343 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6752/external_display.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 1342 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6735/external_display.c has no obvious style problems and is ready for submission.
+total: 0 errors, 0 warnings, 170 lines checked
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6592/debug.c has no obvious style problems and is ready for submission.
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#126: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:126:
++extern const HDMI_DRIVER *HDMI_GetDriver(void);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#128: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:128:
++extern UINT32 DISP_GetScreenHeight(void);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#129: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:129:
++extern UINT32 DISP_GetScreenWidth(void);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#130: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:130:
++extern BOOL DISP_IsVideoMode(void);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#131: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:131:
++extern int disp_module_clock_on(DISP_MODULE_ENUM module, char *caller_name);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#132: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:132:
++extern int disp_module_clock_off(DISP_MODULE_ENUM module, char *caller_name);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#240: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:240:
++int hdmi_free_hdmi_buffer(void);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#241: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:241:
++int hdmi_rdma_address_config(bool enable, hdmi_video_buffer_info buffer_info);
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#1166: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1166:
++						if (buf_sequence > 1)
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#1191: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1191:
++						do {
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#1192: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1192:
++							if (hdmi_bufferdump_on > 0) {
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#1198: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1198:
++							} else {
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#1208: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1208:
++							if (pBuffList->va) {
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#1233: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1233:
++						} while (using_buf_cnt--);
+
+WARNING:AVOID_EXTERNS: externs should be avoided in .c files
+#1968: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:1968:
++void smartbook_state_callback(void);
+
+ERROR:TRAILING_WHITESPACE: trailing whitespace
+#2564: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:2564:
++^I^I^I^I} $
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#2686: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:2686:
++						if (video_buffer_info.src_phy_addr != NULL) {
+
+WARNING:DEEP_INDENTATION: Too many leading tabs - consider code refactoring
+#2692: FILE: drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c:2692:
++						} else {
+
+total: 1 errors, 17 warnings, 3244 lines checked
+
+NOTE: whitespace errors detected, you may wish to use scripts/cleanpatch or
+      scripts/cleanfile
+
+NOTE: Ignored message types: MEMORY_BARRIER NEW_TYPEDEFS VOLATILE
+
+drivers/misc/mediatek/ext_disp/mt6592/hdmitx.c has style problems, please review.
+
+If any of these errors are false positives, please report
+them to the maintainer, see CHECKPATCH in MAINTAINERS.

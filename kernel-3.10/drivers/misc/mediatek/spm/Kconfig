@@ -1,0 +1,8 @@
+config MTK_SPM
+	bool "Enable MTK SPM suspend function"
+	depends on SUSPEND
+	default y if SUSPEND
+	help
+	  Enable MTK SPM suspend function.
+
+

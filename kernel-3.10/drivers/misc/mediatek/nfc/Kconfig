@@ -1,0 +1,17 @@
+menuconfig MTK_NFC
+	tristate "NFC drivers"
+	default n
+	---help---
+	  Say Y here for supporting NFC.
+
+if MTK_NFC
+
+config NFC_MT6605
+	tristate "MediaTek NFC driver"
+	default n
+
+config NFC_MSR3110
+	tristate "MSR3110 NFC driver"
+	default n
+
+endif # NFC

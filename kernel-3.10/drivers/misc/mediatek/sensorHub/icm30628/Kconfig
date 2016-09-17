@@ -1,0 +1,5 @@
+
+config MTK_ICM30628
+	bool "CONFIG_MTK_ICM30628"
+	help
+	  Invensense on ICM30628

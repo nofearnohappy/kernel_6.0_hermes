@@ -1,0 +1,1170 @@
+menu "Drivers Configurations"
+menuconfig MTK_LDVT
+	bool "LDVT"
+	depends on ARCH_MT6589 || ARCH_MT6582 || ARCH_MT6595 || ARCH_MT6795 || ARCH_MT6735 || ARCH_MT6735M || ARCH_MT6753 || ARCH_MT8163
+	default n
+	---help---
+	  Say Y here for supporting LDVT
+
+if MTK_LDVT
+
+config MTK_LDVT_ADC
+	bool "MediaTek ADC driver for LDVT"
+	default y
+	---help---
+	  MediaTek ADC driver for LDVT
+
+config MTK_LDVT_ADC_TS
+	bool "MediaTek ADC_TS driver for LDVT"
+	default y
+	---help---
+
+config MTK_LDVT_GPT
+	bool "MediaTek GPT driver for LDVT"
+	default y
+	---help---
+	  MediaTek GPT driver for LDVT
+
+config MTK_LDVT_IRDA
+	bool "MediaTek IrDA driver for LDVT"
+	default y
+	---help---
+	  MediaTek IrDA driver for LDVT
+
+config MTK_LDVT_MSDC
+	bool "MediaTek MSDC driver for LDVT"
+	default y
+	---help---
+	  MediaTek MSDC driver for LDVT
+
+config MTK_LDVT_UART
+	bool "MediaTek UART driver for LDVT"
+	default y
+	---help---
+	  MediaTek UART driver for LDVT
+
+config MTK_LDVT_PMIC
+	bool "MediaTek PMIC driver for LDVT"
+	default y
+	---help---
+	  MediaTek PMIC driver for LDVT
+
+config MTK_LDVT_PMIC_WRAP
+	bool "MediaTek PMIC_WRAP driver for LDVT"
+	default y
+	---help---
+	  MediaTek PMIC_WRAP driver for LDVT
+
+endif
+
+# Accdet
+config MTK_ACCDET
+	bool "MediaTek Accessory Detection Support"
+	default n
+
+config CUSTOM_KERNEL_CHARGEPUMP
+	bool "backlight driver"
+	default n
+
+config MTK_IRTX_SUPPORT
+	bool "MediaTek consumer IR tansmitter"
+	default n
+
+config MTK_MD_LOW_BAT_SUPPORT
+	bool "MediaTek MD low bat support"
+	default n
+
+config MTK_NET_CCMNI
+	bool "MediaTek CCMNI driver"
+	depends on MTK_CCCI_DEVICES
+	default n
+	select WIRELESS_EXT
+	select WEXT_PRIV
+
+config MTK_C2K_DATA_PPP_SUPPORT
+	bool "MTK_C2K_DATA_PPP_SUPPORT"
+	default n
+
+config MTK_IRAT_SUPPORT
+	bool "MTK_IRAT_SUPPORT"
+	depends on MTK_NET_CCMNI
+	default n
+
+config MTK_MD_IRAT_SUPPORT
+	bool "MTK_MD_IRAT_SUPPORT"
+	depends on MTK_IRAT_SUPPORT
+	default n
+
+config MTK_C2KWP_P2_SUPPORT
+	bool "MTK_C2KWP_P2_SUPPORT"
+	depends on MTK_NET_CCMNI
+	default n
+
+config MTK_UMTS_TDD128_MODE
+	bool "MTK_UMTS_TDD128_MODE"
+	help
+	   MTK_UMTS_TDD128_MODE=yes means enable UMTS TDD128 specific
+	   features MTK_UMTS_TDD128_MODE=no means disable UMTS TDD128
+	   specific features
+
+# EEMCS
+menuconfig MTK_EMCI_DEVICES # Use by MT6290M over SDIO
+	bool "EMCI Devices"
+	default n
+	---help---
+	  Say Y here to get to see options for device drivers from EEMCS.
+	  If you say N, all options in this submenu will be skipped and disabled.
+
+config MTK_EEMCS_DRIVER # EEMCS_DRIVER
+	tristate "EEMCS Driver"
+	depends on MTK_EMCI_DEVICES
+	default y
+	---help---
+	  This option enables EEMCS device driver support
+
+config MTK_ENABLE_MD5
+	bool "MTK_ENABLE_MD5"
+	depends on MTK_EEMCS_DRIVER
+	default y
+	help
+	  Enable/Disable External Modem 5 (LTE modem)
+
+config MTK_MD5_SUPPORT
+	int "MTK_MD5_SUPPORT"
+	depends on MTK_ENABLE_MD5
+	default 5
+	range 0 7
+	help
+	  modem 5 mode, value range(0-7):0(invalid),1(2g),2(3g),3(wg),4(tg)
+
+config MD5_SMEM_SIZE
+	hex "MD5_SMEM_SIZE"
+	depends on MTK_ENABLE_MD5
+	default 0x200000
+	help
+	  modem 5 share memory size.
+
+config MD5_SIZE
+	hex "MD5_SIZE"
+	depends on MTK_ENABLE_MD5
+	default 0xd00000
+	help
+	  modem 5 image size.
+
+# CCCI refine Done
+
+config MTK_EXTERNAL_MODEM_SLOT
+	string "MTK_EXTERNAL_MODEM_SLOT"
+
+# Frame Buffer Related
+menuconfig MTK_FB
+	bool "MediaTek Framebuffer Driver"
+	depends on FB
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	select FB_SOFT_CURSOR
+	---help---
+	  This selects the MediaTek(R) frame buffer driver.
+	  If you want to use MediaTek(R) frame buffer diver, say Y here.
+	  If unsure, say N.
+
+config MTK_FB_SUPPORT_ASSERTION_LAYER
+	bool "AEE Assertion Layer Support"
+	depends on MTK_FB
+	select FONT_8x16
+	default y
+	---help---
+	  This enable support for AEE assertion layer.
+	  If you want to enable AEE assertion layer support, say Y here.
+	  If unsure, say N.
+
+config MTK_DITHERING_SUPPORT
+	bool "MTK_DITHERING_SUPPORT"
+	help
+	  To control whether enable or disable LCD controller dithering
+	  feature. If choose yes,  LCD controller would do dithering to
+	  avoid contour effect, but side effect is that dithering mechanism
+	  will make some noises
+
+config MTK_LCM_PHYSICAL_ROTATION
+	string "MTK_LCM_PHYSICAL_ROTATION"
+	help
+	   To set the angle between dimension of UI layout and LCM scan
+	   direction
+
+config LCM_HEIGHT
+	string "LCM_HEIGHT"
+	default "1920"
+	help
+	  To set LCM resolution height size
+
+config LCM_WIDTH
+	string "LCM_WIDTH"
+	default "1080"
+	help
+	  To set LCM resolution width size
+
+config CUSTOM_LCM_X
+	string "LCM_X"
+	default "0"
+	help
+	  To set CUSTOM_LCM_X size
+
+config CUSTOM_LCM_Y
+	string "LCM_Y"
+	default "0"
+	help
+	  To set CUSTOM_LCM_Y size
+
+config MTK_OVERLAY_ENGINE_SUPPORT
+	bool "MTK_OVERLAY_ENGINE_SUPPORT"
+	help
+	   To open overlay engine to support svp
+
+config MTK_TVOUT_SUPPORT
+	bool "MTK_TVOUT_SUPPORT"
+	help
+	  To control whether enable or disable TV-out feature. If choose
+	  yes, video or image on your phone can be demonstrated on TV via
+	  TV-out cable. Also, this feature can help user to get more fun
+	  when playing some games.
+
+config MIXMODE_FOR_INCELL
+	bool "MIXMODE_FOR_INCELL"
+	default n
+
+config LCM_SEND_CMD_IN_VIDEO
+	bool "LCM_SEND_CMD_IN_VIDEO"
+	default n
+
+# TODO check what's MT6516_EVB_BOARD
+config MTK_FB_EVB_USE_HVGA_LCM # FB_MT6516_EVB_USE_HVGA_LCM
+	bool "Use MagnaChip TA7601 HVGA LCM on EVB"
+	depends on FB_MT6516 && MT6516_EVB_BOARD
+	default n
+	---help---
+	  Use MagnaChip TA7601 HVGA LCM on EVB
+
+menuconfig GPS
+	tristate "GPS drivers"
+	default y
+	---help---
+	  Say Y here for supporting GPS.
+
+if GPS
+config MTK_GPS # MT6516_GPS --> TODO should change to use modulized settings!
+	tristate "MediaTek 3326 GPS driver"
+	default y
+	---help---
+	  MT3326 GPS driver
+endif # GPS
+
+
+config MTK_BTIF
+	tristate"MediaTek BTIF Driver"
+
+config MTK_FM
+	bool "MediaTek FM Chip Support"
+	default n
+
+config MTK_FM_SUPPORT
+	bool "MTK_FM_SUPPORT"
+	help
+	  The root switch of Android FM, if  "no", all features(RX&TX) of FM
+	  will be removed from android system
+
+config MTK_FM_CHIP
+	string "MTK_FM_CHIP"
+	depends on MTK_FM_SUPPORT
+	default "MT6620_FM" if MTK_COMBO_CHIP_MT6620
+	default "MT6630_FM" if MTK_COMBO_CHIP_MT6630
+	help
+	   decide which FM radio chip to use: e.g.MT6620_FM, MT6628_FM
+
+config MTK_FM_50KHZ_SUPPORT
+	bool "MTK_FM_50KHZ_SUPPORT"
+	depends on MTK_FM_SUPPORT
+	help
+	  The feature option is to define if we support FM 50KHz step
+	  tune/seek/scan functions
+
+config MTK_MERGE_INTERFACE_SUPPORT
+	bool "MTK_MERGE_INTERFACE_SUPPORT"
+
+config MTK_IDLE_TIME_FIX
+	tristate "MediaTek fix top get idle time issue"
+	default n
+
+# Graphics 2D
+config MTK_G2D
+	bool "MediaTek G2D Driver"
+	default y
+	---help---
+	  MT6516 G2D Driver
+
+# CMMB
+config  MTK_CMMB
+	tristate "MediaTek CMMB Driver"
+	depends on  MTK_SPI
+	default n
+	---help---
+	  This selects the MediaTek(R) CMMB driver.
+	  If you want to use MediaTek(R) CMMB driver, say M here.
+	  If unsure, say N.
+
+# Mouse
+# if INPUT_MOUSE
+menu "MediaTek OFN / Jogball Related Drivers"
+config MOUSE_PANASONIC_EVQWJN
+	bool "Panasonic EVQWJN Jogball Support"
+	---help---
+	  Say Y here if you have Panasonic EVQWJN Jogball
+	  If unsure, say N.
+
+config MOUSE_AVAGOTECH_A320
+	bool "Avagotech ADBS-A320 driver"
+	---help---
+	  Say Y here if you have ADBS-A320 device, which is a Optical Finger Navigation device
+	  If unsure, say N.
+endmenu
+# endif
+
+
+# Nand
+menuconfig MTK_MTD_NAND
+	tristate "MediaTek Nand Support"
+	depends on MTD_NAND
+	---help---
+	  Enables support for NAND Flash chips wired to MediaTek chips.
+
+config MTK_MTD_NAND_INTERRUPT_SCHEME
+	bool "Nand Read/Write with interrupt scheme"
+	depends on MTK_MTD_NAND
+	default n
+	---help---
+	  Enable interrupt scheme in Nand Read/Write.
+
+config MTK_MLC_NAND_SUPPORT
+  tristate "Mediatek MLC NAND Support"
+  depends on MTK_MTD_NAND
+  ---help---
+	  Enables support for MLC NAND.
+
+config MTK_COMBO_NAND_SUPPORT
+  tristate "Mediatek COMBO NAND Support"
+  depends on MTK_MTD_NAND
+  ---help---
+	  Enables support for COMBO NAND.
+
+config MTK_FAT_ON_NAND
+  tristate "Mediatek FAT on NAND Support"
+  depends on MTK_MTD_NAND
+  ---help---
+	  Enables support for FAT on NAND.
+
+config MTK_FACTORY_RESET_PROTECTION_SUPPORT
+  bool "Mediatek FRP Support"
+  depends on MTK_MTD_NAND
+  ---help---
+          Enables support for FRP on NAND.
+
+# Power Related
+if POWER_SUPPLY
+config MT6326_PMIC
+	tristate "MediaTek PMIC Driver"
+	depends on ARCH_MT6516
+	default y
+
+config MTK_HAFG_20
+	bool "MediaTek Fuel Gauge 2.0"
+	default n
+	help
+	  MediaTek Fuel Gague 2.0 use new fuel gague algorithm to
+	  reduce some limitation for old fuel gague algorithm. With
+	  this algorithm, some customized parameters can be set and
+	  it will help to resolve some issues for old FG algorithm
+
+config MTK_MULTI_BAT_PROFILE_SUPPORT
+	bool "MediaTek Fuel Gauge 2.0 support multiple battery profile"
+	default n
+	help
+	  MediaTek Feul Gauge 2.0 can support multiple battery profile.
+	  It support up to 4 battery profiles. When system on, it can
+	  auto identify battery and select correct battery profile to
+	  use it.
+
+config MTK_SMART_BATTERY
+	tristate "MediaTek Smart Battery Driver"
+	default y
+
+config MTK_DUMMY_BATTERY
+	tristate "MediaTek Dummy Battery Driver"
+	depends on ARCH_MT6516
+	default n
+
+config MTK_PMU
+	tristate "MediaTek Power Management Unit Driver"
+	depends on ARCH_MT6573
+	default y
+
+config MTK_FGADC
+	tristate "MediaTek Fuel Gauge Driver"
+	depends on ARCH_MT6573
+	default y
+
+config MTK_PMIC
+	tristate "MediaTek Power Management Unit Driver"
+	default y
+
+config MTK_PMIC_WRAP
+	bool "MediaTek PMIC_WRAP driver "
+	default y
+	---help---
+	  MediaTek pmic_wrap driver
+
+config MTK_PMIC_MT6397
+	bool "MediaTek PMIC MT6397"
+	default n
+	---help---
+	  MediaTek PMIC MT6397
+
+config POWER_EXT
+	tristate "MediaTek Power Ext"
+	default y
+config MTK_POWER_EXT_DETECT
+	bool "MediaTek Power Ext detect"
+	default n
+	help
+	  EVB/Phone share load configration. Require one GPIO to do detection,
+	  if GPIO is high mean EVB, otherwise mean phone platform.
+
+config MTK_PUMP_EXPRESS_SUPPORT
+	bool "MediaTek PUMP EXPRESS"
+	default n
+	help
+	  fast charging, by using linear charger to achive better charging ability
+
+config MTK_PUMP_EXPRESS_PLUS_SUPPORT
+	bool "MediaTek PUMP EXPRESS PLUS"
+	default n
+	help
+	  fast charging, by using switch charger to achive better charging ability
+
+config MTK_VOW_SUPPORT
+	bool "MediaTek VOW support"
+	default n
+
+config MTK_EXTERNAL_LDO
+	bool "MediaTek externla LDO"
+	default n
+
+config X2_BQ27531_SUPPORT
+	bool "X2_BQ27531 support"
+	default n
+
+config MTK_BQ24250_SUPPORT
+	bool "MediaTek Battery driver for BQ24250"
+	default n
+	help
+	  BQ24250 charger IC support
+
+config MTK_BQ24261_SUPPORT
+	bool "MediaTek Battery driver for TI BQ24261"
+	help
+	  BQ24261 charger IC support
+
+config MTK_BQ24196_SUPPORT
+	bool "MediaTek Battery driver for TI BQ24196"
+	help
+	  BQ24196 charger IC support
+
+config MTK_FAN5405_SUPPORT
+	bool "MTK_FAN5405_SUPPORT"
+	help
+	  use external charger IC
+
+config MTK_FAN5402_SUPPORT
+	bool "MTK_FAN5402_SUPPORT"
+	help
+	  New Config BBK92 Drive Only Codebase
+
+config MTK_BQ24158_SUPPORT
+	bool "MTK_BQ24158_SUPPORT"
+	help
+	  add MTK_BQ24158_SUPPORT to ProjectConfig.mk default off
+
+config MTK_BQ24296_SUPPORT
+	bool "MTK_BQ24296_SUPPORT"
+	help
+	  BQ24296 charger IC support Yes to support bq24296 No to not
+	  support bq24296
+
+config MTK_BQ27541_SUPPORT
+	bool "MTK_BQ27541_SUPPORT"
+	help
+	  yes : support TI bq27541 external gauge IC
+
+config MTK_NCP1851_SUPPORT
+	bool "MTK_NCP1851_SUPPORT"
+	help
+	  Support NCP1851 external charger IC
+
+config MTK_NCP1854_SUPPORT
+	bool "MTK_NCP1854_SUPPORT"
+	help
+	  Support NCP1854 external charger IC
+
+config MTK_RT9536_SUPPORT
+	bool "MTK_RT9536_SUPPORT"
+	default n
+	help
+	  Say Y to include support for RT9536 Battery Charger
+	  Battery Charger.
+
+config MTK_MAX8971_SUPPORT
+	tristate "MAXIM 8971 Battery Charger"
+	depends on I2C
+	default n
+	help
+	  Say Y to include support for MAXIM 8971 Battery Charger
+	  Battery Charger.
+
+endif #POWER_SUPPLY
+
+config MTK_DUAL_INPUT_CHARGER_SUPPORT
+        bool "MTK_DUAL_INPUT_CHARGER_SUPPORT"
+        default n
+        help
+          yes : support dual input charger.
+
+config MTK_WIRELESS_CHARGER_SUPPORT
+	bool "MTK_WIRELESS_CHARGER_SUPPORT"
+	help
+	  yes : support wireless charger feature, it can show the wireless
+	  charging animation and charging icon when receive wireless charger
+	  plug-in. no: not support wireless charger feature, stay with
+	  legancy feature, which cannot sense the exist of the wireles
+	  charger.
+
+config MTK_JEITA_STANDARD_SUPPORT
+	bool "MTK_JEITA_STANDARD_SUPPORT"
+	default n
+	help
+	  yes : support charging standard spec named JEITA, once enable this feature,
+	  there would be semeral thermal zone for battery to control its charging
+	  current and CV.
+
+# RTC
+config MTK_RTC
+	bool "MediaTek Real Time Clock Support"
+	default y
+
+config MTK_UART_USB_SWITCH
+	bool "MTK_UART_USB_SWITCH"
+	help
+	  Support share USB DP/DM as UART TX/RX.
+
+# SIM2
+config MTK_SIM2
+	bool "MediaTek SIM2 Driver"
+	default y
+
+# Sound
+config MTK_SOUND
+	bool "MediaTek Sound Driver"
+
+config MTK_AUDIO_EXTCODEC_SUPPORT
+	bool "MTK_AUDIO_EXTCODEC_SUPPORT"
+	default n
+	help
+	  If you say Y, enable MTK_AUDIO_EXTCODEC_SUPPORT driver.
+
+# Magnet sensor
+
+config MTK_S2200
+	bool "S2200 for Mediatek package"
+	default n
+
+# Touch Panel
+config MTK_TOUCHPANEL
+	tristate "MediaTek Touch Panel Driver"
+	help
+	  Say Y here if you have MediaTek MT6516 touch panel.
+	  If unsure, say N.
+
+config MTK_FT5206
+         bool "FT5206 for Mediatek package"
+        default n
+
+# USB # TODO Check Choice
+config MTK_USB_GADGET # USB_GADGET_MT6516 USB_GADGET_MT6573
+	boolean "MediaTek USB Gadget Driver"
+	select USB_GADGET_SELECTED
+	select USB_GADGET_DUALSPEED
+	default y
+
+# For MTK USB3.0 IP++++
+config USB_MU3D_PIO_ONLY
+	tristate "MediaTek MUSB Gadget support EP0 PIO mode"
+	default n
+
+config USB_MU3D_DRV
+	tristate "MediaTek MUSB Gadget support"
+	default n
+
+config USB_MU3D_DVT
+	tristate "MediaTek MUSB Gadget support"
+	default n
+
+config MU3_PHY
+	bool "MU3 PHY"
+	default n
+	---help---
+	  Enables support MU3 PHY for SSUSB or XHCI.
+	  If unsure, say N.
+
+config U3_PHY_GPIO_SUPPORT
+	bool "MU3 PHY registers access by I2C"
+	depends on MU3_PHY
+	default n
+	---help---
+	  Enables support for read/write PHY registers by external I2C.
+	  If unsure, say N.
+
+config U3_PHY_AHB_SUPPORT
+	bool "MU3 PHY registers access by AHB"
+	depends on MU3_PHY
+	default n
+	---help---
+	  Enables support for read/write PHY registers by internal AHB.
+	  If unsure, say N.
+
+config MTK_XHCI
+	tristate "MediaTek U3 XHCI support"
+	default n
+	---help---
+	  Enables support Mediatek U3 XHCI functions.
+	  If unsure, say N.
+
+config MTK_OTG_PMIC_BOOST_5V
+	tristate "MediaTek PMIC BOOST 5V support"
+	default n
+	---help---
+	  Enables support PMIC BOOST 5V to be supply usb 5v power.
+	  If unsure, say N.
+
+config MTK_OTG_OC_DETECTOR
+	tristate "MediaTek Over Current Detector"
+	default n
+	---help---
+	  Enables support SW over current detect, if happen, cut down the 5V power.
+	  If unsure, say N.
+
+config MTK_TEST_XHCI
+	tristate "MediaTek U3 TEST XHCI driver support"
+	default n
+	---help---
+	  Enables support Mediatek U3 XHCI test driver kernel framework.
+	  If unsure, say N.
+
+config USBIF_COMPLIANCE
+        tristate "MediaTek MUSB U3 USBIF COMPLIANCE"
+        default n
+
+config C60802_SUPPORT
+	bool "MU3 PHY C60802 support"
+	depends on MU3_PHY
+	default n
+	---help---
+	  Enables support for external PHY(Ver C).
+	  If unsure, say N.
+
+config MTK_S3320
+         bool "S3320 for Mediatek package"
+        default n
+
+config MTK_S3320_47
+         bool "S3320 4.7inch for Mediatek package"
+        default n
+
+config MTK_S3320_50
+         bool "S3320 5.0inch for Mediatek package"
+        default n
+
+config LEDS_LM3632
+         bool "LM3632 LED"
+        default n
+
+config LEDS_LM3639
+        bool "LM3639 Support"
+        default n
+
+config LEDS_RT8542
+        bool "RT8542 Support"
+        default n
+config D60802_SUPPORT
+	bool "MU3 PHY D60802 support"
+	depends on MU3_PHY
+	default n
+	---help---
+	  Enables support for external PHY(Ver D).
+	  If unsure, say N.
+
+config E60802_SUPPORT
+	bool "MU3 PHY E60802 support"
+	depends on MU3_PHY
+	default n
+	---help---
+	  Enables support for external PHY(Ver E).
+	  If unsure, say N.
+
+config PROJECT_PHY
+	bool "MU3 ASIC PHY support"
+	depends on MU3_PHY
+	default n
+	---help---
+	  Enables support for ASIC PHY.
+	  If unsure, say N.
+
+# For MTK USB3.0 IP-----
+
+# Vibrator
+config MTK_VIBRATOR
+	bool "MediaTek Vibrator Driver"
+	default y
+
+# WatchDog
+config MTK_WD_KICKER
+	tristate "WatchDog Kicer"
+	default y
+	---help---
+	Watch dog kicker is a module in the kernel for kicking the watch dog
+
+config KICK_SPM_WDT # SW WORKAROUND
+	tristate "Kick SPM Watchdog"
+	default n
+	---help---
+	  SW workaround to kick SPM WDT instaed of RGU WDT
+
+config USB_MTK_ACM_TEMP
+	tristate "MediaTek USB ACM Temp support"
+	default y
+
+config USB_MTK_HDRC
+	tristate "MediaTek MUSB support"
+	select USB_GADGET_SELECTED
+	select USB_GADGET_DUALSPEED
+	default y
+
+config USB_MTK_HDRC_GADGET
+	 tristate "MediaTek MUSB Gadget support"
+
+config USB_MTK_OTG
+	tristate "MediaTek MUSB OTG support"
+
+config USB_MTK_DUALMODE
+	bool "MediaTek DUAL MODE support"
+	default n
+
+config USB_MTK_DEBUG_FS
+	tristate "MediaTek MUSB Debug FS support"
+	depends on DEBUG_FS
+
+config USB_MTK_DEBUG
+	 tristate "MediaTek MUSB Debug support"
+
+config USB_MTK_HDRC_HCD
+	 tristate "MediaTek USB HDRC support"
+
+config MTK_USB_UNIQUE_SERIAL
+	 tristate "MediaTek USB unique serial number"
+
+config MTK_USBFSH # USBFSH
+	bool "MediaTek USB fullspeed Host driver"
+	default n
+
+config MUSBFSH_PIO_ONLY
+	bool "Transfer mode of MediaTek USB fullspeed Host driver"
+	default n
+
+config MTK_MUSB_QMU_SUPPORT
+	bool "QMU Transfer mode of MediaTek MUSB"
+	default n
+
+config AMPC_CDEV_NUM
+	int "AMPC chard device number(never change this value)"
+	default 151
+	help
+	  AMPC char device number.
+endmenu
+
+config ION_MTK
+	bool "Mediatek ION Memory Manager"
+config ION_MTK_FB_HEAP_SUPPORT
+	bool "Mediatek ION FB Heap Support"
+
+config MMPROFILE
+	bool "MMProfile Support"
+
+config MTK_STAGING
+	bool "Select which staging drivers you want"
+	depends on SWAP
+	select ZSMALLOC
+	select ZRAM
+	select ZRAM_DEBUG
+	default n
+#
+# MTK PASR mechanism
+#
+
+config MTKPASR
+	bool "MTK proprietary PASR mechanism"
+	depends on SYSFS && ZSMALLOC && ARM && HIGHMEM
+	select MTKPASR_RDIRECT
+	select MTKPASR_MAFL
+	select MTKPASR_DEBUG
+	select LZO_COMPRESS
+	select LZO_DECOMPRESS
+	default n
+	help
+	  Mediatek PASR mechanism
+
+config MTKPASR_RDIRECT
+	bool "Bank scanning direction"
+	depends on MTKPASR
+	default y
+	help
+	  Scanning direction of MTKPASR
+
+config MTKPASR_MAFL
+	bool "Mark it As Free by removing page blocks from buddy allocator to its List"
+	depends on MTKPASR
+	default y
+	help
+	  Enhance the PASR performance on collecting free banks
+
+config MTKPASR_ALLEXTCOMP
+	bool "No ZRAM/SWAP"
+	depends on MTKPASR
+	default n
+
+config MTKPASR_DEBUG
+	bool "MTK proprietary PASR debug support"
+	depends on MTKPASR
+	default n
+	help
+	  This option adds additional debugging code to MTK PASR
+
+config MTKPASR_NO_LASTBANK
+	bool "Modem occupies last bank"
+	depends on MTKPASR
+	default n
+
+config MTK_GPU_SUPPORT
+	bool "MTK_GPU_SUPPORT"
+    default n
+	help
+	  Using HW 3D if MTK_GPU_SUPPORT=y, otherwise using SW 3D
+
+config MTK_ICUSB_SUPPORT
+	bool "MTK_ICUSB_SUPPORT"
+	help
+	  To enable the ICUSB featurea in phone which support USB port 1
+
+config MTK_DT_USB_SUPPORT
+	bool "MTK_DT_USB_SUPPORT"
+	help
+	  To enable the dual talk feature in phone over USB port 1
+
+config MTK_SWCHR_SUPPORT
+	bool "MTK_SWCHR_SUPPORT"
+	help
+	  Select Y here for MTK switching charger solution
+
+config MTK_DISABLE_POWER_ON_OFF_VOLTAGE_LIMITATION
+	bool "MTK_DISABLE_POWER_ON_OFF_VOLTAGE_LIMITATION"
+	help
+	  Used for SMT and HQA, not for SQC and end-user
+
+config MTK_KERNEL_POWER_OFF_CHARGING
+	bool "MTK_KERNEL_POWER_OFF_CHARGING"
+	help
+	  yes : support KPOC feature, power off charging would running by
+	  kernel and charging animation by IPO service. no: not support KPOC
+	  feature, and power off charging would running by lk.
+
+config MTK_BQ24160_SUPPORT
+	bool "MTK_BQ24160_SUPPORT"
+	help
+	  External switching charger
+
+config MTK_MT8193_SUPPORT
+	bool "MTK_MT8193_SUPPORT"
+
+# HDMI
+config MTK_HDMI_SUPPORT
+	bool "MTK_HDMI_SUPPORT"
+	help
+	  To control whether enable or disable HDMI feature. If choose yes,
+	  phone's screen can be demonstrated on TV via HDMI cable.
+
+config MTK_MT8193_HDMI_SUPPORT
+	bool "MTK_MT8193_HDMI_SUPPORT"
+	depends on MTK_HDMI_SUPPORT
+	depends on MTK_MT8193_SUPPORT
+
+config MTK_INTERNAL_HDMI_SUPPORT
+	bool "MTK_INTERNAL_HDMI_SUPPORT"
+	depends on MTK_HDMI_SUPPORT
+
+config MTK_MT8193_HDCP_SUPPORT
+	bool "MTK_MT8193_HDCP_SUPPORT"
+	help
+	  Enable hdmi tx hdcp support
+
+config CUSTOM_KERNEL_HDMI
+	string "CUSTOM_KERNEL_HDMI"
+	help
+	  Specify HDMI external IC type.
+
+config SINGLE_PANEL_OUTPUT
+	bool "SINGLE_PANEL_OUTPUT"
+	help
+	  Disable panel output when HDMI connected.
+
+config CUSTOM_KERNEL_BAROMETER
+	bool "CUSTOM_KERNEL_BAROMETER"
+	help
+	  Pressure sensor driver to detect pressure
+
+config MTK_INTERNAL_MHL_SUPPORT
+	bool "MTK_INTERNAL_MHL_SUPPORT"
+	depends on MTK_HDMI_SUPPORT
+	help
+	  Enable internal mhl tx  support
+	  (can't enable MTK_INTERNAL_HDMI_SUPPORT at the same time)
+
+config MTK_THERMAL_PA_VIA_ATCMD
+	bool "MTK_THERMAL_PA_VIA_ATCMD"
+	help
+	  Internal switch for thermal management to query modem RF
+	  temperature via AT command.
+
+config MTK_UMTS_TDD128_MODE
+	bool "MTK_UMTS_TDD128_MODE"
+	help
+	  MTK_UMTS_TDD128_MODE=yes means enable UMTS TDD128 specific
+	  features MTK_UMTS_TDD128_MODE=no means disable UMTS TDD128
+	  specific features.  This feature option is used for APP to
+	  distinguish TDD, e.g. TDD modem, TDD HW,
+	  TDD specific customization, etc. TDD projects need to enable this
+	  feature option, non-TDD projects must disable this feature option.
+
+config MTK_SIM1_SOCKET_TYPE
+	string "MTK_SIM1_SOCKET_TYPE"
+	help
+	  support SIM type 1 socket
+
+config MTK_SIM2_SOCKET_TYPE
+	string "MTK_SIM2_SOCKET_TYPE"
+	help
+	  MTK_SIM1_SOCKET_TYPE=1: support type 1 socket type
+
+config MTK_SEC_MODEM_NVRAM_ANTI_CLONE
+	bool "MTK_SEC_MODEM_NVRAM_ANTI_CLONE"
+	help
+	  This option is used to enable modem NVRAM anti-clone functionality
+	  [dependency_relationship]: yes If this option is turned on, the
+	  modem part should also turn on for the following setting 1. Modem
+	  project file CUSTOM_OPTION += __NVRAM_BIND_TO_CHIP_CIPHER__ 2. by
+	  default, only two LID is defaulted has MSP attribute
+	  (1)NVRAM_EF_SML_LID (2)NVRAM_EF_SIM_LOCK_LID 3. if want to turn on
+	  specific LID, please add attribute NVRAM_ATTR_MSP
+
+config MTK_MT6333_SUPPORT
+	bool "MTK_MT6333_SUPPORT"
+	help
+	  If PCB support MT6333, please set yes. otherwise set no.
+
+config IS_VCORE_USE_6333VCORE
+	bool "IS_VCORE_USE_6333VCORE"
+	depends on MTK_MT6333_SUPPORT
+	default n
+
+config IS_VM_USE_6333VM
+	bool "IS_VM_USE_6333VM"
+	depends on MTK_MT6333_SUPPORT
+	default n
+
+config IS_VRF18_USE_6333VRF18
+	bool "IS_VRF18_USE_6333VRF18"
+	depends on MTK_MT6333_SUPPORT
+	default n
+
+config MTK_CTP_RESET_CONFIG
+	bool "MTK_CTP_RESET_CONFIG"
+	help
+	  Reset TP IC for avoiding issue of DL wrong load. yes: Use in
+	  internal. no: For customer release
+
+config MTK_BICR_SUPPORT
+	bool "MTK_BICR_SUPPORT"
+	help
+
+config MTK_VIDEO_HEVC_SUPPORT
+	bool "MTK_VIDEO_HEVC_SUPPORT"
+	help
+	  This option is for HEVC playback/record feature
+
+config MTK_AAL_SUPPORT
+	bool "MTK_AAL_SUPPORT"
+	help
+	  Decide whether to support ambient-light adpative backlight control
+	  and display visual enhancement
+
+config NAND_OTP_SUPPORT
+	bool "NAND_OTP_SUPPORT"
+	help
+	  Select Y here to enable NAND OTP function support
+
+config MTK_OD_SUPPORT
+	bool "MTK_OD_SUPPORT"
+	default n
+
+config MTK_DISPLAY_120HZ_SUPPORT
+	bool "MTK_DISPLAY_120HZ_SUPPORT"
+	default n
+	help
+	  This option enable 120Hz display feature.
+	  This feature also require panel support 120Hz refresh rate.
+	  If you want to use MediaTek 120Hz display feature, say Y here.
+	  If unsure, say N.
+
+
+config MTK_WQHD_VCORE10_SUPPORT
+	bool "MTK_WQHD_VCORE10_SUPPORT"
+	default n
+#
+# LENS
+#
+
+config MTK_LENS_DUMMYLENS_SUPPORT
+	bool "Dummy Lens Driver"
+	default n
+
+config MTK_LENS_DW9761BAF_SUPPORT
+	bool "DW9761BAF Lens Driver"
+	default n
+
+config MTK_LENS_AD5820AF_SUPPORT
+	bool "AD5820AF Lens Driver"
+	default n
+
+config MTK_LENS_AD5823_SUPPORT
+	bool "AD5823 Lens Driver"
+	default n
+
+config MTK_LENS_AD5823AF_SUPPORT
+	bool "AD5823AF Lens Driver"
+	default n
+
+config MTK_LENS_AK7345AF_SUPPORT
+        bool "AK7345AF Lens Driver"
+        default n
+
+config MTK_LENS_BU6424AF_SUPPORT
+	bool "BU6424AF Lens Driver"
+	default n
+
+config MTK_LENS_BU6429AF_SUPPORT
+	bool "BU6429AF Lens Driver"
+	default n
+
+config MTK_LENS_BU64745GWZAF_SUPPORT
+	bool "BU64745GWZAF Lens Driver"
+	default n
+
+config MTK_LENS_AK7345AF_SUPPORT
+	bool "AK7345AF Lens Driver"
+	default n
+
+config MTK_LENS_DW9718AF_SUPPORT
+	bool "DW9718AF Lens Driver"
+	default n
+
+config MTK_LENS_DW9714AF_SUPPORT
+	bool "DW9714AF Lens Driver"
+	default n
+
+config MTK_LENS_DW9714A_SUPPORT
+	bool "DW9714A Lens Driver"
+	default n
+
+config MTK_LENS_DW9814AF_SUPPORT
+	bool "DW9814AF Lens Driver"
+	default n
+
+config MTK_LENS_LC898122AF_SUPPORT
+	bool "LC898122AF Lens Driver"
+	default n
+
+config MTK_LENS_LC898212AF_SUPPORT
+	bool "LC898212AF Lens Driver"
+	default n
+
+config MTK_LENS_FM50AF_SUPPORT
+	bool "FM50AF Lens Driver"
+	default n
+
+config MTK_LENS_MT9P017AF_SUPPORT
+	bool "MT9P017AF Lens Driver"
+	default n
+
+config MTK_LENS_OV8825AF_SUPPORT
+	bool "OV8825AF Lens Driver"
+	default n
+
+config MTK_LENS_SENSORDRIVE_SUPPORT
+	bool "SENSORDRIVE Lens Driver"
+	default n
+
+config MTK_LENS_GAF001AF_SUPPORT
+	bool "GAF001AF Lens Driver"
+	default n
+
+config MTK_LENS_GAF002AF_SUPPORT
+	bool "GAF002AF Lens Driver"
+	default n
+
+config MTK_LENS_GAF008AF_SUPPORT
+	bool "GAF008AF Lens Driver"
+	default n
+
+#
+# MTK_EXTMEM for LCA project
+#
+config MTK_EXTMEM
+	   bool "mtk external memory"
+	   depends on MTK_INTERNAL
+	   default n
+	  
+config MTK_INHOUSE_GPU
+	bool "MTK_INHOUSE_GPU"
+	help
+	  Select Y here to enable inhouse gpu support
+
+config SW_SYNC64
+	bool "Software synchronization 64bits objects"
+	default n
+	depends on SW_SYNC
+	help
+	  A sync object driver that uses a 64bit counter to coordinate
+	  syncrhronization.  Useful when there is no hardware primitive backing
+	  the synchronization.
+#--------------------------RGK driver cfg add (start)------------------------------	  
+config RGK_DRIVER_FG_CW2015
+        bool "RGK for cw2015 charger ic"
+        default n
+#--------------------------RGK driver cfg add (end)------------------------------
+

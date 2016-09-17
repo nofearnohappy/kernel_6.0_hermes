@@ -1,0 +1,4 @@
+
+config MTK_LTR559
+	bool "ltr559 for MediaTek package"
+	default n

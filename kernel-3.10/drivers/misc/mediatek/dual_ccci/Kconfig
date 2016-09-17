@@ -1,0 +1,13 @@
+config MTK_CCCI_EXT # CCCI_DRIVER
+	bool "Dual CCCI Driver"
+	depends on MTK_CCCI_DEVICES
+	default n
+	---help---
+	  This option enables dual ccci device driver support
+
+config MTK_CCCI_DRIVER # CCCI_DRIVER
+	tristate "CCCI Driver"
+	depends on MTK_CCCI_DEVICES
+	default n
+	---help---
+	  This option enables ccci device driver support

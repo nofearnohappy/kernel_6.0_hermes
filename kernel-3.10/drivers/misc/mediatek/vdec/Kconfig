@@ -1,0 +1,9 @@
+# LDVT_VDEC
+config MTK_LDVT_VDEC
+	bool "MediaTek LDVT VDEC Driver"
+	depends on MTK_LDVT
+	default n
+	help
+	  LDVT VDEC is used to vefiry VDEC HW in FPGA/DVT stage.
+	  Video format : H.264, H.265, MPEG4, RM, VP6, VP8,
+	  WMV, AVS, ...
