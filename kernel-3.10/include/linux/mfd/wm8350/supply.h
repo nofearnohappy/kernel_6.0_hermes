@@ -29,8 +29,8 @@
 #define WM8350_CHG_ENA_R168                     0x8000
 #define WM8350_CHG_THR                          0x2000
 #define WM8350_CHG_EOC_SEL_MASK                 0x1C00
-#define WM8350_CHG_TRICKLE_TEMP_CHOKE           0x0200
-#define WM8350_CHG_TRICKLE_USB_CHOKE            0x0100
+#define WM8350_CHG_TRICKLE_TEMP_CHOKE           0x1000
+#define WM8350_CHG_TRICKLE_USB_CHOKE            0x0500
 #define WM8350_CHG_RECOVER_T                    0x0080
 #define WM8350_CHG_END_ACT                      0x0040
 #define WM8350_CHG_FAST                         0x0020
