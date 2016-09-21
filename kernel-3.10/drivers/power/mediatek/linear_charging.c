@@ -669,7 +669,7 @@ static void set_jeita_charging_current(void)
 #endif
 
 	if (g_temp_status == TEMP_NEG_10_TO_POS_0) {
-		g_temp_CC_value = CHARGE_CURRENT_200_00_MA;	/* for low temp */
+		g_temp_CC_value = CHARGE_CURRENT_1000_00_MA;	/* for low temp */
 		battery_log(BAT_LOG_CRTI, "[BATTERY] JEITA set charging current : %d\r\n",
 				    g_temp_CC_value);
 	}
