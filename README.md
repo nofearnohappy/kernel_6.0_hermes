@@ -41,6 +41,7 @@ Works in rom(ALPS 6.0)http://4pda.ru/forum/index.php?showtopic=695717&st=4640#en
 =========================================================================
 * Don't work:
 	* IR Blaster
+        * MAGNETOMETER             (YAS537)
 
 =================================================
 # BUILD
