@@ -702,8 +702,15 @@ config MTK_FT5206
 	  module will be called MTK_FT5206.
 
 config TOUCHSCREEN_MTK_ATMEL_MXT336
-	bool "ATMEL_MXT336 for Mediatek package"
-	depends on TOUCHSCREEN_MTK
+	bool " ATMEL_MXT336 for Mediatek package"
+	default n
+	help
+	  Say Y here if you have GT1151 touch panel.
+
+	  If unsure, say N.
+
+	  To compile this dirver as a module, choose M here: the
+	  module will be called.
 
 config MTK_FT5X0X
 	bool "FT5X0X for Mediatek package"

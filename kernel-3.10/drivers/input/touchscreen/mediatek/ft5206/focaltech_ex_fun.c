@@ -17,9 +17,8 @@
  *Note:the error code of EIO is the general error in this file.
  */
 #include "tpd.h"
-//#include "tpd_custom_ft5206.h"
+#include "tpd_custom_fts.h"
 #ifdef TPD_AUTO_UPGRADE
-#error
 #include "focaltech_ex_fun.h"
 
 #include <linux/netdevice.h>
@@ -148,11 +147,11 @@ int fts_i2c_Write(struct i2c_client *client, char *writebuf, int writelen)
 {
 	int ret;
 	int i = 0;
-	//printk("fts_i2c_Write  %d  %x  %x %x %x",writelen,writebuf,I2CDMABuf_va,I2CDMABuf_pa,client);
-	
-   client->addr = client->addr & I2C_MASK_FLAG;
-  // client->ext_flag |= I2C_DIRECTION_FLAG; 
-  // client->timing = 100;
+	/* pr_warn("fts_i2c_Write  %d  %x  %x %x %x",writelen,writebuf,I2CDMABuf_va,I2CDMABuf_pa,client); */
+
+	client->addr = client->addr & I2C_MASK_FLAG;
+	/* client->ext_flag |= I2C_DIRECTION_FLAG; */
+	/* client->timing = 100; */
     #if 0
 	struct i2c_msg msg[] = {
 		{
@@ -415,12 +414,12 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client)
 	u8 uc_host_fm_ver = FT_REG_FW_VER;
 	u8 uc_tp_fm_ver;
 	int i_ret;
-	
+
 	fts_read_reg(client, FT_REG_FW_VER, &uc_tp_fm_ver);
 	uc_host_fm_ver = fts_ctpm_get_i_file_ver();
 
-       printk("[FTS] uc_tp_fm_ver = 0x%x, uc_host_fm_ver = 0x%x\n",uc_tp_fm_ver, uc_host_fm_ver);
-	   
+	pr_warn("[FTS] uc_tp_fm_ver = 0x%x, uc_host_fm_ver = 0x%x\n", uc_tp_fm_ver, uc_host_fm_ver);
+
 	if (/*the firmware in touch panel maybe corrupted */
 		uc_tp_fm_ver == FT_REG_FW_VER ||
 		/*the firmware in host flash is new, need upgrade */
@@ -435,7 +434,7 @@ int fts_ctpm_auto_upgrade(struct i2c_client *client)
 			uc_host_fm_ver = fts_ctpm_get_i_file_ver();
 			dev_dbg(&client->dev, "[FTS] upgrade to new version 0x%x\n",
 					uc_host_fm_ver);
-			printk("[FTS] upgrade to new version 0x%x\n", uc_host_fm_ver);
+			pr_warn("[FTS] upgrade to new version 0x%x\n", uc_host_fm_ver);
 		} else {
 			pr_err("[FTS] upgrade failed ret=%d.\n", i_ret);
 			return -EIO;
@@ -460,16 +459,16 @@ int fts_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf,
 	u8 bt_ecc;
 	//int i_ret;
       // struct Upgrade_Info upgradeinfo;
-	   
+
 	//fts_get_upgrade_info(&upgradeinfo);
-	for (i = 0; i < FTS_UPGRADE_LOOP; i++) 
+	for (i = 0; i < FTS_UPGRADE_LOOP; i++)
 	{
 	        msleep(100);
-		printk("[FTS] Step 1:Reset  CTPM\n");
+		pr_warn("[FTS] Step 1:Reset  CTPM\n");
 		/*********Step 1:Reset  CTPM *****/
 		/*write 0xaa to register 0xfc */
 		//if (DEVICE_IC_TYPE == IC_FT6208 || DEVICE_IC_TYPE == IC_FT6x06)
-		if(fts_updateinfo_curr.CHIP_ID==0x05 || fts_updateinfo_curr.CHIP_ID==0x06 ) 
+		if (fts_updateinfo_curr.CHIP_ID == 0x05 || fts_updateinfo_curr.CHIP_ID == 0x06)
 			fts_write_reg(client, 0xbc, FT_UPGRADE_AA);
 		else
 			fts_write_reg(client, 0xfc, FT_UPGRADE_AA);
@@ -491,9 +490,9 @@ int fts_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf,
 		msleep(fts_updateinfo_curr.delay_55-(i-15)*2);
 		}
 
-   
+
 		/*********Step 2:Enter upgrade mode *****/
-		printk("[FTS] Step 2:Enter upgrade mode \n");
+		pr_warn("[FTS] Step 2:Enter upgrade mode\n");
 		#if 0
 			auc_i2c_write_buf[0] = FT_UPGRADE_55;
 			auc_i2c_write_buf[1] = FT_UPGRADE_AA;
@@ -517,25 +516,25 @@ int fts_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf,
 		auc_i2c_write_buf[1] = auc_i2c_write_buf[2] = auc_i2c_write_buf[3] =0x00;
 		fts_i2c_Read(client, auc_i2c_write_buf, 4, reg_val, 2);
 
-		printk("[FTS] Step 3: CTPM ID,ID1 = 0x%x,ID2 = 0x%x\n",reg_val[0], reg_val[1]);
-		printk("[FTS] Step 3: fts_updateinfo_curr,ID1 = 0x%x,ID2 = 0x%x\n",
+		pr_warn("[FTS] Step 3: CTPM ID,ID1 = 0x%x,ID2 = 0x%x\n", reg_val[0], reg_val[1]);
+		pr_warn("[FTS] Step 3: fts_updateinfo_curr,ID1 = 0x%x,ID2 = 0x%x\n",
 					fts_updateinfo_curr.upgrade_id_1, fts_updateinfo_curr.upgrade_id_2);
 		if (reg_val[0] == fts_updateinfo_curr.upgrade_id_1
 			&& reg_val[1] == fts_updateinfo_curr.upgrade_id_2) {
 			break;
 		} else {
 		}
-#endif	
+#endif
 	}
 	if (i >= FTS_UPGRADE_LOOP)
 		return -EIO;
-	
+
 	auc_i2c_write_buf[0] = 0xcd;
 	fts_i2c_Read(client, auc_i2c_write_buf, 1, reg_val, 1);
 	if (reg_val[0] > 4)
 		is_5336_new_bootloader = 1;
 
-	printk("[FTS] Step 4:erase app and panel paramenter area\n");
+	pr_warn("[FTS] Step 4:erase app and panel paramenter area\n");
 	/*Step 4:erase app and panel paramenter area*/
 	auc_i2c_write_buf[0] = 0x61;
 	fts_i2c_Write(client, auc_i2c_write_buf, 1);	/*erase app area */
@@ -545,7 +544,7 @@ int fts_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf,
 	fts_i2c_Write(client, auc_i2c_write_buf, 1);
 	msleep(100);
 
-	printk("[FTS] Step 5:write firmware(FW) to ctpm flash\n");
+	pr_warn("[FTS] Step 5:write firmware(FW) to ctpm flash\n");
 	/*********Step 5:write firmware(FW) to ctpm flash*********/
 	bt_ecc = 0;
 
@@ -603,13 +602,13 @@ int fts_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf,
 		temp =1;
 		packet_buf[4] = (u8)(temp>>8);
 		packet_buf[5] = (u8)temp;
-		packet_buf[6] = pbt_buf[ dw_lenth + i]; 
+		packet_buf[6] = pbt_buf[dw_lenth + i];
 		bt_ecc ^= packet_buf[6];
 		fts_i2c_Write(client, packet_buf, 7);
 		msleep(20);
 	}
 
-	printk("[FTS] Step 6: read out checksum\n");
+	pr_warn("[FTS] Step 6: read out checksum\n");
 	/*********Step 6: read out checksum***********************/
 	/*send the opration head */
 	auc_i2c_write_buf[0] = 0xcc;
@@ -621,7 +620,7 @@ int fts_ctpm_fw_upgrade(struct i2c_client *client, u8 *pbt_buf,
 		return -EIO;
 	}
 
-	printk("[FTS] Step 7: reset the new FW\n");
+	pr_warn("[FTS] Step 7: reset the new FW\n");
 	/*********Step 7: reset the new FW***********************/
 	auc_i2c_write_buf[0] = 0x07;
 	fts_i2c_Write(client, auc_i2c_write_buf, 1);
@@ -995,13 +994,13 @@ int fts_create_sysfs(struct i2c_client *client)
 {
 	int err;
 	I2CDMABuf_va = (u8 *)dma_alloc_coherent(NULL, FTS_DMA_BUF_SIZE, (dma_addr_t *)I2CDMABuf_pa, GFP_KERNEL);
-	
+
     if(!I2CDMABuf_va)
 	{
 		dev_dbg(&client->dev,"%s Allocate DMA I2C Buffer failed!\n",__func__);
 		return -EIO;
 	}
-	//printk("FTP: I2CDMABuf_pa=%x,val=%x val2=%x\n",&I2CDMABuf_pa,I2CDMABuf_pa,(unsigned char *)I2CDMABuf_pa);
+	/* pr_warn("FTP: I2CDMABuf_pa=%x,val=%x val2=%x\n",&I2CDMABuf_pa,I2CDMABuf_pa,(unsigned char *)I2CDMABuf_pa); */
 	err = sysfs_create_group(&client->dev.kobj, &fts_attribute_group);
 	if (0 != err) {
 		dev_err(&client->dev,

@@ -95,10 +95,18 @@ static int g_probe_pid=GED_NO_UM_SERVICE;
 
 #endif
 
-typedef void (*gpufreq_input_boost_notify)(unsigned int );
-typedef void (*gpufreq_power_limit_notify)(unsigned int );
-extern void mt_gpufreq_input_boost_notify_registerCB(gpufreq_input_boost_notify pCB);
-extern void mt_gpufreq_power_limit_notify_registerCB(gpufreq_power_limit_notify pCB);
+/*BSP-ELuo-Fix_CONFIG_MODVERSIONS-00+[*/
+/*Duplicate definition : mtk_mfgsys.c
+  gpufreq_input_boost_notify
+  gpufreq_power_limit_notify
+
+  This will make Segment fault when enable CONFIG_MODVERSIONS
+*/
+typedef void (*gpufreq_input_boost_notify2)(unsigned int );
+typedef void (*gpufreq_power_limit_notify2)(unsigned int );
+extern void mt_gpufreq_input_boost_notify_registerCB(gpufreq_input_boost_notify2 pCB);
+extern void mt_gpufreq_power_limit_notify_registerCB(gpufreq_power_limit_notify2 pCB);
+/*BSP-ELuo-Fix_CONFIG_MODVERSIONS-00]+*/
 extern void (*mtk_boost_gpu_freq_fp)(void);
 extern void (*mtk_set_bottom_gpu_freq_fp)(unsigned int);
 extern unsigned int (*mtk_get_bottom_gpu_freq_fp)(void);

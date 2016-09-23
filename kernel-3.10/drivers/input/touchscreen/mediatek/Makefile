@@ -10,17 +10,136 @@ obj-y   +=  tpd_default.o
 obj-y   +=  tpd_init.o
 obj-y   +=  tpd_misc.o
 obj-y   +=  tpd_setting.o
-#Vanzo:wangfei on: Wed, 12 Nov 2014 21:06:42 +0800
-# for compatible the old style ,so use CUSTOM_KERNEL_IMGSENSOR
-project_name:=$(shell echo $(VANZO_INNER_PROJECT_NAME))
-ifneq ($(project_name),)
 
-custom_kernel_touchpanel:= $(addsuffix /, $(shell echo $(CUSTOM_KERNEL_TOUCHPANEL)))
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_MAX1187X),y)
+obj-y	+=  max1187x/
+endif
 
-$(info "custom_kernel_touchpanel:$(custom_kernel_touchpanel)")
-obj-y += $(custom_kernel_touchpanel)
-else
-# End of Vanzo:wangfei
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT9XX),y)
+obj-y	+=  GT9XX/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT9XX_AIO),y)
+obj-y	+=  GT9XX_aio/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT1151),y)
+obj-y	+=  GT1151/
+endif
+
+ifeq ($(CONFIG_MTK_MMS244),y)
+obj-y	+=  mms244/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT9XX_HOTKNOT),y)
+obj-y	+=  GT9XX_hotknot/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT9XX_HOTKNOT_WEAR),y)
+obj-y	+=  GT9XX_hotknot_wear/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT818B_FPGA),y)
+obj-y	+=  GT818B-fpga/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT9XXTB_HOTKNOT),y)
+obj-y	+=  GT9XXTB_hotknot/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_S7020),y)
+obj-y	+=  S7020/
+endif
+
+obj-$(CONFIG_TOUCHSCREEN_MTK_GT9XX_HOTKNOT_SCP)	+=  GT9XX_hotknot_SCP/
+
+ifeq ($(CONFIG_GT9XX_HOTKNOT_FLASHLESS),y)
+obj-y	+=  GT9XX_hotknot_FLASHLESS/
+endif
+
+ifeq ($(CONFIG_MTK_GT9XX),y)
+obj-y	+=  GT9XX/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT910),y)
+obj-y	+=  GT910/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_FTS2A052),y)
+obj-y	+=  FTS2A052/
+endif
+
+ifeq ($(CONFIG_MTK_S2200),y)
+obj-y   +=  synaptics_2200/
+endif
+
+ifeq ($(CONFIG_MTK_S3320),y)
+obj-y	+=  synaptics_3320/
+endif
+
+ifeq ($(CONFIG_MTK_S3320_47),y)
+obj-y	+=  synaptics_3320_47/
+endif
+
+ifeq ($(CONFIG_MTK_S3320_50),y)
+obj-y	+=  synaptics_3320_50/
+endif
+
+ifeq ($(CONFIG_MTK_MMS134),y)
+obj-y	+=  mms134/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_SYNAPTICS_S2202), y)
+obj-y   +=  synaptics_2202/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_SYNAPTICS_S7020), y)
+obj-y   +=  synaptics_7020/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_SYNAPTICS_S3528),y)
+obj-y   +=  synaptics_3528/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_SYNAPTICS),y)
+obj-y   +=  synaptics/
+endif
+
+ifeq ($(CONFIG_MTK_S7020),y)
+obj-y   +=  synaptics_7020_s7/
+endif
+
+ifeq ($(CONFIG_MTK_FT5406),y)
+obj-y	+=  ft5406/
+endif
+
+ifeq ($(CONFIG_MTK_MMS128),y)
+obj-y	+=  mms128/
+endif
+
+ifeq ($(CONFIG_MTK_FT5406_82),y)
+obj-y	+=  ft5406_82/
+endif
+
+ifeq ($(CONFIG_MTK_FT5X0X),y)
+obj-y	+=  ft5x0x/
+endif
+
+ifeq ($(CONFIG_TOUCHSCREEN_MTK_GT9XX_2),y)
+obj-y	+=  GT9XX_2/
+endif
+
+ifeq ($(CONFIG_MTK_MIT200),y)
+obj-y	+=  melfas_mit200/
+endif
+
+ifeq ($(CONFIG_MTK_GT911),y)
+obj-y	+=  GT911/
+endif
+
+ifeq ($(CONFIG_MTK_GT911TB_HOTKNOT),y)
+obj-y	+=  GT911TB_HOTKNOT/
+endif
 
 ifeq ($(CONFIG_TOUCHSCREEN_MTK_ATMEL_MXT336),y)
 obj-y	+=  ATMEL_MXT336/
@@ -33,8 +152,3 @@ endif
 ifeq ($(CONFIG_MTK_FT5206),y)
 obj-y	+=  ft5206/
 endif
-
-# Vanzo:wangfei on: Sat, 28 Feb 2015 16:22:43 +0800
-# for use new style to config touchscreen
-endif
-# End of Vanzo:wangfei

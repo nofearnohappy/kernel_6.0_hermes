@@ -1996,7 +1996,4 @@ int yas_attitude_filter_init(struct yas_attitude_filter *f);
 #ifdef __cplusplus
 }
 #endif
-
-extern struct mag_hw * yamaha537_get_cust_mag_hw(void); //shihaobin add for auto_detect 20150316
-
 #endif /* __YAS_H__ */

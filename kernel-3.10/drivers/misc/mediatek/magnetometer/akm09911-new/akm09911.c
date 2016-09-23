@@ -107,8 +107,6 @@ static int mEnabled=0;
 static int akm09911_init_flag =0;
 static struct i2c_client *this_client = NULL;
 
-extern struct mag_hw * akm09911_get_cust_mag_hw(void);  //shihaobin add for auto_detect 20150316
-
 /*----------------------------------------------------------------------------*/
 static const struct i2c_device_id akm09911_i2c_id[] = {{AKM09911_DEV_NAME,0},{}};
 //static struct i2c_board_info __initdata i2c_akm09911={ I2C_BOARD_INFO("akm09911", (AKM09911_I2C_ADDRESS>>1))};
@@ -2995,7 +2993,7 @@ static int akm09911_i2c_probe(struct i2c_client *client, const struct i2c_device
         mt_set_gpio_out(MAG_PIN, 0);
         msleep(5);
 
-	data->hw = akm09911_get_cust_mag_hw();
+	data->hw = get_cust_mag_hw();
 
 	atomic_set(&data->layout, data->hw->direction);
 	atomic_set(&data->trace, 0);	
@@ -3131,7 +3129,7 @@ static int __init akm09911_init(void)
     const char *name = "mediatek,AKM09911";
 //    hw =	get_mag_dts_func(name, hw);
 //	if (!hw)
-		hw = akm09911_get_cust_mag_hw();
+		hw = get_cust_mag_hw();
         mt_set_gpio_mode(MAG_PIN, 0);
         mt_set_gpio_dir(MAG_PIN, 1);
         mt_set_gpio_out(MAG_PIN, 0);

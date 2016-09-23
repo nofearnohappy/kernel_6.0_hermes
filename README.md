@@ -2,7 +2,7 @@
 # Kernel version 3.10.72
 # Vendor Vanzo (ALPS-MP-M0.MP11-V1_VZ6795_LWT_M)
 Works in rom(ALPS 6.0)http://4pda.ru/forum/index.php?showtopic=695717&st=4640#entry52877661
-
+=========================================================================
 * Works:
 	* LCM(NT35596_TIANMA , NT35596_AUO , NT35532_BOE)
 	* Touch (ATMEL , FT5206)
@@ -28,7 +28,15 @@ Works in rom(ALPS 6.0)http://4pda.ru/forum/index.php?showtopic=695717&st=4640#en
 	* Lens(DF9761BAF)
 	* Fixed graphics bug
       	* Fixed bug headphones Disconnects
-      	* 
+      	* Twitching with the change in the brightness thresholds
+      	* Сharging(0-100% 2.5 hours)
+      	* Proximity Sensor Calibration
+      	* GPU from source sony
+=========================================================================
+* Disabled drivers:
+	* ALSPS                    (STK3X1X)
+        * MAGNETOMETER             (AKM09911_NEW)
+=========================================================================
 * Don't work:
 	* IR Blaster
 

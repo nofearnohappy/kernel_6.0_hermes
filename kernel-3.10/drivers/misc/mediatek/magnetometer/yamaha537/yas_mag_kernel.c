@@ -969,7 +969,7 @@ static int yas_probe(struct i2c_client *i2c,
 		goto error_free_device;
 
 	atomic_set(&st->mag_enable, 0);
-	st->hw = yamaha537_get_cust_mag_hw();
+	st->hw = get_cust_mag_hw();
 	st->raw = raw;
 	st->cal = cal;
 	st->euler = euler;
@@ -1158,7 +1158,7 @@ static struct i2c_driver yas_driver = {
 
 static int yas_local_init(void)
 {
-	struct mag_hw *hw = yamaha537_get_cust_mag_hw();
+	struct mag_hw *hw = get_cust_mag_hw();
 	MAGN_LOG("[%s]\n", __func__);
 	yas_power(hw, 1);
 	if (i2c_add_driver(&yas_driver)) {
@@ -1170,7 +1170,7 @@ static int yas_local_init(void)
 
 static int yas_local_uninit(void)
 {
-	struct mag_hw *hw = yamaha537_get_cust_mag_hw();
+	struct mag_hw *hw = get_cust_mag_hw();
 	MAGN_LOG("[%s]\n", __func__);
 	yas_power(hw, 0);
 	i2c_del_driver(&yas_driver);
@@ -1179,7 +1179,7 @@ static int yas_local_uninit(void)
 
 static int __init yas_init(void)
 {
-	struct mag_hw *hw = yamaha537_get_cust_mag_hw();
+	struct mag_hw *hw = get_cust_mag_hw();
 	MAGN_LOG("[%s]: i2c_number=%d\n", __func__, hw->i2c_num);
 	i2c_register_board_info(hw->i2c_num, &i2c_yas53x, 1);
 	mag_driver_add(&yas_init_info);

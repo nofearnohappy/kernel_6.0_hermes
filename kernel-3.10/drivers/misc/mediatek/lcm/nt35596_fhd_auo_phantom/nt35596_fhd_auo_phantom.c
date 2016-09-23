@@ -483,6 +483,7 @@ static void lcm_setbacklight_cmdq(void* handle, unsigned int level)
                     if (tianma_first_vlue >= 31){
                         if (tianma_second_vlue >= 31){
                             mt_set_gpio_out(GPIO_MHL_POWER_CTRL_PIN, GPIO_OUT_ONE);
+                            MDELAY(10);
                         }else{
                             KTD3116_Tianma_SendData(0);
                         }
@@ -490,6 +491,7 @@ static void lcm_setbacklight_cmdq(void* handle, unsigned int level)
                 }
             }else{
                 mt_set_gpio_out(GPIO_MHL_POWER_CTRL_PIN, GPIO_OUT_ZERO);
+                MDELAY(30); //10
             }
             
             lcm_backlight_level_setting[2].para_list[0] = (unsigned char)level;

@@ -7,7 +7,6 @@
 #include <mach/upmu_hw.h>
 
 extern int mtkfb_set_backlight_level(unsigned int level);
-extern int flashlight_onoff(unsigned int val);
 
 #define BACKLIGHT_LEVEL_PWM_64_FIFO_MODE_SUPPORT 64 
 #define BACKLIGHT_LEVEL_PWM_256_SUPPORT 256 
@@ -49,7 +48,6 @@ static struct cust_mt65xx_led cust_led_list[MT65XX_LED_TYPE_TOTAL] = {
 	{"keyboard-backlight",	MT65XX_LED_MODE_NONE, -1,{0}},
 	{"button-backlight",    MT65XX_LED_MODE_GPIO, (long)lct_set_button_keypad,{0}},
 	{"lcd-backlight",       MT65XX_LED_MODE_CUST_LCM, (long)mtkfb_set_backlight_level,{0}},
-//	{"flashlight",     	MT65XX_LED_MODE_CUST_BLS_PWM, -1,{0}},
 };  
 
 struct cust_mt65xx_led *get_cust_led_list(void)

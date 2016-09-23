@@ -1545,6 +1545,7 @@ static struct LCM_setting_table lcm_resume_setting[] = {
                         if (boe_first_vlue >= 31){
                             if (boe_second_vlue >= 31){
                                 mt_set_gpio_out(GPIO_MHL_POWER_CTRL_PIN, GPIO_OUT_ONE);
+                                MDELAY(10);
                             }else{
                                 KTD3116_Boe_SendData(0);
                             }
@@ -1552,6 +1553,7 @@ static struct LCM_setting_table lcm_resume_setting[] = {
                     }
                 }else{
                     mt_set_gpio_out(GPIO_MHL_POWER_CTRL_PIN, GPIO_OUT_ZERO);
+                    MDELAY(30); //10
                 }
                 
                 lcm_backlight_level_setting[4].para_list[0] = (unsigned char)level;

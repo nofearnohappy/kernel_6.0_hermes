@@ -226,14 +226,6 @@ config MTK_CLKMGR
           disabling, and querying status. If this config is not set,
           system will use COMMON_CLK instead.
 
-config MTK_LTR559
-	bool "CONFIG_MTK_LTR559"
-	default y
-
-config MTK_YAS537
-	bool "CONFIG_MTK_YAS537"
-	default y
-
 source "drivers/misc/mediatek/Kconfig.kernel"
 source "drivers/misc/mediatek/Kconfig.drivers"
 source "drivers/misc/mediatek/smartpa/Kconfig"
