@@ -15,9 +15,8 @@ Works in rom(ALPS 6.0)http://4pda.ru/forum/index.php?showtopic=695717&st=4640#en
 	* Brightness
 	* Leds indication
 	* Rill(sim1 and sim2)
-	* Alsps (LT559 STK3X1X)
+	* Alsps (LT559)
 	* Accel(BMI160_ACC LSM6DS3_ACCEL)
-	* Mag
 	* Giro
 	* OTG
 	* Sound(Speaker,Headphones)
