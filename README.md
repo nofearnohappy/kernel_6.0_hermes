@@ -32,10 +32,12 @@ Works in rom(ALPS 6.0)http://4pda.ru/forum/index.php?showtopic=695717&st=4640#en
       	* Сharging(0-100% 2.5 hours)
       	* Proximity Sensor Calibration
       	* GPU from source sony
+
 =========================================================================
 * Disabled drivers:
 	* ALSPS                    (STK3X1X)
         * MAGNETOMETER             (AKM09911_NEW)
+
 =========================================================================
 * Don't work:
 	* IR Blaster
