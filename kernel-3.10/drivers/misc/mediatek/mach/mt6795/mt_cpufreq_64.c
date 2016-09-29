@@ -135,10 +135,10 @@ extern unsigned int mt_get_cpu_freq(void);
 #define CPU_DVFS_FREQ7   (403000) /* KHz */
 #define CPUFREQ_LAST_FREQ_LEVEL    (CPU_DVFS_FREQ7)
 
-#define CPU_DVFS_FREQ0_1   (1950000) /* KHz */
-#define CPU_DVFS_FREQ1_1   (1781000) /* KHz */
-#define CPU_DVFS_FREQ2_1   (1625000) /* KHz */
-#define CPU_DVFS_FREQ3_1   (1469000) /* KHz */
+#define CPU_DVFS_FREQ0_1   (2158000) /* KHz */
+#define CPU_DVFS_FREQ1_1   (1885000) /* KHz */
+#define CPU_DVFS_FREQ2_1   (1664000) /* KHz */
+#define CPU_DVFS_FREQ3_1   (1482000) /* KHz */
 #define CPU_DVFS_FREQ4_1   (1326000) /* KHz */
 #define CPU_DVFS_FREQ5_1   (1183000) /* KHz */
 #define CPU_DVFS_FREQ6_1   (806000) /* KHz */
