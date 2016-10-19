@@ -2,7 +2,7 @@
 # Kernel version 3.10.72
 # Vendor Vanzo (ALPS-MP-M0.MP11-V1_VZ6795_LWT_M)
 Works in rom(ALPS 6.0)
-http://4pda.ru/forum/index.php?showtopic=695717&st=4640#entry52877661
+http://4pda.ru/forum/index.php?showtopic=695717&st=720#entry52877661
 
 Works in rom(CM13)
 http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
