@@ -3,8 +3,10 @@
 # Vendor Vanzo (ALPS-MP-M0.MP11-V1_VZ6795_LWT_M)
 Works in rom(ALPS 6.0)
 http://4pda.ru/forum/index.php?showtopic=695717&st=4640#entry52877661
+
 Works in rom(CM13)
 http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
+
 =========================================================================
 * Works:
 	* LCM(NT35596_TIANMA , NT35596_AUO , NT35532_BOE)
