@@ -1,4 +1,4 @@
 include $(srctree)/drivers/misc/mediatek/Makefile.custom
 
-obj-y	:=  bmi160_acc.o
+obj-y	:=  bmi160_acc.o cust_acc.o
 
