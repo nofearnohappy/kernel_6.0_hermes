@@ -99,7 +99,9 @@ static struct i2c_board_info __initdata i2c_ltr559={ I2C_BOARD_INFO("LTR_559ALS"
 /*----------------------------------------------------------------------------*/
 static int ltr559_i2c_probe(struct i2c_client *client, const struct i2c_device_id *id); 
 static int ltr559_i2c_remove(struct i2c_client *client);
+#if !defined(MTK_AUTO_DETECT_ALSPS)
 static int ltr559_i2c_detect(struct i2c_client *client, int kind, struct i2c_board_info *info);
+#endif
 /*----------------------------------------------------------------------------*/
 static int ltr559_i2c_suspend(struct i2c_client *client, pm_message_t msg);
 static int ltr559_i2c_resume(struct i2c_client *client);
@@ -119,6 +121,19 @@ static int final_lux_val;
 static DEFINE_MUTEX(read_lock);
 
 /*----------------------------------------------------------------------------*/
+
+#if defined(MTK_AUTO_DETECT_ALSPS)
+static int  ltr559_local_init(void);
+static int  ltr559_remove(void);
+static int ltr559_init_flag =-1; // 0<==>OK -1 <==> fail
+
+static struct alsps_init_info ltr559_init_info = {
+        .name = "ltr559",
+        .init = ltr559_local_init,
+        .uninit = ltr559_remove,
+};
+#endif
+
 static int ltr559_als_read(int gainrange);
 static int ltr559_ps_read(void);
 static int ltr559_devinit(void);
@@ -200,13 +215,16 @@ static int intr_flag_value = 0;
 
 
 static struct ltr559_priv *ltr559_obj = NULL;
+#if !defined(MTK_AUTO_DETECT_ALSPS)
 static struct platform_driver ltr559_alsps_driver;
-
+#endif
 /*----------------------------------------------------------------------------*/
 static struct i2c_driver ltr559_i2c_driver = {	
 	.probe      = ltr559_i2c_probe,
 	.remove     = ltr559_i2c_remove,
+	#if !defined(MTK_AUTO_DETECT_ALSPS)
 	.detect     = ltr559_i2c_detect,
+        #endif
 	.suspend    = ltr559_i2c_suspend,
 	.resume     = ltr559_i2c_resume,
 	.id_table   = ltr559_i2c_id,
@@ -2331,12 +2349,13 @@ int ltr559_als_operate(void* self, uint32_t command, void* buff_in, int size_in,
 
 
 /*----------------------------------------------------------------------------*/
+#if !defined(MTK_AUTO_DETECT_ALSPS)
 static int ltr559_i2c_detect(struct i2c_client *client, int kind, struct i2c_board_info *info) 
 {    
 	strcpy(info->type, LTR559_DEV_NAME);
 	return 0;
 }
-
+#endif
 /*----------------------------------------------------------------------------*/
 static int ltr559_i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
@@ -2448,6 +2467,10 @@ static int ltr559_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 	APS_LOG("%s: OK\n", __func__);
 	return 0;
 
+#if defined(MTK_AUTO_DETECT_ALSPS)
+        ltr559_init_flag = 0;
+#endif
+
 	exit_create_attr_failed:
 	misc_deregister(&ltr559_device);
 	exit_misc_device_register_failed:
@@ -2459,6 +2482,9 @@ static int ltr559_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 	ltr559_i2c_client = NULL;           
 //	MT6516_EINTIRQMask(CUST_EINT_ALS_NUM);  /*mask interrupt if fail*/
 	APS_ERR("%s: err = %d\n", __func__, err);
+#if defined(MTK_AUTO_DETECT_ALSPS)
+        ltr559_init_flag = -1;
+#endif
 	return err;
 }
 
@@ -2483,6 +2509,37 @@ static int ltr559_i2c_remove(struct i2c_client *client)
 
 	return 0;
 }
+/*----------------------------------------------------------------------------*/
+#if defined(MTK_AUTO_DETECT_ALSPS)
+static int TMD2771_remove(void)
+{
+    struct alsps_hw *hw = get_cust_alsps_hw();
+
+    APS_FUN();    
+    ltr559_power(hw, 0);    
+    i2c_del_driver(&ltr559_i2c_driver);
+    return 0;
+}
+/*----------------------------------------------------------------------------*/
+static int ltr559_local_init(void)
+{
+   struct alsps_hw *hw = get_cust_alsps_hw();
+    APS_FUN();
+
+    ltr559_power(hw, 1);
+    if(i2c_add_driver(&ltr559_i2c_driver))
+    {
+        APS_ERR("add driver error\n");
+        return -1;
+    }
+    if(-1 == ltr559_init_flag)
+    {
+       return -1;
+    }
+    
+    return 0;
+}
+#else
 /*----------------------------------------------------------------------------*/
 static int ltr559_probe(struct platform_device *pdev) 
 {
@@ -2537,6 +2594,7 @@ static struct platform_device ltr559_alsps_device={
 	.id=-1
 };
 #endif
+#endif
 
 /*----------------------------------------------------------------------------*/
 static int __init ltr559_init(void)
@@ -2546,19 +2604,24 @@ static int __init ltr559_init(void)
 	
 	i2c_register_board_info(hw->i2c_num, &i2c_ltr559, 1);
 	
-
+#if defined(MTK_AUTO_DETECT_ALSPS)
+        hwmsen_alsps_sensor_add(&ltr559_init_info);
+#else
 	if(platform_driver_register(&ltr559_alsps_driver))
 	{
 		APS_ERR("failed to register driver");
 		return -ENODEV;
 	}
+#endif
 	return 0;
 }
 /*----------------------------------------------------------------------------*/
 static void __exit ltr559_exit(void)
 {
 	APS_FUN();
-	platform_driver_unregister(&ltr559_alsps_driver);
+#if !defined(MTK_AUTO_DETECT_ALSPS)
+    platform_driver_unregister(&ltr559_alsps_driver);
+#endif
 }
 /*----------------------------------------------------------------------------*/
 module_init(ltr559_init);
