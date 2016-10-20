@@ -51,8 +51,6 @@ ifeq ($(CONFIG_TOUCHSCREEN_S7020),y)
 obj-y	+=  S7020/
 endif
 
-obj-$(CONFIG_TOUCHSCREEN_MTK_GT9XX_HOTKNOT_SCP)	+=  GT9XX_hotknot_SCP/
-
 ifeq ($(CONFIG_GT9XX_HOTKNOT_FLASHLESS),y)
 obj-y	+=  GT9XX_hotknot_FLASHLESS/
 endif

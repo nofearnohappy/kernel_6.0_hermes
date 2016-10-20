@@ -165,7 +165,7 @@ extern void MT6516_EINT_Registration(kal_uint8 eintno, kal_bool Dbounce_En,
 #endif
 
 #define STK3311WV_PID	0x1D
-#define MTK_AUTO_DETECT_ALSPS
+#define MTK_AUTO_DETECT_ALSPS //defined in driver. What?
 /*----------------------------------------------------------------------------*/
 static struct i2c_client *stk3x1x_i2c_client = NULL;
 /*----------------------------------------------------------------------------*/
@@ -5332,7 +5332,7 @@ static int __init stk3x1x_init(void)
 	APS_FUN();
 	
 #if defined(MTK_AUTO_DETECT_ALSPS)	
-   	alsps_driver_add(&stk3x1x_init_info);// hwmsen_alsps_add(&stk3x1x_init_info);
+   	hwmsen_alsps_sensor_add(&stk3x1x_init_info);
 #else	
 	if((retval = platform_driver_register(&stk3x1x_alsps_driver)))
 	{
