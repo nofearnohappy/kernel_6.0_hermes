@@ -20,7 +20,7 @@ http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
 	* Brightness
 	* Leds indication
 	* Rill(sim1 and sim2)
-	* Alsps (LT559)
+	* Alsps (LT559 and STK)
 	* Accel(BMI160_ACC LSM6DS3_ACCEL)
 	* Giro
 	* OTG
