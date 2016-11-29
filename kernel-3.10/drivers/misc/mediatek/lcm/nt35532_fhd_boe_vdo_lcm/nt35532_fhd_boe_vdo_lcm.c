@@ -1556,7 +1556,7 @@ static struct LCM_setting_table lcm_resume_setting[] = {
                     MDELAY(30); //10
                 }
                 
-                lcm_backlight_level_setting[4].para_list[0] = (unsigned char)level;
+                lcm_backlight_level_setting[3].para_list[0] = (unsigned char)level;
                 push_table(lcm_backlight_level_setting, sizeof(lcm_backlight_level_setting) / sizeof(struct LCM_setting_table), 1);  
                 boe_second_vlue = boe_first_vlue;
             }
