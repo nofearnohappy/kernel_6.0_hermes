@@ -556,9 +556,12 @@ int BattVoltToTemp(int dwVolt)
 	kal_int64 TRes;
 	int sBaTTMP = -100;
 
-	/* TRes_temp = ((kal_int64)RBAT_PULL_UP_R*(kal_int64)dwVolt) / (RBAT_PULL_UP_VOLT-dwVolt); */
-	/* TRes = (TRes_temp * (kal_int64)RBAT_PULL_DOWN_R)/((kal_int64)RBAT_PULL_DOWN_R - TRes_temp); */
+// Reverse from sourse kernel TODO: need to correct function
+// TRes = ((kal_int64)RBAT_PULL_UP_R*(kal_int64)dwVolt) / (RBAT_PULL_UP_VOLT-dwVolt);
 
+	/*TRes_temp = ((kal_int64)RBAT_PULL_UP_R*(kal_int64)dwVolt) / (RBAT_PULL_UP_VOLT-dwVolt);*/
+	/* TRes = (TRes_temp * (kal_int64)RBAT_PULL_DOWN_R)/((kal_int64)RBAT_PULL_DOWN_R - TRes_temp); */
+	
 	TRes_temp = (RBAT_PULL_UP_R * (kal_int64) dwVolt);
 	do_div(TRes_temp, (RBAT_PULL_UP_VOLT - dwVolt));
 
@@ -568,7 +571,7 @@ int BattVoltToTemp(int dwVolt)
 #else
 	TRes = TRes_temp;
 #endif
-
+	
 	/* convert register to temperature */
 	sBaTTMP = BattThermistorConverTemp((int)TRes);
 
@@ -2002,8 +2005,8 @@ kal_int32 fgauge_update_dod(void)
 	if (C_FGCurrent != 0)
 		FG_dod_1 =  gFG_DOD0 - ((gFG_columb*100)/gFG_BATT_CAPACITY_aging)*C_0mA/C_FGCurrent;
 
-	bm_print(BM_LOG_CRTI, "[fgauge_update_dod] FG_dod_1=%d, adjust_coulomb_counter=%d, gFG_columb=%d, gFG_DOD0=%d,
-		gFG_temp=%d, gFG_BATT_CAPACITY=%d, C_0mA=%d, C_400mA=%d, C_FGCurrent=%d, gFG_current_AVG=%d\n",
+	bm_print(BM_LOG_CRTI, "[fgauge_update_dod] FG_dod_1=%d, adjust_coulomb_counter=%d, gFG_columb=%d, gFG_DOD0=%d," \
+		"gFG_temp=%d, gFG_BATT_CAPACITY=%d, C_0mA=%d, C_400mA=%d, C_FGCurrent=%d, gFG_current_AVG=%d\n",
 		FG_dod_1, adjust_coulomb_counter, gFG_columb, gFG_DOD0, gFG_temp,
 		gFG_BATT_CAPACITY, C_0mA, C_400mA, C_FGCurrent, gFG_current_AVG);
 #else
