@@ -658,7 +658,6 @@ static int cw_get_vol(struct cw_battery *cw_bat)
     }
 
     voltage = value16_1 * 312 / 1024;
-    voltage = voltage * 1000;
 
     printk("[CW2015] [cw_get_vol]: cw_voltage = %d\n", voltage);
 
