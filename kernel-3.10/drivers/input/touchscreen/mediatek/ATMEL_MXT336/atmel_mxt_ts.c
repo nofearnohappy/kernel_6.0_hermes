@@ -1769,7 +1769,7 @@ LCSH_DEBUG("swf55 esd_check_function \n ");
 				hwPowerDown(MT6331_POWER_LDO_VGP1, "TP");
 				mt_set_gpio_out(GPIO_CTP_RST_PIN, GPIO_OUT_ZERO);
 				msleep(10);
-				hwPowerOn(MT6331_POWER_LDO_VGP1, VOL_2800, "TP");
+				hwPowerOn(MT6331_POWER_LDO_VGP1, VOL_3300, "TP");
 				msleep(50);
 				mt_set_gpio_out(GPIO_CTP_RST_PIN, GPIO_OUT_ONE);
 				msleep(200);
