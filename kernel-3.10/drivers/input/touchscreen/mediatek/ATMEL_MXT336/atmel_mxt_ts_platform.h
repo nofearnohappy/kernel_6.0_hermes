@@ -101,7 +101,7 @@ static inline void board_gpio_init(const struct mxt_platform_data *pdata)
 	mt_set_gpio_out(GPIO_CTP_RST_PIN, GPIO_OUT_ZERO);
 	msleep(10);
 printk("*****sunwf111111 func = %s line = %d ******\n",__func__,__LINE__);
-	hwPowerOn(MT6331_POWER_LDO_VGP1, VOL_2800, "TP");
+	hwPowerOn(MT6331_POWER_LDO_VGP1, VOL_3300, "TP");
 	msleep(50);
 	mt_set_gpio_out(GPIO_CTP_RST_PIN, GPIO_OUT_ONE);
 #if 0
