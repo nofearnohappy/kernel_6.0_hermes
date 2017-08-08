@@ -36,6 +36,8 @@ http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
       	* Сharging(0-100% 2.5 hours)
       	* Proximity Sensor Calibration
       	* GPU from source sony
+      	* Fixed bug with voltage drop
+
 
 =========================================================================
 * Disabled drivers:
