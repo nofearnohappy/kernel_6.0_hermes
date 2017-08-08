@@ -358,33 +358,38 @@ static int cw_init(struct cw_battery *cw_bat)
     if (ret < 0)
         return ret;
 
-    if (!(reg_val & CONFIG_UPDATE_FLG))
-    {
-        printk("[CW2015] update flag for new battery info have not set\n");
+if (!(reg_val & CONFIG_UPDATE_FLG)) {
+    #ifdef FG_CW2015_DEBUG
+    FG_CW2015_LOG("update flag for new battery info have not set\n");
+    #endif
+    ret = cw_update_config_info(cw_bat);
+    if (ret < 0)
+        return ret;
+} else {
+    for(i = 0; i < SIZE_BATINFO; i++) { 
+        ret = cw_read(cw_bat->client, (REG_BATINFO + i), &reg_val);
+        if (ret < 0)
+            return ret;
+        
+        if (2 == liuchao_test_hmi_battery_version){
+            if (config_info_des[i] != reg_val)
+                break;
+            
+        }else{
+            if (config_info[i] != reg_val)
+                break;
+        }
+    }
+    
+    if (i != SIZE_BATINFO) {
+        #ifdef FG_CW2015_DEBUG
+        FG_CW2015_LOG("update flag for new battery info have not set\n"); 
+        #endif
         ret = cw_update_config_info(cw_bat);
         if (ret < 0)
             return ret;
     }
-    else 
-    {
-        for (i = 0; i < SIZE_BATINFO; i++) 
-        {
-            ret = cw_read(cw_bat->client, (REG_BATINFO + i), &reg_val);
-            if (ret < 0)
-                return ret;
-
-            if (cw_bat->plat_data->cw_bat_config_info[i] != reg_val)
-                break;
-        }
-
-        if (i != SIZE_BATINFO) 
-        {
-            printk("[CW2015] update flag for new battery info have not set\n");
-            ret = cw_update_config_info(cw_bat);
-            if (ret < 0)
-                return ret;
-        }
-    }
+}
 
     for (i = 0; i < 30; i++) 
     {
