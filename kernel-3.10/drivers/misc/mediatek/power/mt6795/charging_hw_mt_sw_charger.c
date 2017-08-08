@@ -31,7 +31,7 @@ int g_sw_rechr_vlot=4100;
 #if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
 kal_uint32 g_cv_reg_val=0x4; //default 4.35V
 #else
-kal_uint32 g_cv_reg_val=0x8; //default 4.2V
+kal_uint32 g_cv_reg_val=0x4; //default 4.2V
 #endif
 
 kal_bool chargin_hw_init_done = KAL_TRUE;
@@ -387,10 +387,10 @@ void set_cv_volt(void)
 
         #if 1
 			#if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
-			if (g_cv_reg_val != 0x5)
+			if (g_cv_reg_val != 0x4)
 				battery_log(BAT_LOG_CRTI, "[set_cv_volt] g_cv_reg_val=0x%x\n", g_cv_reg_val);
 			#else
-			if (g_cv_reg_val != 0x8)
+			if (g_cv_reg_val != 0x4)
 				battery_log(BAT_LOG_CRTI, "[set_cv_volt] g_cv_reg_val=0x%x\n", g_cv_reg_val);
 			#endif
 
