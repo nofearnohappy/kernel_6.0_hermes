@@ -2200,17 +2200,22 @@ void mt_battery_GetBatteryData(void)
 	static kal_uint8 batteryIndex = 0;
 	static kal_int32 previous_SOC = -1;
 
-        FG_charging_status = upmu_is_chr_det(); // Hermes
-
 	bat_vol = battery_meter_get_battery_voltage(KAL_TRUE);
 	Vsense = battery_meter_get_VSense();
 	if( upmu_is_chr_det() == KAL_TRUE ) {
-	ICharging = battery_meter_get_charging_current();
+//my edit start
+		//ICharging = battery_meter_get_charging_current();
+                ICharging =  get_bat_charging_current_level();
+                ICharging =  ICharging/100;
+	        charger_vol = battery_meter_get_charger_voltage();
+//my edit end
 	} else {
 		ICharging = 0;
+//my edit start
+                charger_vol = 0;
+//my edit end
 	}
 
-	charger_vol = battery_meter_get_charger_voltage();
 	temperature = battery_meter_get_battery_temperature();
 	temperatureV = battery_meter_get_tempV();
 	temperatureR = battery_meter_get_tempR(temperatureV);
@@ -2911,6 +2916,19 @@ void do_chrdet_int_task(void)
 
 			BMT_status.SOC = battery_meter_get_battery_percentage();
 		}
+
+//my edit start
+		if (BMT_status.bat_vol > 0) {
+			BMT_status.charger_vol = battery_meter_get_charger_voltage();
+			if(BMT_status.charger_type == STANDARD_CHARGER)
+				BMT_status.ICharging = AC_CHARGER_CURRENT/100;
+			else if(BMT_status.charger_type == STANDARD_HOST)
+				BMT_status.ICharging = USB_CHARGER_CURRENT/100;
+
+			mt_battery_update_status();
+		}
+//my edit end
+
 		#if defined(CONFIG_MTK_DUAL_INPUT_CHARGER_SUPPORT)
 		DISO_data.chr_get_diso_state = KAL_TRUE;
 		#endif

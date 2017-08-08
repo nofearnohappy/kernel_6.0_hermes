@@ -644,6 +644,15 @@ void select_charging_curret(void)
 		}
 		#endif
 
+//my edit start
+                if(BMT_status.bat_charging_state == CHR_PRE) //&& (gFG_voltage_value <= V_PRE2CC_THRES)) //LC--zbl--modify-20150506-for precc
+                {
+                        g_temp_input_CC_value = CHARGE_CURRENT_500_00_MA;
+                        g_temp_CC_value = CHARGE_CURRENT_500_00_MA;
+                        battery_xlog_printk(BAT_LOG_CRTI, "[BATTERY] set_pre_cc_current 500mA\r\n");
+                }
+//my edit end
+
 #if defined(CONFIG_MTK_JEITA_STANDARD_SUPPORT)
 		set_jeita_charging_current();
 #endif
