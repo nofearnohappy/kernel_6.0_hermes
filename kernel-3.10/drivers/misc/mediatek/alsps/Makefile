@@ -5,5 +5,5 @@ obj-y   +=  alsps.o
 obj-y   +=  alsps_factory.o
 obj-y   +=  aal_control.o
 
-obj-$(CONFIG_MTK_STK3X1X_DRIVER)+=  stk3x1x_driver/
-obj-$(CONFIG_MTK_LTR559)	+=  ltr559/
+obj-$(CONFIG_MTK_STK3X1X) += stk3x1x/
+obj-$(CONFIG_MTK_LTR559) += ltr559/
