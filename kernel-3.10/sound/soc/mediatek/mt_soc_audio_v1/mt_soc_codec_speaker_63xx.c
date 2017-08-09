@@ -298,9 +298,7 @@ bool GetSpeakerOcFlag(void)
     unsigned int bitmask = 1;
     bool DmodeFlag = false;
     bool ABmodeFlag = false;
-#if 0 // workaround for co-clock screen off
     Ana_Set_Reg(SPK_INT_CON2_CLR, (1 << 6 || 1 << 7), (1 << 6 || 1 << 7));
-#endif
     OCregister = Ana_Get_Reg(0x8CFE);
     DmodeFlag = OCregister & (bitmask << 14); // ; no.14 bit is SPK_D_OC_L_DEG
     ABmodeFlag = OCregister & (bitmask << 15); // ; no.15 bit is SPK_AB_OC_L_DEG

@@ -70,7 +70,6 @@ void Auddrv_Reg_map(void);
 bool SetSampleRate(uint32 Aud_block, uint32 SampleRate);
 bool SetChannels(uint32 Memory_Interface, uint32 channel);
 
-/* DO NOT USER DIRECTLY, use irq manager */
 bool SetIrqMcuCounter(uint32 Irqmode, uint32 Counter);
 bool SetIrqEnable(uint32 Irqmode, bool bEnable);
 bool SetIrqMcuSampleRate(uint32  Irqmode, uint32 SampleRate);
@@ -99,7 +98,6 @@ bool SetI2SDacOut(uint32 SampleRate);
 bool SetHwDigitalGainMode(uint32 GainType, uint32 SampleRate, uint32 SamplePerStep);
 bool SetHwDigitalGainEnable(int GainType, bool Enable);
 bool SetHwDigitalGain(uint32 Gain , int GainType);
-bool SetI2SDacOutlowJitterMode(uint32 SampleRate);
 
 bool SetMemDuplicateWrite(uint32 InterfaceType, int dupwrite);
 bool EnableSideGenHw(uint32 connection , bool direction  , bool  Enable);
@@ -116,7 +114,6 @@ bool SetI2SASRCConfig(bool bIsUseASRC, unsigned int dToSampleRate);
 bool SetI2SASRCEnable(bool bEnable);
 bool Audio_ModemPcm2_ASRC_Set(bool Enable);
 
-bool checkDllinkMEMIfStatus(void);
 bool checkUplinkMEMIfStatus(void);
 bool SetMemIfFetchFormatPerSample(uint32 InterfaceType, uint32 eFetchFormat);
 bool SetoutputConnectionFormat(uint32 ConnectionFormat,uint32  Output);
@@ -169,11 +166,7 @@ bool ClearMemBlock(Soc_Aud_Digital_Block MemBlock);
 
 void Auddrv_Dl1_Spinlock_lock(void);
 void Auddrv_Dl1_Spinlock_unlock(void);
-void Auddrv_Dl2_Spinlock_lock(void);
-void Auddrv_Dl2_Spinlock_unlock(void);
-
 void Auddrv_DL1_Interrupt_Handler(void);
-void Auddrv_DL2_Interrupt_Handler(void);
 void Auddrv_UL1_Interrupt_Handler(void);
 void Auddrv_UL1_Spinlock_lock(void);
 void Auddrv_UL1_Spinlock_unlock(void);
@@ -182,7 +175,9 @@ void Auddrv_DAI_Interrupt_Handler(void);
 void Auddrv_HDMI_Interrupt_Handler(void);
 void Auddrv_UL2_Interrupt_Handler(void);
 void Auddrv_MOD_DAI_Interrupt_Handler(void);
+void Clear_Mem_CopySize(Soc_Aud_Digital_Block MemBlock);
 kal_uint32 Get_Mem_CopySizeByStream(Soc_Aud_Digital_Block MemBlock,struct snd_pcm_substream *substream);
+kal_uint32 Get_Mem_MaxCopySize(Soc_Aud_Digital_Block MemBlock);
 void Set_Mem_CopySizeByStream(Soc_Aud_Digital_Block MemBlock,struct snd_pcm_substream *substream,uint32 size);
 
 struct snd_dma_buffer* Get_Mem_Buffer(Soc_Aud_Digital_Block MemBlock);
@@ -216,24 +211,5 @@ void SetExternalModemStatus(const bool bEnable);
 bool GetExternalModemStatus(void);
 
 unsigned int Align64ByteSize(unsigned int insize);
-
-bool SetHighAddr(Soc_Aud_Digital_Block MemBlock,bool usingdram);
-
-void AudDrv_checkDLISRStatus(void);
-
-/* IRQ Manager */
-int init_irq_manager(void);
-int irq_add_user(const void *_user,
-		 enum Soc_Aud_IRQ_MCU_MODE _irq,
-		 unsigned int _rate,
-		 unsigned int _count);
-int irq_remove_user(const void *_user,
-		    enum Soc_Aud_IRQ_MCU_MODE _irq);
-int irq_update_user(const void *_user,
-		    enum Soc_Aud_IRQ_MCU_MODE _irq,
-		    unsigned int _rate,
-		    unsigned int _count);
-
-/* IRQ Manager */
 
 #endif

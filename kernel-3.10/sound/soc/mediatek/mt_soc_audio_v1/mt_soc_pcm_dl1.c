@@ -160,9 +160,9 @@ static struct snd_pcm_hardware mtk_pcm_dl1_hardware =
 
 static int mtk_pcm_dl1_stop(struct snd_pcm_substream *substream)
 {
-	pr_debug("%s\n", __func__);
+    printk("%s \n", __func__);
 
-	irq_remove_user(substream, Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE);
+    SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, false);
     SetMemoryPathEnable(Soc_Aud_Digital_Block_MEM_DL1, false);
 
     // here start digital part
@@ -264,7 +264,6 @@ static int mtk_pcm_dl1_params(struct snd_pcm_substream *substream,
         //substream->runtime->dma_bytes = AFE_INTERNAL_SRAM_SIZE;
         substream->runtime->dma_area = (unsigned char *)Get_Afe_SramBase_Pointer();
         substream->runtime->dma_addr = AFE_INTERNAL_SRAM_PHY_BASE;
-        SetHighAddr(Soc_Aud_Digital_Block_MEM_DL1,false);
         AudDrv_Allocate_DL1_Buffer(mDev, substream->runtime->dma_bytes);
     }
     else
@@ -272,7 +271,6 @@ static int mtk_pcm_dl1_params(struct snd_pcm_substream *substream,
         substream->runtime->dma_bytes = params_buffer_bytes(hw_params);
         substream->runtime->dma_area = Dl1_Playback_dma_buf->area;
         substream->runtime->dma_addr = Dl1_Playback_dma_buf->addr;
-        SetHighAddr(Soc_Aud_Digital_Block_MEM_DL1,true);
         SetDL1Buffer(substream, hw_params);
     }
 
@@ -423,6 +421,9 @@ static int mtk_pcm_prepare(struct snd_pcm_substream *substream)
         {
             SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC, true);
         }
+        // here to set interrupt_distributor
+        SetIrqMcuCounter(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, runtime->period_size);
+        SetIrqMcuSampleRate(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, runtime->rate);
 
         EnableAfe(true);
         mPrepareDone = true;
@@ -440,11 +441,7 @@ static int mtk_pcm_dl1_start(struct snd_pcm_substream *substream)
     SetConnection(Soc_Aud_InterCon_Connection, Soc_Aud_InterConnectionInput_I05, Soc_Aud_InterConnectionOutput_O03);
     SetConnection(Soc_Aud_InterCon_Connection, Soc_Aud_InterConnectionInput_I06, Soc_Aud_InterConnectionOutput_O04);
 
-    /* here to set interrupt */
-	irq_add_user(substream,
-		     Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE,
-		     substream->runtime->rate,
-		     substream->runtime->period_size);
+    SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, true);
 
     SetSampleRate(Soc_Aud_Digital_Block_MEM_DL1, runtime->rate);
     SetChannels(Soc_Aud_Digital_Block_MEM_DL1, runtime->channels);
@@ -493,8 +490,6 @@ static int mtk_pcm_copy(struct snd_pcm_substream *substream,
         printk("AudDrv_write: u4BufferSize=0 Error");
         return 0;
     }
-
-	AudDrv_checkDLISRStatus();
 
     spin_lock_irqsave(&auddrv_DLCtl_lock, flags);
     copy_size = Afe_Block->u4BufferSize - Afe_Block->u4DataRemained;  //  free space of the buffer
