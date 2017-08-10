@@ -102,14 +102,14 @@ static int mtk_uldlloopback_open(struct snd_pcm_substream *substream)
     int ret = 0;
 
     printk("%s \n", __func__);
+    AudDrv_Clk_On();
+    AudDrv_ADC_Clk_On();	
     if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
     {
         printk("%s  with mtk_uldlloopback_open \n", __func__);
         runtime->rate = 16000;
         return 0;
     }
-    AudDrv_Clk_On();
-    AudDrv_ADC_Clk_On();
 
     runtime->hw = mtk_uldlloopback_hardware;
     memcpy((void *)(&(runtime->hw)), (void *)&mtk_uldlloopback_hardware , sizeof(struct snd_pcm_hardware));
@@ -164,8 +164,6 @@ static int mtk_uldlloopbackpcm_close(struct snd_pcm_substream *substream)
 
     // stop I2S
     Afe_Set_Reg(AFE_I2S_CON3, 0x0, 0x1);
-    Afe_Set_Reg(AFE_I2S_CON1, 0x0, 0x1);
-    Afe_Set_Reg(AFE_I2S_CON, 0x0, 0x1);
     SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC, false);
     SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_IN_ADC, false);
 
@@ -225,14 +223,14 @@ static int mtk_uldlloopback_pcm_prepare(struct snd_pcm_substream *substream)
     uint32 Audio_I2S_Dac = 0;
     uint32 u32AudioI2S = 0;
 
+    SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC, true);
+    SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_IN_ADC, true);
+
     if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
     {
         printk("%s  with mtk_uldlloopback_pcm_prepare \n", __func__);
         return 0;
     }
-
-    SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC, true);
-    SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_IN_ADC, true);
 
     printk("%s rate = %d\n", __func__, runtime->rate);
 

@@ -263,8 +263,10 @@ static int Audio_i2s0_hdoutput_Set(struct snd_kcontrol *kcontrol, struct snd_ctl
         return -EINVAL;
     }
     AudDrv_Clk_On();
+    mi2s0_hdoutput_control = ucontrol->value.integer.value[0];
+    printk("%s(), mi2s0_hdoutput_control=%d\n", __func__, mi2s0_hdoutput_control);
 
-    if ( (ucontrol->value.integer.value[0] == true) &&(mi2s0_hdoutput_control == false) )
+    if (mi2s0_hdoutput_control)
     {
         printk("%s(), mi2s0_hdoutput_control=%d, enable APLL!!!!\n", __func__, mi2s0_hdoutput_control);
         // set APLL clock setting
@@ -275,7 +277,7 @@ static int Audio_i2s0_hdoutput_Set(struct snd_kcontrol *kcontrol, struct snd_ctl
         AudDrv_APLL1Tuner_Clk_On();
         AudDrv_APLL2Tuner_Clk_On();
     }
-    else if( (ucontrol->value.integer.value[0] == false) &&(mi2s0_hdoutput_control == true) )
+    else
     {
         printk("%s(), mi2s0_hdoutput_control=%d, disable APLL!!!!\n", __func__, mi2s0_hdoutput_control);
         // set APLL clock setting
@@ -286,9 +288,6 @@ static int Audio_i2s0_hdoutput_Set(struct snd_kcontrol *kcontrol, struct snd_ctl
         AudDrv_APLL1Tuner_Clk_Off();
         AudDrv_APLL2Tuner_Clk_Off();
     }
-
-    mi2s0_hdoutput_control = ucontrol->value.integer.value[0];
-    printk("%s(), mi2s0_hdoutput_control=%d\n", __func__, mi2s0_hdoutput_control);
 
     AudDrv_Clk_Off();
     printk("-%s(), mi2s0_hdoutput_control=%d\n", __func__, mi2s0_hdoutput_control);
@@ -345,8 +344,8 @@ static int mtk_pcm_i2s0_stop(struct snd_pcm_substream *substream)
 {
     AFE_BLOCK_T *Afe_Block = &(pI2s0MemControl->rBlock);
 
-	pr_debug("mtk_pcm_i2s0_stop\n");
-	irq_remove_user(substream, Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE);
+    printk("mtk_pcm_i2s0_stop \n");
+    SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, false);
 
     // here start digital part
     SetConnection(Soc_Aud_InterCon_DisConnect, Soc_Aud_InterConnectionInput_I05, Soc_Aud_InterConnectionOutput_O00);
@@ -435,7 +434,6 @@ static int mtk_pcm_i2s0_hw_params(struct snd_pcm_substream *substream,
     //substream->runtime->dma_bytes = AFE_INTERNAL_SRAM_SIZE;
     substream->runtime->dma_area = (unsigned char *)Get_Afe_SramBase_Pointer();
     substream->runtime->dma_addr = AFE_INTERNAL_SRAM_PHY_BASE;
-    SetHighAddr(Soc_Aud_Digital_Block_MEM_DL1,false);
 
     // -------------------------------------------------------
     PRINTK_AUDDRV("1 dma_bytes = %d dma_area = %p dma_addr = 0x%x\n",
@@ -571,14 +569,12 @@ static int mtk_pcm_i2s0_start(struct snd_pcm_substream *substream)
 
     SetSampleRate(Soc_Aud_Digital_Block_MEM_DL1, runtime->rate);
     SetChannels(Soc_Aud_Digital_Block_MEM_DL1, runtime->channels);
-
-	/* here to set interrupt */
-	irq_add_user(substream,
-		     Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE,
-		     substream->runtime->rate,
-		     substream->runtime->period_size);
-
     SetMemoryPathEnable(Soc_Aud_Digital_Block_MEM_DL1, true);
+
+    // here to set interrupt
+    SetIrqMcuCounter(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, runtime->period_size);
+    SetIrqMcuSampleRate(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, runtime->rate);
+    SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, true);
 
     EnableAfe(true);
 
@@ -625,8 +621,6 @@ static int mtk_pcm_i2s0_copy(struct snd_pcm_substream *substream,
         printk(" u4BufferSize=0 Error");
         return 0;
     }
-
-	AudDrv_checkDLISRStatus();
 
     spin_lock_irqsave(&auddrv_I2S0_lock, flags);
     copy_size = Afe_Block->u4BufferSize - Afe_Block->u4DataRemained;  //  free space of the buffer
