@@ -109,6 +109,10 @@ define for PCM settings
 #define Dl1_MIN_PERIOD_SIZE       1
 #define Dl1_MAX_PERIOD_SIZE     Dl1_MAX_BUFFER_SIZE
 
+#define Dl2_MAX_BUFFER_SIZE     (48*1024)
+#define Dl2_MIN_PERIOD_SIZE       1
+#define Dl2_MAX_PERIOD_SIZE     Dl2_MAX_BUFFER_SIZE
+
 #define MAX_BUFFER_SIZE     (24*1024)
 #define MIN_PERIOD_SIZE       1
 #define MAX_PERIOD_SIZE     MAX_BUFFER_SIZE
@@ -130,9 +134,9 @@ define for PCM settings
 #define AWB_MAX_PERIOD_SIZE     AWB_MAX_BUFFER_SIZE
 
 
-#define HDMI_MAX_BUFFER_SIZE     (192*1024*8)
+#define HDMI_MAX_BUFFER_SIZE     (384*1024*2)
 
-#define HDMI_MULTI_MAX_BUFFER_SIZE     (192*1024*8)
+#define HDMI_MULTI_MAX_BUFFER_SIZE     (384*1024*2)
 #define HDMI_STEREO_MAX_BUFFER_SIZE     (24*1024)
 
 

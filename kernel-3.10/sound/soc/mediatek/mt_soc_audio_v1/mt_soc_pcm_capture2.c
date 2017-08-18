@@ -257,6 +257,7 @@ static int mtk_capture2_pcm_hw_params(struct snd_pcm_substream *substream,
         printk("mtk_capture2_pcm_hw_params mUL2UseSram dma_bytes = %zu \n", runtime->dma_bytes);
         substream->runtime->dma_area = (unsigned char *)Get_Afe_SramSphUL2Base_Pointer();
         substream->runtime->dma_addr = Get_Afe_Sram_SphUL2_Phys_Addr();
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_VUL_DATA2,false);
     }
     else if (Capture_dma_buf->area)
     {
@@ -265,6 +266,7 @@ static int mtk_capture2_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_area = Capture_dma_buf->area;
         runtime->dma_addr = Capture_dma_buf->addr;
         runtime->buffer_size = Capture_dma_buf->bytes;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_VUL_DATA2,true);
     }
     else
     {

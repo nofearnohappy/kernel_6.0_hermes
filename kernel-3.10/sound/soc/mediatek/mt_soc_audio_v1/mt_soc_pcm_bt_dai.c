@@ -247,6 +247,7 @@ static int mtk_bt_dai_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_bytes = params_buffer_bytes(hw_params);
         runtime->dma_area = Bt_Dai_Capture_dma_buf->area;
         runtime->dma_addr = Bt_Dai_Capture_dma_buf->addr;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_DAI,true);
     }
     else
     {

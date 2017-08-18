@@ -143,7 +143,7 @@ static void StartAudioI2S0AWBHardware(struct snd_pcm_substream *substream)
     Afe_Set_Reg(AFE_I2S_CON, Audio_I2S_Dac | 0x1, MASK_ALL);
 
     // here to set interrupt
-    SetIrqMcuCounter(Soc_Aud_IRQ_MCU_MODE_IRQ2_MCU_MODE, substream->runtime->period_size);
+	SetIrqMcuCounter(Soc_Aud_IRQ_MCU_MODE_IRQ2_MCU_MODE, substream->runtime->period_size >> 1);
     SetIrqMcuSampleRate(Soc_Aud_IRQ_MCU_MODE_IRQ2_MCU_MODE, substream->runtime->rate);
     SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ2_MCU_MODE, true);
 
@@ -187,32 +187,34 @@ static int mtk_i2s0_awb_alsa_stop(struct snd_pcm_substream *substream)
     return 0;
 }
 
-static kal_int32 Previous_Hw_cur = 0;
+static kal_int32 Previous_Hw_cur;
 static snd_pcm_uframes_t mtk_i2s0_awb_pcm_pointer(struct snd_pcm_substream *substream)
 {
-    kal_int32 HW_memory_index = 0;
-    kal_int32 HW_Cur_ReadIdx = 0;
-    kal_uint32 Frameidx =0;
-    AFE_BLOCK_T *Awb_Block = &(I2S0_AWB_Control_context->rBlock);
-    PRINTK_AUD_AWB("mtk_i2s0_awb_pcm_pointer Awb_Block->u4WriteIdx;= 0x%x \n",Awb_Block->u4WriteIdx);
-    if (GetMemoryPathEnable(Soc_Aud_Digital_Block_MEM_AWB) == true)
-    {
-        // get total bytes to copysinewavetohdmi
-        Frameidx =audio_bytes_to_frame(substream , Awb_Block->u4WriteIdx);
-        return Frameidx;
+	kal_int32 HW_memory_index = 0;
+	kal_int32 HW_Cur_ReadIdx = 0;
+	kal_uint32 Frameidx = 0;
+	AFE_BLOCK_T *Awb_Block = &(I2S0_AWB_Control_context->rBlock);
 
-        HW_Cur_ReadIdx = Align64ByteSize(Afe_Get_Reg(AFE_AWB_CUR));
-        if (HW_Cur_ReadIdx == 0)
-        {
-            printk("[Auddrv] mtk_awb_pcm_pointer  HW_Cur_ReadIdx ==0 \n");
-            HW_Cur_ReadIdx = Awb_Block->pucPhysBufAddr;
-        }
-        HW_memory_index = (HW_Cur_ReadIdx - Awb_Block->pucPhysBufAddr);
-        Previous_Hw_cur = HW_memory_index;
-        PRINTK_AUD_AWB("[Auddrv] mtk_i2s0_awb_pcm_pointer =0x%x HW_memory_index = 0x%x\n", HW_Cur_ReadIdx, HW_memory_index);
-        return audio_bytes_to_frame(substream,Previous_Hw_cur);
-    }
-    return 0;
+	pr_debug("mtk_i2s0_awb_pcm_pointer Awb_Block->u4WriteIdx;= 0x%x\n",
+		       Awb_Block->u4WriteIdx);
+	if (GetMemoryPathEnable(Soc_Aud_Digital_Block_MEM_AWB) == true) {
+		/* get total bytes to copysinewavetohdmi */
+		Frameidx = audio_bytes_to_frame(substream, Awb_Block->u4WriteIdx);
+		return Frameidx;
+#if 0
+		HW_Cur_ReadIdx = Align64ByteSize(Afe_Get_Reg(AFE_AWB_CUR));
+		if (HW_Cur_ReadIdx == 0) {
+			pr_debug("[Auddrv] mtk_awb_pcm_pointer  HW_Cur_ReadIdx ==0\n");
+			HW_Cur_ReadIdx = Awb_Block->pucPhysBufAddr;
+		}
+		HW_memory_index = (HW_Cur_ReadIdx - Awb_Block->pucPhysBufAddr);
+		Previous_Hw_cur = HW_memory_index;
+		pr_debug("[Auddrv] mtk_i2s0_awb_pcm_pointer =0x%x HW_memory_index = 0x%x\n",
+			       HW_Cur_ReadIdx, HW_memory_index);
+		return audio_bytes_to_frame(substream, Previous_Hw_cur);
+#endif
+	}
+	return 0;
 }
 
 
@@ -258,6 +260,7 @@ static int mtk_i2s0_awb_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_bytes = params_buffer_bytes(hw_params);
         runtime->dma_area = Awb_Capture_dma_buf->area;
         runtime->dma_addr = Awb_Capture_dma_buf->addr;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_AWB,true);
     }
     else
     {
@@ -344,6 +347,7 @@ static int mtk_i2s0_awb_pcm_open(struct snd_pcm_substream *substream)
 static int mtk_i2s0_awb_pcm_close(struct snd_pcm_substream *substream)
 {
     AudDrv_Emi_Clk_Off();
+    AudDrv_Clk_Off();
     return 0;
 }
 

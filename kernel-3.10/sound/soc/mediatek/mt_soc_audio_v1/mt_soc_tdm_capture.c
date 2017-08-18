@@ -328,6 +328,7 @@ static int mtk_capture_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_area = Capture_dma_buf->area;
         runtime->dma_addr = Capture_dma_buf->addr;
         runtime->buffer_size = Capture_dma_buf->bytes;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_VUL,true);
     }
     else
     {

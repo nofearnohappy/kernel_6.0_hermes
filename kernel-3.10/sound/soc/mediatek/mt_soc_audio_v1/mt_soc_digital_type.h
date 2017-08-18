@@ -42,6 +42,7 @@
 #ifndef _AUDIO_DIGITAL_TYPE_H
 #define _AUDIO_DIGITAL_TYPE_H
 
+#include <linux/list.h>
 
 /*****************************************************************************
  *                ENUM DEFINITION
@@ -471,14 +472,6 @@ typedef struct
     bool MrgIf_En;
 } AudioMrgIf;
 
-// class for irq mode and counter.
-typedef struct
-{
-    unsigned int mStatus;  // on,off
-    unsigned int mIrqMcuCounter;
-    unsigned int mSampleRate;
-} AudioIrqMcuMode;
-
 typedef struct
 {
     int mFormat;
@@ -663,6 +656,34 @@ typedef enum
     AUDIO_APLL2_DIV4 =20,
     AUDIO_APLL2_DIV5 =21
 } AUDIO_APLL_DIVIDER_GROUP;
+
+typedef enum
+{
+    AUDIO_APLL1_DIV0_INDEX =0 ,
+    AUDIO_APLL1_DIV1_INDEX ,
+    AUDIO_APLL1_DIV2_INDEX ,
+    AUDIO_APLL1_DIV3_INDEX ,
+    AUDIO_APLL1_DIV4_INDEX ,
+    AUDIO_APLL1_DIV5_INDEX ,
+    AUDIO_APLL1_DIV_NUM ,
+} AUDIO_APLL1_DIVIDER_INDEX;
+
+typedef enum
+{
+    AUDIO_APLL2_DIV0_INDEX  = 0,
+    AUDIO_APLL2_DIV1_INDEX ,
+    AUDIO_APLL2_DIV2_INDEX ,
+    AUDIO_APLL2_DIV3_INDEX ,
+    AUDIO_APLL2_DIV4_INDEX ,
+    AUDIO_APLL2_DIV5_INDEX ,
+    AUDIO_APLL2_DIV_NUM ,
+} AUDIO_APLL2_DIVIDER_INDEX;
+
+typedef enum
+{
+    AUDIO_APLL1_GROUP1 = 0 ,
+    AUDIO_APLL2_GROUP2 = 1,
+} AUDIO_APLL_GROUP_DEFINE;
 
 typedef enum
 {
@@ -892,6 +913,28 @@ typedef struct
     uint32 REG_AFE_ASRC3_CON13;
     uint32 REG_AFE_ASRC3_CON14;
 } AudioAfeRegCache;
+
+/*
+ * IRQ Manager
+ */
+#define IRQ_MIN_RATE 48000
+#define IRQ_MAX_RATE 192000
+#define IRQ_TOLERANCE_US 10 /* irq period difference that can be tolerated */
+
+struct irq_user {
+	const void *user;
+	unsigned int request_rate;
+	unsigned int request_count;
+	struct list_head list;
+};
+
+struct irq_manager {
+	bool is_on;
+	unsigned int rate;
+	unsigned int count;
+	struct list_head users;
+	const struct irq_user *selected_user;
+};
 
 #endif
 

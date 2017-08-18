@@ -216,6 +216,7 @@ static int mtk_io2_awb_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_area = io2_awb_dma_buf->area;
         runtime->dma_addr = io2_awb_dma_buf->addr;
         runtime->buffer_size = io2_awb_dma_buf->bytes;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_AWB,true);
     }
     else
     {

@@ -672,7 +672,7 @@ void AudDrv_APLL2Tuner_Clk_On(void)
     if (Aud_APLL2_Tuner_cntr == 0)
     {
         PRINTK_AUD_CLK("+Aud_APLL2_Tuner_cntr, Aud_APLL2_Tuner_cntr:%d \n", Aud_APLL2_Tuner_cntr);
-        Afe_Set_Reg(AUDIO_AUDIO_TOP_CON0, 0x0 << 20, 0x1 << 20);
+        Afe_Set_Reg(AUDIO_AUDIO_TOP_CON0, 0x0 << 18, 0x1 << 18);
         Afe_Set_Reg(AFE_APLL2_TUNER_CFG, 0x00000033, 0x1 << 19);
         SetpllCfg(AP_PLL_CON5, 0x1<<1, 0x1<<1);
     }
@@ -687,7 +687,7 @@ void AudDrv_APLL2Tuner_Clk_Off(void)
     Aud_APLL2_Tuner_cntr--;
     if (Aud_APLL2_Tuner_cntr == 0)
     {
-        Afe_Set_Reg(AUDIO_AUDIO_TOP_CON0, 0x1 << 20, 0x1 << 20);
+        Afe_Set_Reg(AUDIO_AUDIO_TOP_CON0, 0x1 << 18, 0x1 << 18);
         SetpllCfg(AP_PLL_CON5, 0x0<<1, 0x1<<1);
     }
     // handle for clock error

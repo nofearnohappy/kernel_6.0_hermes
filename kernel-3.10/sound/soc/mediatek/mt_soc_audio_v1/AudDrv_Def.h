@@ -31,6 +31,7 @@
 #define AUDIO_DEF_H
 
 #include "AudDrv_Type_Def.h"
+#include <linux/aee.h>
 
 #define PM_MANAGER_API
 #define AUDIO_MEMORY_SRAM
@@ -145,6 +146,8 @@
 // if need assert , use AUDIO_ASSERT(true)
 #define AUDIO_ASSERT(value) BUG_ON(false)
 
+#define AUDIO_AEE(message) \
+	(aee_kernel_exception_api(__FILE__, __LINE__, DB_OPT_FTRACE, message, "audio dump ftrace"))
 
 /**********************************
  *  Other Definitions             *
@@ -186,6 +189,7 @@
 // cpu dai name
 #define MT_SOC_DAI_NAME "mt-soc-dai-driver"
 #define MT_SOC_DL1DAI_NAME "mt-soc-dl1dai-driver"
+#define MT_SOC_DL2DAI_NAME "mt-soc-dl2dai-driver"
 #define MT_SOC_DL1DATA2DAI_NAME "mt-soc-dl1data2dai-driver"
 #define MT_SOC_UL1DAI_NAME "mt-soc-ul1dai-driver"
 #define MT_SOC_UL1DATA2_NAME "mt-soc-ul1data2dai-driver"
@@ -251,6 +255,7 @@
 
 //codec dai name
 #define MT_SOC_CODEC_TXDAI_NAME "mt-soc-codec-tx-dai"
+#define MT_SOC_CODEC_TXDAI2_NAME "mt-soc-codec-tx-dai2"
 #define MT_SOC_CODEC_RXDAI_NAME "mt-soc-codec-rx-dai"
 #define MT_SOC_CODEC_RXDAI2_NAME "mt-soc-codec-rx-dai2"
 #define MT_SOC_CODEC_I2S0AWB_NAME "mt-soc-codec-i2s0awb-dai"
@@ -291,7 +296,7 @@
 #define MT_SOC_DL1DATA2_STREAM_NAME "MultiMedia1data2_PLayback"
 #define MT_SOC_DL2_STREAM_NAME "MultiMedia2_PLayback"
 #define MT_SOC_PCM1_STREAM_NAME "PCM1_PLayback"
-#define MT_SOC_PCM2_STREAM_NAME "PCM2_PLayback"
+#define MT_SOC_PCM2_STREAM_NAME "Voice_MD1_PLayback"
 #define MT_SOC_VOICE_EXTINT_STREAM_NAME "Voice Call ExtInt Playback"
 #define MT_SOC_VOICE_BT_STREAM_NAME "Voice_Call_BT_Playback"
 #define MT_SOC_VOICE_EXT_BT_STREAM_NAME "Voice Call(Ext) BT Playback"

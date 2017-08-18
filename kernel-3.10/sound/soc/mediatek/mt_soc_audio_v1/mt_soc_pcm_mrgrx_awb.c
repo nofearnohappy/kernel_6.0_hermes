@@ -238,6 +238,7 @@ static int mtk_mgrrx_awb_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_bytes = params_buffer_bytes(hw_params);
         runtime->dma_area = Awb_Capture_dma_buf->area;
         runtime->dma_addr = Awb_Capture_dma_buf->addr;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_AWB,true);
     }
     else
     {
@@ -366,6 +367,7 @@ static int mtk_mrgrx_awb_pcm_copy(struct snd_pcm_substream *substream,
     char *Read_Data_Ptr = (char *)dst;
     ssize_t DMA_Read_Ptr = 0 , read_size = 0, read_count = 0;
     unsigned long flags;
+    kal_uint32 stream_copy_size = 0;
 
     // get total bytes to copy
     count = Align64ByteSize(audio_frame_to_bytes(substream , count));
@@ -411,12 +413,14 @@ static int mtk_mrgrx_awb_pcm_copy(struct snd_pcm_substream *substream,
         read_size = count;
     }
 
-    DMA_Read_Ptr = Awb_Block->u4DMAReadIdx + Get_Mem_CopySizeByStream(Soc_Aud_Digital_Block_MEM_AWB,substream);
+    stream_copy_size = Get_Mem_CopySizeByStream(Soc_Aud_Digital_Block_MEM_AWB,substream);
+    DMA_Read_Ptr = Awb_Block->u4DMAReadIdx + stream_copy_size;
     PRINTK_AUD_AWB("Awb_Block->u4DMAReadIdx= 0x%x Get_Mem_CopySizeByStream = 0x%x \r\n",
                     Awb_Block->u4DMAReadIdx ,Get_Mem_CopySizeByStream(Soc_Aud_Digital_Block_MEM_AWB,substream));
     if(DMA_Read_Ptr >=  Awb_Block->u4BufferSize )
     {
-         DMA_Read_Ptr -=Awb_Block->u4BufferSize;
+         printk("DEBUG: AudDrv_MEMIF_Read 1, DMA_Read_Ptr out of bound. Get_Mem_CopySizeByStream = %d, u4BufferSize = %d, DMA_Read_Ptr = %zu\n", stream_copy_size, Awb_Block->u4BufferSize, DMA_Read_Ptr);
+         DMA_Read_Ptr %=Awb_Block->u4BufferSize;
     }
     spin_unlock_irqrestore(&auddrv_AWBInCtl_lock, flags);
 
@@ -433,7 +437,7 @@ static int mtk_mrgrx_awb_pcm_copy(struct snd_pcm_substream *substream,
 
         if (copy_to_user((void __user *)Read_Data_Ptr, (Awb_Block->pucVirtBufAddr + DMA_Read_Ptr), read_size))
         {
-            printk("AudDrv_MEMIF_Read Fail 1 copy to user Read_Data_Ptr:%p, pucVirtBufAddr:%p, u4DMAReadIdx:0x%x, DMA_Read_Ptr:%zu,read_size:%zu", Read_Data_Ptr, Awb_Block->pucVirtBufAddr, Awb_Block->u4DMAReadIdx, DMA_Read_Ptr, read_size);
+            printk("AudDrv_MEMIF_Read Fail 1 copy to user Read_Data_Ptr:%p, pucVirtBufAddr:%p, u4DMAReadIdx:0x%x, DMA_Read_Ptr:%zu, read_size:%zu", Read_Data_Ptr, Awb_Block->pucVirtBufAddr, Awb_Block->u4DMAReadIdx, DMA_Read_Ptr, read_size);
             return 0;
         }
 
@@ -474,7 +478,8 @@ static int mtk_mrgrx_awb_pcm_copy(struct snd_pcm_substream *substream,
         Set_Mem_CopySizeByStream(Soc_Aud_Digital_Block_MEM_AWB,substream,size_1);
         if(DMA_Read_Ptr >= Awb_Block->u4BufferSize )
         {
-            DMA_Read_Ptr -= Awb_Block->u4BufferSize;
+            printk("DEBUG: AudDrv_MEMIF_Read 2, DMA_Read_Ptr out of bound. u4BufferSize = %d, DMA_Read_Ptr = %zu\n", Awb_Block->u4BufferSize, DMA_Read_Ptr);
+            DMA_Read_Ptr %= Awb_Block->u4BufferSize;
         }
         spin_unlock(&auddrv_AWBInCtl_lock);
 

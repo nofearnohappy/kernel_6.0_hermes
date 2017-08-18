@@ -59,6 +59,8 @@
 #include "mt_soc_afe_control.h"
 #include "mt_soc_digital_type.h"
 #include "mt_soc_pcm_common.h"
+#include <auddrv_underflow_mach.h>
+
 
 #define MAGIC_NUMBER 0xFFFFFFC0
 static DEFINE_SPINLOCK(auddrv_I2S0dl1_lock);
@@ -78,6 +80,9 @@ static int mtk_afe_I2S0dl1_probe(struct snd_soc_platform *platform);
 static int mI2S0dl1_hdoutput_control = false;
 static int mDl1_md_echo_ref_control = false;
 static bool mPrepareDone = false;
+
+static const void *irq_user_id;
+static uint32 irq1_cnt;
 
 static struct device *mDev = NULL;
 
@@ -109,40 +114,43 @@ static int Audio_I2S0dl1_hdoutput_Set(struct snd_kcontrol *kcontrol, struct snd_
         printk("return -EINVAL\n");
         return -EINVAL;
     }
-			
-    mI2S0dl1_hdoutput_control = ucontrol->value.integer.value[0];
 
-	
-	if (GetMemoryPathEnable(Soc_Aud_Digital_Block_MEM_HDMI) == true )
-	{
-		return 0;
-	}
-	
-    if (mI2S0dl1_hdoutput_control)
+    if ((ucontrol->value.integer.value[0] == true) &&(mI2S0dl1_hdoutput_control == false))
     {
         // set APLL clock setting
         EnableApll1(true);
         EnableApll2(true);
         EnableI2SDivPower(AUDIO_APLL1_DIV0, true);
         EnableI2SDivPower(AUDIO_APLL2_DIV0, true);
+        EnableI2SDivPower(AUDIO_APLL1_DIV1, true);
+        EnableI2SDivPower(AUDIO_APLL2_DIV1, true);
+        EnableI2SDivPower(AUDIO_APLL1_DIV2, true);
+        EnableI2SDivPower(AUDIO_APLL2_DIV2, true);
         AudDrv_APLL1Tuner_Clk_On();
         AudDrv_APLL2Tuner_Clk_On();
     }
-    else
-    { 	
+    else  if ((ucontrol->value.integer.value[0] == false) &&(mI2S0dl1_hdoutput_control == true))
+    {
         // set APLL clock setting
         EnableApll1(false);
         EnableApll2(false);
         EnableI2SDivPower(AUDIO_APLL1_DIV0, false);
         EnableI2SDivPower(AUDIO_APLL2_DIV0, false);
+        EnableI2SDivPower(AUDIO_APLL1_DIV1, false);
+        EnableI2SDivPower(AUDIO_APLL2_DIV1, false);
+        EnableI2SDivPower(AUDIO_APLL1_DIV2, false);
+        EnableI2SDivPower(AUDIO_APLL2_DIV2, false);
         AudDrv_APLL1Tuner_Clk_Off();
         AudDrv_APLL2Tuner_Clk_Off();
     }
+
+    mI2S0dl1_hdoutput_control = ucontrol->value.integer.value[0];
+
     return 0;
 }
 
 static int Audio_Speaker_Protection_SRAM_Get(struct snd_kcontrol *kcontrol,
-                                      struct snd_ctl_elem_value *ucontrol)
+                                             struct snd_ctl_elem_value *ucontrol)
 {
     bool useSram;
     useSram = GetAudioSpeakerProtectSram();
@@ -161,7 +169,7 @@ static int Audio_Speaker_Protection_SRAM_Set(struct snd_kcontrol *kcontrol, stru
         return -EINVAL;
     }
     useSram = ucontrol->value.integer.value[0];
-    if(useSram)
+    if (useSram)
     {
         SetAudioSpeakerProtectSram(true);
     }
@@ -173,7 +181,7 @@ static int Audio_Speaker_Protection_SRAM_Set(struct snd_kcontrol *kcontrol, stru
 }
 
 static int Audio_Dl1_MD_Echo_Ref_Get(struct snd_kcontrol *kcontrol,
-                                      struct snd_ctl_elem_value *ucontrol)
+                                     struct snd_ctl_elem_value *ucontrol)
 {
     printk("Audio_Dl1_MD_Echo_Ref_Get = %d\n", mDl1_md_echo_ref_control);
     ucontrol->value.integer.value[0] = mDl1_md_echo_ref_control;
@@ -215,11 +223,40 @@ static int Audio_Dl1_MD_Echo_Ref_Set(struct snd_kcontrol *kcontrol, struct snd_c
     return 0;
 }
 
+static int Audio_Irqcnt1_Get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
+{
+	AudDrv_Clk_On();
+	ucontrol->value.integer.value[0] = Afe_Get_Reg(AFE_IRQ_MCU_CNT1);
+	AudDrv_Clk_Off();
+	return 0;
+}
+
+static int Audio_Irqcnt1_Set(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
+{
+	irq1_cnt = ucontrol->value.integer.value[0];
+
+	pr_warn("%s()\n", __func__);
+	AudDrv_Clk_On();
+	if (irq_user_id && irq1_cnt)
+		irq_update_user(irq_user_id,
+				Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE,
+				0,
+				irq1_cnt);
+	else
+		pr_warn("warn, cannot update irq counter, user_id = %p, irq1_cnt = %d\n",
+			irq_user_id, irq1_cnt);
+
+	AudDrv_Clk_Off();
+	return 0;
+}
+
 static const struct snd_kcontrol_new Audio_snd_I2S0dl1_controls[] =
 {
     SOC_ENUM_EXT("Audio_I2S0dl1_hd_Switch", Audio_I2S0dl1_Enum[0], Audio_I2S0dl1_hdoutput_Get, Audio_I2S0dl1_hdoutput_Set),
     SOC_ENUM_EXT("Audio_Dl1_MD_Echo_Ref_Switch", Audio_I2S0dl1_Enum[1], Audio_Dl1_MD_Echo_Ref_Get, Audio_Dl1_MD_Echo_Ref_Set),
     SOC_ENUM_EXT("Audio_Speaker_Protection_SRAM_Switch", Audio_I2S0dl1_Enum[2], Audio_Speaker_Protection_SRAM_Get, Audio_Speaker_Protection_SRAM_Set),
+	SOC_SINGLE_EXT("Audio IRQ1 CNT", SND_SOC_NOPM, 0, IRQ_MAX_RATE, 0,
+		       Audio_Irqcnt1_Get, Audio_Irqcnt1_Set),
 };
 
 static struct snd_pcm_hardware mtk_I2S0dl1_hardware =
@@ -246,9 +283,11 @@ static int mtk_pcm_I2S0dl1_stop(struct snd_pcm_substream *substream)
 {
     //AFE_BLOCK_T *Afe_Block = &(pI2S0dl1MemControl->rBlock);
 
-    printk("%s \n", __func__);
+	pr_debug("%s\n", __func__);
 
-    SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, false);
+	irq_user_id = NULL;
+	irq_remove_user(substream, Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE);
+
     SetMemoryPathEnable(Soc_Aud_Digital_Block_MEM_DL1, false);
 
     // here start digital part
@@ -269,10 +308,10 @@ static snd_pcm_uframes_t mtk_pcm_I2S0dl1_pointer(struct snd_pcm_substream *subst
     kal_uint32 Frameidx = 0;
     kal_int32 Afe_consumed_bytes = 0;
     AFE_BLOCK_T *Afe_Block = &pI2S0dl1MemControl->rBlock;
-    //unsigned int flags;
+    unsigned long flags;
     //struct snd_pcm_runtime *runtime = substream->runtime;
 
-    Auddrv_Dl1_Spinlock_lock();
+    spin_lock_irqsave(&pI2S0dl1MemControl->substream_lock, flags);
     PRINTK_AUD_DL1(" %s Afe_Block->u4DMAReadIdx = 0x%x\n", __func__, Afe_Block->u4DMAReadIdx);
 
     // get total bytes to copy
@@ -304,16 +343,17 @@ static snd_pcm_uframes_t mtk_pcm_I2S0dl1_pointer(struct snd_pcm_substream *subst
         Afe_Block->u4DMAReadIdx += Afe_consumed_bytes;
         Afe_Block->u4DMAReadIdx %= Afe_Block->u4BufferSize;
         PRINTK_AUD_DL1("[Auddrv] HW_Cur_ReadIdx =0x%x HW_memory_index = 0x%x Afe_consumed_bytes  = 0x%x\n", HW_Cur_ReadIdx, HW_memory_index, Afe_consumed_bytes);
-        Auddrv_Dl1_Spinlock_unlock();
+        spin_unlock_irqrestore(&pI2S0dl1MemControl->substream_lock, flags);
 
         return audio_bytes_to_frame(substream , Afe_Block->u4DMAReadIdx);
     }
     else
     {
         Frameidx = audio_bytes_to_frame(substream , Afe_Block->u4DMAReadIdx);
-        Auddrv_Dl1_Spinlock_unlock();
+        spin_unlock_irqrestore(&pI2S0dl1MemControl->substream_lock, flags);
         return Frameidx;
     }
+    return 0;
 
 }
 
@@ -338,7 +378,7 @@ static void SetDL1Buffer(struct snd_pcm_substream *substream,
     // set dram address top hardware
     Afe_Set_Reg(AFE_DL1_BASE , pblock->pucPhysBufAddr , 0xffffffff);
     Afe_Set_Reg(AFE_DL1_END  , pblock->pucPhysBufAddr + (pblock->u4BufferSize - 1), 0xffffffff);
-    memset((void*)pblock->pucVirtBufAddr,0,pblock->u4BufferSize);
+    memset((void *)pblock->pucVirtBufAddr, 0, pblock->u4BufferSize);
 
 }
 
@@ -348,17 +388,19 @@ static int mtk_pcm_I2S0dl1_hw_params(struct snd_pcm_substream *substream,
 {
     int ret = 0;
     substream->runtime->dma_bytes = params_buffer_bytes(hw_params);
-    if(mPlaybackSramState == SRAM_STATE_PLAYBACKFULL)
+    if (mPlaybackSramState == SRAM_STATE_PLAYBACKFULL)
     {
         //substream->runtime->dma_bytes = AFE_INTERNAL_SRAM_SIZE;
         substream->runtime->dma_area = (unsigned char *)Get_Afe_SramBase_Pointer();
         substream->runtime->dma_addr = AFE_INTERNAL_SRAM_PHY_BASE;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_DL1,false);
         AudDrv_Allocate_DL1_Buffer(mDev, substream->runtime->dma_bytes);
     }
-    else if(mPlaybackSramState == SRAM_STATE_SPH_SPK_MNTR_PROCESS_DL)
+    else if (mPlaybackSramState == SRAM_STATE_SPH_SPK_MNTR_PROCESS_DL)
     {
         substream->runtime->dma_area = (unsigned char *)Get_Afe_SramSphDLBase_Pointer();
         substream->runtime->dma_addr = Get_Afe_Sram_SphDL_Phys_Addr();
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_DL1,false);
         SetDL1Buffer(substream, hw_params);
     }
     else
@@ -370,7 +412,7 @@ static int mtk_pcm_I2S0dl1_hw_params(struct snd_pcm_substream *substream,
     }
     // -------------------------------------------------------
     printk("1 dma_bytes = %zu dma_area = %p dma_addr = 0x%x\n",
-                  substream->runtime->dma_bytes, substream->runtime->dma_area, (unsigned int)substream->runtime->dma_addr);
+           substream->runtime->dma_bytes, substream->runtime->dma_area, (unsigned int)substream->runtime->dma_addr);
 
     return ret;
 }
@@ -392,7 +434,7 @@ static int mtk_pcm_I2S0dl1_open(struct snd_pcm_substream *substream)
     int ret = 0;
     struct snd_pcm_runtime *runtime = substream->runtime;
     AfeControlSramLock();
-    
+
     if ((GetSramState() & SRAM_STATE_SPH_SPK_MNTR_CAPTURE_DL) != 0 || mDl1_md_echo_ref_control == true)
     {
         mtk_I2S0dl1_hardware.buffer_bytes_max = 0x2000;
@@ -408,10 +450,10 @@ static int mtk_pcm_I2S0dl1_open(struct snd_pcm_substream *substream)
     else
     {
         mtk_I2S0dl1_hardware.buffer_bytes_max = GetPLaybackDramSize();
-        mPlaybackSramState= SRAM_STATE_PLAYBACKDRAM;
+        mPlaybackSramState = SRAM_STATE_PLAYBACKDRAM;
     }
     AfeControlSramUnLock();
-    if(mPlaybackSramState == SRAM_STATE_PLAYBACKDRAM)
+    if (mPlaybackSramState == SRAM_STATE_PLAYBACKDRAM)
     {
         AudDrv_Emi_Clk_On();
     }
@@ -469,13 +511,13 @@ static int mtk_pcm_I2S0dl1_close(struct snd_pcm_substream *substream)
             Afe_Set_Reg(AFE_I2S_CON3, 0x0, 0x1);
         }
 
-        RemoveMemifSubStream(Soc_Aud_Digital_Block_MEM_DL1,substream);
+        RemoveMemifSubStream(Soc_Aud_Digital_Block_MEM_DL1, substream);
 
         EnableAfe(false);
         mPrepareDone = false;
     }
 
-    if(mPlaybackSramState == SRAM_STATE_PLAYBACKDRAM)
+    if (mPlaybackSramState == SRAM_STATE_PLAYBACKDRAM)
     {
         AudDrv_Emi_Clk_Off();
     }
@@ -484,6 +526,9 @@ static int mtk_pcm_I2S0dl1_close(struct snd_pcm_substream *substream)
     mPlaybackSramState = GetSramState();
     AfeControlSramUnLock();
     AudDrv_Clk_Off();
+
+    // reset for dmump state
+    Auddrv_Reset_Dump_State();
     return 0;
 }
 
@@ -552,16 +597,20 @@ static int mtk_pcm_I2S0dl1_prepare(struct snd_pcm_substream *substream)
         if (GetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC) == false)
         {
             SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC, true);
-            SetI2SDacOut(substream->runtime->rate);
+            if(mI2S0dl1_hdoutput_control == true)
+            {
+                SetI2SDacOutlowJitterMode(substream->runtime->rate);
+            }
+            else
+            {
+                SetI2SDacOut(substream->runtime->rate);
+            }
             SetI2SDacEnable(true);
         }
         else
         {
             SetMemoryPathEnable(Soc_Aud_Digital_Block_I2S_OUT_DAC, true);
         }
-        // here to set interrupt_distributor
-        SetIrqMcuCounter(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, runtime->period_size);
-        SetIrqMcuSampleRate(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, runtime->rate);
 
         EnableAfe(true);
         mPrepareDone = true;
@@ -579,7 +628,12 @@ static int mtk_pcm_I2S0dl1_start(struct snd_pcm_substream *substream)
     SetConnection(Soc_Aud_InterCon_Connection, Soc_Aud_InterConnectionInput_I05, Soc_Aud_InterConnectionOutput_O03);
     SetConnection(Soc_Aud_InterCon_Connection, Soc_Aud_InterConnectionInput_I06, Soc_Aud_InterConnectionOutput_O04);
 
-    SetIrqEnable(Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE, true);
+	/* here to set interrupt */
+	irq_add_user(substream,
+		     Soc_Aud_IRQ_MCU_MODE_IRQ1_MCU_MODE,
+		     substream->runtime->rate,
+		     irq1_cnt ? irq1_cnt : substream->runtime->period_size);
+	irq_user_id = substream;
 
     SetSampleRate(Soc_Aud_Digital_Block_MEM_DL1, runtime->rate);
     SetChannels(Soc_Aud_Digital_Block_MEM_DL1, runtime->channels);
@@ -632,6 +686,8 @@ static int mtk_pcm_I2S0dl1_copy(struct snd_pcm_substream *substream,
         printk(" u4BufferSize=0 Error");
         return 0;
     }
+
+	AudDrv_checkDLISRStatus();
 
     spin_lock_irqsave(&auddrv_I2S0dl1_lock, flags);
     copy_size = Afe_Block->u4BufferSize - Afe_Block->u4DataRemained;  //  free space of the buffer

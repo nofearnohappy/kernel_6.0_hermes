@@ -257,6 +257,7 @@ static int mtk_mod_dai_pcm_hw_params(struct snd_pcm_substream *substream,
         printk("mtk_mod_dai_pcm_hw_params mModDaiUseSram dma_bytes = %zu \n", runtime->dma_bytes);
         substream->runtime->dma_area = (unsigned char *)Get_Afe_SramModDaiBase_Pointer();
         substream->runtime->dma_addr = Get_Afe_Sram_ModDai_Phys_Addr();
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_MOD_DAI,false);
     }
     else if (Capture_dma_buf->area)
     {//Use SRAM here
@@ -265,6 +266,7 @@ static int mtk_mod_dai_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_area = Capture_dma_buf->area;
         runtime->dma_addr = Capture_dma_buf->addr;
         runtime->buffer_size = Capture_dma_buf->bytes;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_MOD_DAI,true);
     }
     else
     {

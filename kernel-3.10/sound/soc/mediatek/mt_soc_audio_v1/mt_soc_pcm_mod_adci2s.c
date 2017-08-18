@@ -256,6 +256,7 @@ static int mtk_mod_adci2s_pcm_hw_params(struct snd_pcm_substream *substream,
         runtime->dma_area = mod_adci2s_dma_buf->area;
         runtime->dma_addr = mod_adci2s_dma_buf->addr;
         runtime->buffer_size = mod_adci2s_dma_buf->bytes;
+        SetHighAddr(Soc_Aud_Digital_Block_MEM_VUL,true);
     }
     else
     {
