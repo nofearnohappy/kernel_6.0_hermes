@@ -37,7 +37,7 @@ http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
       	* Proximity Sensor Calibration
       	* GPU from source sony
       	* Fixed bug with voltage drop
-
+        * MAGNETOMETER             (YAS537)
 
 =========================================================================
 * Disabled drivers:
@@ -47,7 +47,6 @@ http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
 =========================================================================
 * Don't work:
 	* IR Blaster
-        * MAGNETOMETER             (YAS537)
 
 =================================================
 # BUILD
