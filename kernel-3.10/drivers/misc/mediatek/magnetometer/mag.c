@@ -722,6 +722,11 @@ static struct platform_driver msensor_driver = {
 	}
 };
 
+//shihaobin add for msensor auto detect 20150323 begin
+uint8_t yas537_init_flag = 0;
+uint8_t akm09911_init_flag = 0;
+//shihaobin add for msensor auto detect 20150323 end
+
 static int mag_real_driver_init(void) 
 {
     int i =0;
@@ -734,7 +739,8 @@ static int mag_real_driver_init(void)
 	  {
 	    MAG_LOG(" mag try to init driver %s\n", msensor_init_list[i]->name);
 	    err = msensor_init_list[i]->init();
-		if(0 == err)
+	    //shihaobin modify for msensor auto detect 20150323
+		if((0 == err && (1 == yas537_init_flag)) || (0 == err && (1 == akm09911_init_flag)))
 		{
 		   MAG_LOG(" mag real driver %s probe ok\n", msensor_init_list[i]->name);
 		   break;

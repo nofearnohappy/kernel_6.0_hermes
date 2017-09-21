@@ -38,13 +38,9 @@ http://4pda.ru/forum/index.php?showtopic=695717&st=1020#entry53819235
       	* GPU from source sony
       	* Fixed bug with voltage drop
         * MAGNETOMETER             (YAS537)
+        * MAGNETOMETER             (AKM09911 not tested)
 
-=========================================================================
-* Disabled drivers:
-
-        * MAGNETOMETER             (AKM09911_NEW)
-
-=========================================================================
+=================================================
 * Don't work:
 	* IR Blaster
 
