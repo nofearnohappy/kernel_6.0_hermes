@@ -24,5 +24,5 @@ else
   endif
 endif
 ifeq ($(CONFIG_RGK_DRIVER_FG_CW2015),y)
-    obj-$(CONFIG_MTK_PMIC) += cw2015_battery.o
+    obj-$(CONFIG_MTK_PMIC) += cw2015_fuel_gauge_V3.2.o
 endif
