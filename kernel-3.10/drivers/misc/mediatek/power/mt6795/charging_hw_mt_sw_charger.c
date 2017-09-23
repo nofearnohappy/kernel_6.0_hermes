@@ -26,12 +26,12 @@
 
 int g_chr_complete_timer=0;
 int g_sw_rechr_flag=0;
-int g_sw_rechr_vlot=4100;
+int g_sw_rechr_vlot=4350;
 
 #if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
-kal_uint32 g_cv_reg_val=0x4; //default 4.35V
+kal_uint32 g_cv_reg_val=0x3; //default 4.35V
 #else
-kal_uint32 g_cv_reg_val=0x4; //default 4.2V
+kal_uint32 g_cv_reg_val=0x3; //default 4.2V
 #endif
 
 kal_bool chargin_hw_init_done = KAL_TRUE;
@@ -387,10 +387,10 @@ void set_cv_volt(void)
 
         #if 1
 			#if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
-			if (g_cv_reg_val != 0x4)
+			if (g_cv_reg_val != 0x3)
 				battery_log(BAT_LOG_CRTI, "[set_cv_volt] g_cv_reg_val=0x%x\n", g_cv_reg_val);
 			#else
-			if (g_cv_reg_val != 0x4)
+			if (g_cv_reg_val != 0x3)
 				battery_log(BAT_LOG_CRTI, "[set_cv_volt] g_cv_reg_val=0x%x\n", g_cv_reg_val);
 			#endif
 
@@ -400,11 +400,11 @@ void set_cv_volt(void)
             //set CV_VTH (ex=4.2) and RG_CV_PP_SEL (ex=4.3)
             #if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
             //battery_log(BAT_LOG_CRTI, "[set_cv_volt] HIGH_BATTERY_VOLTAGE_SUPPORT\n");
-            mt6332_upmu_set_rg_cv_sel(0x5);    // 4.35V
-            mt6332_upmu_set_rg_cv_pp_sel(0x5); // 4.35V
+            mt6332_upmu_set_rg_cv_sel(0x3);    // 4.35V
+            mt6332_upmu_set_rg_cv_pp_sel(0x3); // 4.35V
             #else
-            mt6332_upmu_set_rg_cv_sel(0x8);    // 4.2V
-            mt6332_upmu_set_rg_cv_pp_sel(0x8); // 4.2V
+            mt6332_upmu_set_rg_cv_sel(0x3);    // 4.2V
+            mt6332_upmu_set_rg_cv_pp_sel(0x3); // 4.2V
             #endif
         #endif
 
@@ -553,7 +553,7 @@ static kal_uint32 charging_set_cv_voltage(void *data)
 
     if(*(kal_uint32 *)(data) == BATTERY_VOLT_04_340000_V)
     {
-        g_cv_reg_val=0x4;
+        g_cv_reg_val=0x3;
     }
 
     set_cv_volt();
