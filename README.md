@@ -78,6 +78,7 @@ make -C kernel-3.10 O=$TOP/KERNEL_OBJ ROOTDIR=$TOP
 	* STK3X1X               (0048)
 	* BMI160_GYRO		(0066)
 	* BMI160_ACC		(0068)
+	* Step_couneter(BMI160_STC)		(007a)
 
 * I2C4
 	* CW2015 		(0062)
