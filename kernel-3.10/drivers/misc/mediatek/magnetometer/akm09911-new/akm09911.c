@@ -2981,7 +2981,7 @@ static int akm09911_o_get_data(int* x ,int* y,int* z, int* status)
     mutex_unlock(&sensor_data_mutex);
     return 0;
 }
-extern int get_device_info(char* buf); //liuxinyuan@yulong.com  add for get device info 20150521
+//extern int get_device_info(char* buf); //liuxinyuan@yulong.com  add for get device info 20150521
 /*----------------------------------------------------------------------------*/
 static int akm09911_i2c_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
@@ -3161,7 +3161,7 @@ static int akm09911_i2c_probe(struct i2c_client *client, const struct i2c_device
 
     MAG_ERR("%s: OK\n", __func__);
 
-    get_device_info(" MAGNETOMETER: AKM09911\n"); // liuxinyuan@yulong.com add for get device info 20150521
+//    get_device_info(" MAGNETOMETER: AKM09911\n"); // liuxinyuan@yulong.com add for get device info 20150521
     akm09911_init_flag = 1;
     return 0;
 
