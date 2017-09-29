@@ -141,11 +141,7 @@ static imgsensor_info_struct imgsensor_info = {
     .sensor_interface_type = SENSOR_INTERFACE_TYPE_MIPI,//sensor_interface_type
     .mipi_sensor_type = MIPI_OPHY_NCSI2, //0,MIPI_OPHY_NCSI2;  1,MIPI_OPHY_CSI2
     .mipi_settle_delay_mode = MIPI_SETTLEDELAY_AUTO,//0,MIPI_SETTLEDELAY_AUTO; 1,MIPI_SETTLEDELAY_MANNUAL
-#ifdef VANZO_IMGSENSOR_OV5670_ROTATION
 	.sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_Gb,//sensor output first pixel color
-#else
-	.sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_B,//sensor output first pixel color
-#endif
 	.mclk = 24,//mclk value, suggest 24 or 26 for 24Mhz or 26Mhz
 	.mipi_lane_num = SENSOR_MIPI_2_LANE,//mipi lane num
 	.i2c_addr_table = {0x20, 0xff},//record sensor support all write id addr, only supprt 4must end with 0xff
@@ -153,11 +149,7 @@ static imgsensor_info_struct imgsensor_info = {
 
 
 static imgsensor_struct imgsensor = {
-#ifdef VANZO_IMGSENSOR_OV5670_ROTATION
 	.mirror = IMAGE_HV_MIRROR,				//mirrorflip information
-#else
-	.mirror = IMAGE_NORMAL,				//mirrorflip information
-#endif
 	.sensor_mode = IMGSENSOR_MODE_INIT, //IMGSENSOR_MODE enum value,record current sensor mode,such as: INIT, Preview, Capture, Video,High Speed Video, Slim Video
 	.shutter = 0x4C00,					//current shutter
 	.gain = 0x0200,						//current gain
@@ -1301,7 +1293,7 @@ static kal_uint32 preview(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 	spin_unlock(&imgsensor_drv_lock);
 	preview_setting();
 //Vanzo:wujie on 2015.4.16
-    set_mirror_flip(imgsensor.mirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
 // End of Vanzo:wujie 
 	return ERROR_NONE;
 }	/*	preview   */
@@ -1347,7 +1339,7 @@ static kal_uint32 capture(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 
 	capture_setting(imgsensor.current_fps); 
 //Vanzo:wujie on 2015.4.16
-    set_mirror_flip(imgsensor.mirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
 // End of Vanzo:wujie 	
 	return ERROR_NONE;
 }	/* capture() */
@@ -1367,7 +1359,7 @@ static kal_uint32 normal_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 	spin_unlock(&imgsensor_drv_lock);
 	normal_video_setting(imgsensor.current_fps);
 //Vanzo:wujie on 2015.4.16
-    set_mirror_flip(imgsensor.mirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
 // End of Vanzo:wujie 	
 	return ERROR_NONE;
 }	/*	normal_video   */
@@ -1390,7 +1382,7 @@ static kal_uint32 hs_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 	spin_unlock(&imgsensor_drv_lock);
 	hs_video_setting();
 //Vanzo:wujie on 2015.4.16
-    set_mirror_flip(imgsensor.mirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
 // End of Vanzo:wujie 
 	return ERROR_NONE;
 }	/*	hs_video   */
@@ -1412,7 +1404,7 @@ static kal_uint32 slim_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 	spin_unlock(&imgsensor_drv_lock);
 	slim_video_setting();
 //Vanzo:wujie on 2015.4.16
-    set_mirror_flip(imgsensor.mirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
 // End of Vanzo:wujie 
 	return ERROR_NONE;
 }	/*	slim_video	 */
