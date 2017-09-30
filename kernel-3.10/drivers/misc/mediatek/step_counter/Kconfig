@@ -14,3 +14,5 @@ config CUSTOM_KERNEL_SIGNIFICANT_MOTION_SENSOR
           A motion detector is often integrated as a component
           of a system that automatically performs a task or alerts
           a user of motion in an area.
+
+source "drivers/misc/mediatek/step_counter/bmi160_stc/Kconfig"
