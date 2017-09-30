@@ -1643,7 +1643,10 @@
 		};
 		barometer@0 {
 			compatible = "mediatek,barometer";
-	};
+		};
+		step_counter@0 {
+			compatible = "mediatek,step_counter";
+		};
 		m_baro_pl@0 {
 			compatible = "mediatek,m_baro_pl";
 		};
