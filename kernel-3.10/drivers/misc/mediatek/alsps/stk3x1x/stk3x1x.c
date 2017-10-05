@@ -3111,7 +3111,7 @@ static int stk3x1x_i2c_probe(struct i2c_client *client, const struct i2c_device_
 	}
 
 	stk3x1x_obj = obj;
-	obj->hw = get_cust_alsps_hw();
+	obj->hw = stk_get_cust_alsps_hw();
 	stk3x1x_get_addr(obj->hw, &obj->addr);
 
 	INIT_DELAYED_WORK(&obj->eint_work, stk3x1x_eint_work);
