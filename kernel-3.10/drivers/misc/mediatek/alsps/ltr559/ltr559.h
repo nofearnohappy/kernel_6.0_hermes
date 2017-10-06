@@ -13,6 +13,7 @@
 #define _LTR559_H
 
 #include <linux/ioctl.h>
+/* LTR-559 Registers */
 #define LTR559_ALS_CONTR	0x80
 #define LTR559_PS_CONTR		0x81
 #define LTR559_PS_LED		0x82
@@ -34,6 +35,7 @@
 
 #define LTR559_INTERRUPT_PERSIST 0x9E
 
+/* 559's Read Only Registers */
 #define LTR559_ALS_DATA_CH1_0	0x88
 #define LTR559_ALS_DATA_CH1_1	0x89
 #define LTR559_ALS_DATA_CH0_0	0x8A
@@ -43,12 +45,13 @@
 #define LTR559_PS_DATA_1	0x8E
 
 
-#define MODE_ALS_ON_Range1	0x01  
-#define MODE_ALS_ON_Range2	0x05  
-#define MODE_ALS_ON_Range3	0x09  
-#define MODE_ALS_ON_Range4	0x0D  
-#define MODE_ALS_ON_Range5	0x19  
-#define MODE_ALS_ON_Range6	0x1D  
+/* Basic Operating Modes */
+#define MODE_ALS_ON_Range1	0x01  ///for als gain x1
+#define MODE_ALS_ON_Range2	0x05  ///for als  gain x2
+#define MODE_ALS_ON_Range3	0x09  ///for als  gain x4
+#define MODE_ALS_ON_Range4	0x0D  ///for als gain x8
+#define MODE_ALS_ON_Range5	0x19  ///for als gain x48
+#define MODE_ALS_ON_Range6	0x1D  ///for als gain x96
 
 #define MODE_ALS_StdBy		0x00
 
@@ -72,16 +75,25 @@
 
 
 
+/* 
+ * Magic Number
+ * ============
+ * Refer to file ioctl-number.txt for allocation
+ */
 #define LTR559_IOCTL_MAGIC      'c'
 
+/* IOCTLs for ltr559 device */
 #define LTR559_IOCTL_PS_ENABLE		_IOW(LTR559_IOCTL_MAGIC, 0, char *)
 #define LTR559_IOCTL_ALS_ENABLE		_IOW(LTR559_IOCTL_MAGIC, 1, char *)
 #define LTR559_IOCTL_READ_PS_DATA	_IOR(LTR559_IOCTL_MAGIC, 2, char *)
 #define LTR559_IOCTL_READ_PS_INT	_IOR(LTR559_IOCTL_MAGIC, 3, char *)
 #define LTR559_IOCTL_READ_ALS_DATA	_IOR(LTR559_IOCTL_MAGIC, 4, char *)
 #define LTR559_IOCTL_READ_ALS_INT	_IOR(LTR559_IOCTL_MAGIC, 5, char *)
+/* add by mayulong 20121203 begin */
+#define PROXIMITY_CALIBRATE	_IOR(LTR559_IOCTL_MAGIC, 6, char *)
+/* add by mayulong 20121203 end */
 
-
+/* Power On response time in ms */
 #define PON_DELAY	600
 #define WAKEUP_DELAY	10
 
@@ -95,6 +107,18 @@
 
 
 
+/* Interrupt vector number to use when probing IRQ number.
+ * User changeable depending on sys interrupt.
+ * For IRQ numbers used, see /proc/interrupts.
+ */
 #define GPIO_INT_NO	32
-
+/* add by mayulong 20121203 begin */
+#define CAL_MODE 1
+struct ltr_offset {
+    unsigned short key;
+    unsigned short x;
+    unsigned short y;
+    unsigned short z;
+};
+/* add by mayulong 20121203 end */
 #endif

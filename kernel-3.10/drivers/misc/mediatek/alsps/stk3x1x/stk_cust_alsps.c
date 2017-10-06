@@ -16,8 +16,8 @@ static struct alsps_hw cust_alsps_hw = {
 	.alsctrl_val = 0x39, 	/* als_persistance=1, als_gain=64X, ALS_IT=50ms */
 	.ledctrl_val = 0xBF,	/* 100mA IRDR, 64/64 LED duty */
 	.wait_val = 0x7,		/* 50 ms */
-    .ps_threshold_high = 1050,
-    .ps_threshold_low =  980,
+    .ps_threshold_high = 1520,
+    .ps_threshold_low =  1450,
 };
 struct alsps_hw *stk_get_cust_alsps_hw(void) {
     return &cust_alsps_hw;
