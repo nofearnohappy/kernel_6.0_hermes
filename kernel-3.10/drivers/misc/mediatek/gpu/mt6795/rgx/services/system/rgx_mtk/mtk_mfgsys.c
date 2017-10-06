@@ -348,9 +348,6 @@ static void MTKCommitFreqIdx(unsigned long ui32NewFreqID, GED_DVFS_COMMIT_TYPE e
     PVRSRV_DEV_POWER_STATE ePowerState;
     IMG_UINT32 ui32RGXDevIdx = MTKGetRGXDevIdx();
     PVRSRV_ERROR eResult;
-    IMG_BOOL ret; 
-    
-    ret = IMG_FALSE;
     
     
     if (MTK_RGX_DEVICE_INDEX_INVALID != ui32RGXDevIdx)
@@ -395,12 +392,15 @@ static void MTKCommitFreqIdx(unsigned long ui32NewFreqID, GED_DVFS_COMMIT_TYPE e
                 PVRSRVDevicePostClockSpeedChange(ui32RGXDevIdx, IMG_FALSE, (IMG_VOID*)NULL);
             }
 
-            ret =  IMG_TRUE;
+		/*Always return true because the APM would almost letting GPU power down with high possibility while DVFS commiting*/
+            if(pbCommited)
+						*pbCommited = IMG_TRUE;
+				return;
         }
     }
     
     if(pbCommited)
-        *pbCommited = ret;
+						*pbCommited = IMG_FALSE;
 }
 
 static void MTKFreqInputBoostCB(unsigned int ui32BoostFreqID)
@@ -603,10 +603,15 @@ static IMG_VOID MTKCalGpuLoading(unsigned int* pui32Loading , unsigned int* pui3
             PVR_DPF((PVR_DBG_ERROR,"Loading: A(%d), I(%d), B(%d)",
                 sGpuUtilStats.ui64GpuStatActiveHigh, sGpuUtilStats.ui64GpuStatIdle, sGpuUtilStats.ui64GpuStatBlocked));
 #endif
-
-            *pui32Loading = 100*(sGpuUtilStats.ui64GpuStatActiveHigh + sGpuUtilStats.ui64GpuStatActiveLow) / sGpuUtilStats.ui64GpuStatCumulative;
-            *pui32Block =  100*(sGpuUtilStats.ui64GpuStatBlocked) / sGpuUtilStats.ui64GpuStatCumulative;
-            *pui32Idle = 100*(sGpuUtilStats.ui64GpuStatIdle) / sGpuUtilStats.ui64GpuStatCumulative;
+#if defined(__arm64__) || defined(__aarch64__)
+		*pui32Loading = (100*(sGpuUtilStats.ui64GpuStatActiveHigh + sGpuUtilStats.ui64GpuStatActiveLow)) / sGpuUtilStats.ui64GpuStatCumulative;
+                *pui32Block = (100*(sGpuUtilStats.ui64GpuStatBlocked)) / sGpuUtilStats.ui64GpuStatCumulative;
+                *pui32Idle = (100*(sGpuUtilStats.ui64GpuStatIdle)) / sGpuUtilStats.ui64GpuStatCumulative;
+#else
+		*pui32Loading = (unsigned long)(100*(sGpuUtilStats.ui64GpuStatActiveHigh + sGpuUtilStats.ui64GpuStatActiveLow)) / (unsigned long)sGpuUtilStats.ui64GpuStatCumulative;
+		*pui32Block =  (unsigned long)(100*(sGpuUtilStats.ui64GpuStatBlocked)) / (unsigned long)sGpuUtilStats.ui64GpuStatCumulative;
+		*pui32Idle = (unsigned long)(100*(sGpuUtilStats.ui64GpuStatIdle)) / (unsigned long)sGpuUtilStats.ui64GpuStatCumulative;
+#endif
         }
     }
 }
@@ -617,32 +622,30 @@ static IMG_BOOL MTKGpuDVFSPolicy(IMG_UINT32 ui32GPULoading, unsigned int* pui32N
     int i32CurFreqID = (int)mt_gpufreq_get_cur_freq_index();
     int i32NewFreqID = i32CurFreqID;
 
-	//CORE-BH-LowPowerPatch-00*[
     if (ui32GPULoading >= 99)
     {
         i32NewFreqID = 0;
     }
-    else if (ui32GPULoading <= 25)
+    else if (ui32GPULoading <= 1)
     {
         i32NewFreqID = i32MaxLevel;
     }
-    else if (ui32GPULoading >= 97)
+    else if (ui32GPULoading >= 85)
     {
         i32NewFreqID -= 2;
     }
-    else if (ui32GPULoading <= 45)
+    else if (ui32GPULoading <= 30)
     {
         i32NewFreqID += 2;
     }
-    else if (ui32GPULoading >= 85)
+    else if (ui32GPULoading >= 70)
     {
         i32NewFreqID -= 1;
     }
-    else if (ui32GPULoading <= 65)
+    else if (ui32GPULoading <= 50)
     {
         i32NewFreqID += 1;
     }
-	//CORE-BH-LowPowerPatch-00*]
 
     if (i32NewFreqID < i32CurFreqID)
     {
@@ -1036,6 +1039,9 @@ extern void (*mtk_custom_upbound_gpu_freq_fp)(unsigned int ui32FreqLevel);
 extern unsigned int (*mtk_get_custom_boost_gpu_freq_fp)(void);
 extern unsigned int (*mtk_get_custom_upbound_gpu_freq_fp)(void);
 
+extern int* (*mtk_get_gpu_cur_owner_fp)(void);
+
+
 extern void (*ged_dvfs_cal_gpu_utilization_fp)(unsigned int* pui32Loading , unsigned int* pui32Block,unsigned int* pui32Idle);
 extern void (*ged_dvfs_gpu_freq_commit_fp)(unsigned long ui32NewFreqID, GED_DVFS_COMMIT_TYPE eCommitType, int* pbCommited);
 
@@ -1118,6 +1124,8 @@ PVRSRV_ERROR MTKMFGSystemInit(void)
     ged_dvfs_cal_gpu_utilization_fp = MTKCalGpuLoading;
     ged_dvfs_gpu_freq_commit_fp = MTKCommitFreqIdx;    
 #endif    
+	mtk_get_gpu_cur_owner_fp = OSGetBridgeLockOwnerID;
+
 
 #ifdef CONFIG_MTK_HIBERNATION
     register_swsusp_restore_noirq_func(ID_M_GPU, gpu_pm_restore_noirq, NULL);

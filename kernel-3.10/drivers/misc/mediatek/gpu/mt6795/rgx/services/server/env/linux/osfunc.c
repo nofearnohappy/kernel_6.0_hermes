@@ -2005,16 +2005,24 @@ void OSDumpStack(void)
 }
 
 static struct task_struct *gsOwner;
+/// MTK {
+int g_pid[2];
+/// MTK }
 
 void OSAcquireBridgeLock(void)
 {
 	mutex_lock(&gPVRSRVLock);
 	gsOwner = current;
+	
+	g_pid[0] = gsOwner->pid;
+	g_pid[1] = gsOwner->tgid;
 }
 
 void OSReleaseBridgeLock(void)
 {
 	gsOwner = NULL;
+	g_pid[0] = -1;
+	g_pid[1] = -1;
 	mutex_unlock(&gPVRSRVLock);
 }
 
@@ -2022,7 +2030,12 @@ struct task_struct *OSGetBridgeLockOwner(void)
 {
 	return gsOwner;
 }
-
+/// MTK {
+int * OSGetBridgeLockOwnerID(void)
+{
+	return g_pid;
+}
+/// MTK }
 
 /*************************************************************************/ /*!
 @Function       OSCreateStatisticEntry

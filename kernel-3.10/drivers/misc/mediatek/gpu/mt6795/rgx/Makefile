@@ -6,7 +6,13 @@ RGX_TOP := $(srctree)/drivers/misc/mediatek/gpu/$(MTK_PLATFORM)/rgx
 
 VER := $(if $(filter eng,$(TARGET_BUILD_VARIANT)),eng,user)
 
+#MTK_DDK_DEBUG := y
+
+ifeq ($(MTK_DDK_DEBUG),y)
+ccflags-y += -include $(RGX_TOP)/include/config_kernel_debug.h
+else
 ccflags-y += -include $(RGX_TOP)/include/config_kernel_$(VER).h
+endif
 
 ccflags-y += \
  -D__linux__ $(OPTIM) -g \
@@ -121,7 +127,18 @@ pvrsrvkm-y += \
  generated/cachegeneric_bridge/server_cachegeneric_bridge.o \
  generated/smm_bridge/server_smm_bridge.o \
  generated/syncsexport_bridge/server_syncsexport_bridge.o \
- generated/dmabuf_bridge/server_dmabuf_bridge.o 
+ generated/dmabuf_bridge/server_dmabuf_bridge.o \
+ services/server/common/devicemem_history_server.o \
+ generated/devicememhistory_bridge/server_devicememhistory_bridge.o \
+ generated/ddevicememhistory_bridge/client_devicememhistory_bridge.o 
+
+ifeq ($(MTK_DDK_DEBUG),y)
+pvrsrvkm-y += \
+ services/server/common/ri_server.o \
+ generated/dri_bridge/client_ri_bridge.o \
+ generated/ri_bridge/server_ri_bridge.o 
+endif
+
 
 pvrsrvkm-$(CONFIG_ARM) += services/server/env/linux/osfunc_arm.o
 pvrsrvkm-$(CONFIG_ARM64) += services/server/env/linux/osfunc_arm64.o
@@ -163,6 +180,7 @@ ccflags-y += \
  -I$(RGX_TOP)/generated/syncexport_bridge \
  -I$(RGX_TOP)/generated/syncsexport_bridge \
  -I$(RGX_TOP)/generated/timerquery_bridge \
+ -I$(RGX_TOP)/generated/devicememhistory_bridge \
  -I$(RGX_TOP)/hwdefs \
  -I$(RGX_TOP)/hwdefs/km \
  -I$(RGX_TOP)/hwdefs/km/configs \
@@ -179,7 +197,13 @@ ccflags-y += \
  -I$(RGX_TOP)/services/shared/include \
  -I$(RGX_TOP)/services/system/include \
  -I$(RGX_TOP)/services/system/rgx_mtk \
- -I$(RGX_TOP)/kernel/drivers/staging/imgtec
+ -I$(RGX_TOP)/kernel/drivers/staging/imgtec 
+
+ifeq ($(MTK_DDK_DEBUG),y)
+ccflags-y += \
+ -I$(RGX_TOP)/generated/ri_bridge 
+endif
+
 
 obj-y += pvrsrvkm.o
 

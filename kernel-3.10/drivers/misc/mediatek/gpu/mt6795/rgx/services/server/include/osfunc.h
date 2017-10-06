@@ -437,6 +437,9 @@ IMG_VOID OSDumpStack(IMG_VOID);
 IMG_VOID OSAcquireBridgeLock(IMG_VOID);
 IMG_VOID OSReleaseBridgeLock(IMG_VOID);
 
+///MTK{
+int * OSGetBridgeLockOwnerID(IMG_VOID);
+///MTK}
 
 /*
  *  Functions for providing support for PID statistics.

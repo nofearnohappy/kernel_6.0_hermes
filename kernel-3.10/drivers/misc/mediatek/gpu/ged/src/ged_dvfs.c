@@ -71,9 +71,9 @@ static unsigned int gpu_block = 0;
 static unsigned int gpu_idle = 0;
 
 
-static unsigned long g_ulCalResetTS_us = 0; // calculate loading reset time stamp
-static unsigned long g_ulPreCalResetTS_us = 0; // previous calculate loading reset time stamp
-static unsigned long g_ulWorkingPeriod_us = 0; // last frame half, t0
+unsigned long g_ulCalResetTS_us = 0; // calculate loading reset time stamp
+unsigned long g_ulPreCalResetTS_us = 0; // previous calculate loading reset time stamp
+unsigned long g_ulWorkingPeriod_us = 0; // last frame half, t0
 
 unsigned long g_ulPreDVFS_TS_us = 0; // record previous DVFS applying time stamp
 
@@ -95,18 +95,10 @@ static int g_probe_pid=GED_NO_UM_SERVICE;
 
 #endif
 
-/*BSP-ELuo-Fix_CONFIG_MODVERSIONS-00+[*/
-/*Duplicate definition : mtk_mfgsys.c
-  gpufreq_input_boost_notify
-  gpufreq_power_limit_notify
-
-  This will make Segment fault when enable CONFIG_MODVERSIONS
-*/
-typedef void (*gpufreq_input_boost_notify2)(unsigned int );
-typedef void (*gpufreq_power_limit_notify2)(unsigned int );
-extern void mt_gpufreq_input_boost_notify_registerCB(gpufreq_input_boost_notify2 pCB);
-extern void mt_gpufreq_power_limit_notify_registerCB(gpufreq_power_limit_notify2 pCB);
-/*BSP-ELuo-Fix_CONFIG_MODVERSIONS-00]+*/
+typedef void (*gpufreq_input_boost_notify)(unsigned int );
+typedef void (*gpufreq_power_limit_notify)(unsigned int );
+extern void mt_gpufreq_input_boost_notify_registerCB(gpufreq_input_boost_notify pCB);
+extern void mt_gpufreq_power_limit_notify_registerCB(gpufreq_power_limit_notify pCB);
 extern void (*mtk_boost_gpu_freq_fp)(void);
 extern void (*mtk_set_bottom_gpu_freq_fp)(unsigned int);
 extern unsigned int (*mtk_get_bottom_gpu_freq_fp)(void);
@@ -250,9 +242,10 @@ bool ged_dvfs_gpu_freq_commit(unsigned long ui32NewFreqID, GED_DVFS_COMMIT_TYPE 
 			if(true==bCommited)
 			{
 				ged_log_buf_print(ghLogBuf_DVFS, "[GED_K] commited true");
-				g_ui32PreFreqID = ui32CurFreqID;            
 			}
 		}	
+		/* update previous freq-ID */
+		g_ui32PreFreqID = ui32CurFreqID;
 	}
 #endif    
 	return bCommited;
@@ -758,7 +751,7 @@ void ged_dvfs_run(unsigned long t, long phase, unsigned long ul3DFenceDoneTime)
 	if(g_dvfs_skip_round>0)
 	{
 		g_dvfs_skip_round--;
-		goto EXIT_ged_dvfs_run;			
+		//goto EXIT_ged_dvfs_run;			
 	}		
 
 	if (g_iSkipCount > 0)
@@ -825,11 +818,9 @@ void ged_dvfs_sw_vsync_query_data(GED_DVFS_UM_QUERY_PACK* psQueryData)
 	psQueryData->ui32GPULoading = gpu_loading;
 	psQueryData->ui32GPUFreqID =  mt_gpufreq_get_cur_freq_index();
 	psQueryData->gpu_cur_freq = mt_gpufreq_get_freq_by_idx(psQueryData->ui32GPUFreqID) ;
-	psQueryData->gpu_pre_freq = g_ui32PreFreqID;
+	psQueryData->gpu_pre_freq = mt_gpufreq_get_freq_by_idx(g_ui32PreFreqID);
 	psQueryData->nsOffset = ged_dvfs_vsync_offset_level_get();
 
-	psQueryData->ulWorkingPeriod_us = g_ulWorkingPeriod_us;
-	psQueryData->ulPreCalResetTS_us = g_ulPreCalResetTS_us;
 
 }
 

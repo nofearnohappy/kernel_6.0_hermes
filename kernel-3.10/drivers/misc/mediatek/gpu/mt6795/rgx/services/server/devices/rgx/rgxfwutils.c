@@ -110,6 +110,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define RGXFWIF_FWCCB_RTU_NUMCMDS_LOG2	(4)
 #define RGXFWIF_FWCCB_SHG_NUMCMDS_LOG2	(4)
 
+#define tracek(format, ...) trace_printk(format "\n", __VA_ARGS__)
+
 #if defined(RGX_FEATURE_SLC_VIVT)
 static PVRSRV_ERROR _AllocateSLC3Fence(PVRSRV_RGXDEV_INFO* psDevInfo, RGXFWIF_INIT* psRGXFWInit)
 {
@@ -419,6 +421,7 @@ PVRSRV_ERROR FWCommonContextAllocate(CONNECTION_DATA *psConnection,
 	IMG_UINT32 ui32FWCommonContextOffset;
 	IMG_UINT8 *pui8Ptr;
 	PVRSRV_ERROR eError;
+	IMG_UINT32 ui32CcbFwAddr = 0, ui32CtxFwAddr = 0;
 
 	/*
 		Allocate all the resources that are required
@@ -503,6 +506,7 @@ PVRSRV_ERROR FWCommonContextAllocate(CONNECTION_DATA *psConnection,
 	RGXSetFirmwareAddress(&psFWCommonContext->psCCB,
 						  psServerCommonContext->psClientCCBMemDesc,
 						  0, RFW_FWADDR_FLAG_NONE);
+	ui32CcbFwAddr = psFWCommonContext->psCCB.ui32Addr;
 	RGXSetFirmwareAddress(&psFWCommonContext->psCCBCtl,
 						  psServerCommonContext->psClientCCBCtrlMemDesc,
 						  0, RFW_FWADDR_FLAG_NONE);
@@ -558,12 +562,14 @@ PVRSRV_ERROR FWCommonContextAllocate(CONNECTION_DATA *psConnection,
 						  psServerCommonContext->psFWCommonContextMemDesc,
 						  ui32FWCommonContextOffset,
 						  RFW_FWADDR_FLAG_NONE);
+	ui32CtxFwAddr = psServerCommonContext->sFWCommonContextFWAddr.ui32Addr;
 
 #if defined(LINUX)
 	trace_rogue_create_fw_context(OSGetCurrentProcessName(),
 								  pszContextName,
 								  psServerCommonContext->sFWCommonContextFWAddr.ui32Addr);
 #endif
+	tracek("ctx fwaddr: 0x%08x; ccb fwaddr: 0x%08x", ui32CtxFwAddr, ui32CcbFwAddr);
 
 	*ppsServerCommonContext = psServerCommonContext;
 	return PVRSRV_OK;

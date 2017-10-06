@@ -100,6 +100,10 @@ static void ged_timer_switch_work_handle(struct work_struct *psWork)
 }
 
 extern unsigned int g_gpu_timer_based_emu;
+extern unsigned long g_ulCalResetTS_us; // calculate loading reset time stamp
+extern unsigned long g_ulPreCalResetTS_us; // previous calculate loading reset time stamp
+extern unsigned long g_ulWorkingPeriod_us; // last frame half, t0
+
 GED_ERROR ged_notify_sw_vsync(GED_VSYNC_TYPE eType, GED_DVFS_UM_QUERY_PACK* psQueryData)
 {
 #ifdef ENABLE_COMMON_DVFS  
@@ -107,12 +111,24 @@ GED_ERROR ged_notify_sw_vsync(GED_VSYNC_TYPE eType, GED_DVFS_UM_QUERY_PACK* psQu
 	long long llDiff = 0;
 	bool bHWEventKick = false;
 	unsigned long long temp;
+	int* cur_gpu_owner=NULL;
 
 	unsigned long t;
 	long phase = 0;
+    unsigned long ul3DFenceDoneTime;
 
+    ul3DFenceDoneTime = ged_monitor_3D_fence_done_time(); 
+	psQueryData-> ul3DFenceDoneTime = ul3DFenceDoneTime;
+	psQueryData->ulWorkingPeriod_us = g_ulWorkingPeriod_us;
+	psQueryData->ulPreCalResetTS_us = g_ulCalResetTS_us; // IMPORTANT
 	temp = ged_get_time();
 
+	if(mtk_get_gpu_cur_owner(&cur_gpu_owner))
+	{
+		ged_log_buf_print(ghLogBuf_DVFS, "GPU hold in PID/TID (%d/%d)", cur_gpu_owner[1],cur_gpu_owner[0]);
+	}
+	
+	
 	if(g_gpu_timer_based_emu)
 	{
 		ged_log_buf_print(ghLogBuf_DVFS, "[GED_K] Vsync ignored (ts=%llu)", temp);
@@ -177,9 +193,17 @@ GED_ERROR ged_notify_sw_vsync(GED_VSYNC_TYPE eType, GED_DVFS_UM_QUERY_PACK* psQu
 	{
 		do_div(temp,1000);
 		t = (unsigned long)(temp);
-		ged_dvfs_run(t, phase, ged_monitor_3D_fence_done_time());
+		
+		if(ul3DFenceDoneTime>t) // for some cases just align vsync to FenceDoneTime
+		{
+			if(ul3DFenceDoneTime - t < GED_DVFS_DIFF_THRESHOLD) // allow diff
+				t = ul3DFenceDoneTime;
+		}
 		psQueryData->usT = t;
-		psQueryData-> ul3DFenceDoneTime = ged_monitor_3D_fence_done_time();
+		
+		ged_dvfs_run(t, phase, ul3DFenceDoneTime);
+		
+		
 		ged_dvfs_sw_vsync_query_data(psQueryData);
 	}    
 	else
@@ -212,24 +236,30 @@ GED_ERROR ged_notify_sw_vsync(GED_VSYNC_TYPE eType, GED_DVFS_UM_QUERY_PACK* psQu
 	psNotify->ul3DFenceDoneTime = ged_monitor_3D_fence_done_time();
 	queue_work(g_psNotifyWorkQueue, &psNotify->sWork);
 #endif
-#endif
-
+#endif	
 	return GED_OK;
 }
 
 extern unsigned int gpu_loading;
 enum hrtimer_restart ged_sw_vsync_check_cb( struct hrtimer *timer )
 {
+	int* cur_gpu_owner;
 	unsigned long long temp;
+	unsigned long long retarget;
 	long long llDiff;
 	GED_NOTIFY_SW_SYNC* psNotify;
 
 	temp = cpu_clock(smp_processor_id()); // interrupt contex no need to set non-preempt
 
 	llDiff = (long long)(temp - sw_vsync_ts);
-
+	
 	if(llDiff > GED_VSYNC_MISS_QUANTUM_NS)
 	{
+		if(mtk_get_gpu_cur_owner(&cur_gpu_owner))
+		{
+			ged_log_buf_print(ghLogBuf_DVFS, "GPU hold in PID/TID (%d/%d)", cur_gpu_owner[1],cur_gpu_owner[0]);
+		}
+		
 		psNotify = (GED_NOTIFY_SW_SYNC*)ged_alloc_atomic(sizeof(GED_NOTIFY_SW_SYNC));
 
 		if(false==g_bGPUClock && 0==gpu_loading && (temp - g_ns_gpu_on_ts> GED_DVFS_TIMER_TIMEOUT) )
@@ -247,8 +277,11 @@ enum hrtimer_restart ged_sw_vsync_check_cb( struct hrtimer *timer )
 		if (psNotify)
 		{
 			INIT_WORK(&psNotify->sWork, ged_notify_sw_sync_work_handle);
-			psNotify->t = temp;
-			do_div(psNotify->t,1000);
+			retarget = temp;
+			
+			do_div(retarget,1000);
+			
+			psNotify->t = retarget;
 			psNotify->phase = GED_DVFS_FALLBACK;
 			psNotify->ul3DFenceDoneTime = 0;
 			queue_work(g_psNotifyWorkQueue, &psNotify->sWork);

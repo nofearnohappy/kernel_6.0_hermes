@@ -7,7 +7,7 @@ VER:=eng
 ifneq ($(strip $(TARGET_BUILD_VARIANT)),)
 ifneq ($(strip $(TARGET_BUILD_VARIANT)),eng)
 VER:=user
-ccflags-y += -DGED_LOG_SIZE_LIMITED
+#ccflags-y += -DGED_LOG_SIZE_LIMITED
 endif
 endif
 
@@ -22,6 +22,13 @@ ifeq ($(PLATFORM_NAME),mt6795)
 ccflags-y += -DMT_GET_FREQ_ALIAS
 CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT=y
 endif
+
+ifeq ($(PLATFORM_NAME),mt6595)
+# for mt6795
+ccflags-y += -DMT_GET_FREQ_ALIAS
+CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT=y
+endif
+
 
 
 $(info $$CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT is [${CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT}])

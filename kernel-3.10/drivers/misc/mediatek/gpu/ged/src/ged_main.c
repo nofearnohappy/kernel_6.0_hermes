@@ -376,6 +376,11 @@ static int ged_init(void)
 	ghLogBuf_GED = ged_log_buf_alloc(32, 64 * 32, GED_LOG_BUF_TYPE_RINGBUFFER, "GED internal", NULL);
 #endif
 
+	ged_log_buf_alloc(1024*32, 1024*1024, GED_LOG_BUF_TYPE_RINGBUFFER, "fence_trace", "fence_trace");
+	ged_log_buf_alloc(1024*32, 1024*1024, GED_LOG_BUF_TYPE_QUEUEBUFFER, "fw_trace", "fw_trace");
+
+
+
 #ifdef GED_DVFS_DEBUG_BUF
 #ifdef GED_LOG_SIZE_LIMITED
 	ghLogBuf_DVFS =  ged_log_buf_alloc(20*60, 20*60*80, GED_LOG_BUF_TYPE_RINGBUFFER, "DVFS_Log", "ged_dvfs_debug_limited");

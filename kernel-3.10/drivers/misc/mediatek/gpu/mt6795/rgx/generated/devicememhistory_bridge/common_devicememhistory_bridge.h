@@ -1,8 +1,9 @@
 /*************************************************************************/ /*!
 @File
-@Title          System Description Header
+@Title          Common bridge header for devicememhistory
 @Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-@Description    This header provides system-specific declarations and macros
+@Description    Declares common defines and structures that are used by both
+                the client and sever side of the bridge for devicememhistory
 @License        Dual MIT/GPLv2
 
 The contents of this file are subject to the MIT license as set out below.
@@ -41,49 +42,58 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ /**************************************************************************/
 
-#include "pvrsrv_device.h"
-#include "rgxdevice.h"
+#ifndef COMMON_DEVICEMEMHISTORY_BRIDGE_H
+#define COMMON_DEVICEMEMHISTORY_BRIDGE_H
 
-#if !defined(__SYSCCONFIG_H__)
-#define __SYSCCONFIG_H__
+#include "img_types.h"
+#include "pvrsrv_error.h"
 
-
-#define RGX_HW_CORE_CLOCK_SPEED 455000000
-#define RGX_HW_SYSTEM_NAME "RGX HW"
-
-#define SYS_RGX_ACTIVE_POWER_LATENCY_MS (3)
+#include "img_types.h"
+#include "mm_common.h"
 
 
+#define PVRSRV_BRIDGE_DEVICEMEMHISTORY_CMD_FIRST			0
+#define PVRSRV_BRIDGE_DEVICEMEMHISTORY_DEVICEMEMHISTORYMAP			PVRSRV_BRIDGE_DEVICEMEMHISTORY_CMD_FIRST+0
+#define PVRSRV_BRIDGE_DEVICEMEMHISTORY_DEVICEMEMHISTORYUNMAP			PVRSRV_BRIDGE_DEVICEMEMHISTORY_CMD_FIRST+1
+#define PVRSRV_BRIDGE_DEVICEMEMHISTORY_CMD_LAST			(PVRSRV_BRIDGE_DEVICEMEMHISTORY_CMD_FIRST+1)
 
-static IMG_UINT32 gauiBIFTilingHeapXStrides[RGXFWIF_NUM_BIF_TILING_CONFIGS] =
+
+/*******************************************
+            DevicememHistoryMap          
+ *******************************************/
+
+/* Bridge in structure for DevicememHistoryMap */
+typedef struct PVRSRV_BRIDGE_IN_DEVICEMEMHISTORYMAP_TAG
 {
-	0, /* BIF tiling heap 1 x-stride */
-	1, /* BIF tiling heap 2 x-stride */
-	2, /* BIF tiling heap 3 x-stride */
-	3  /* BIF tiling heap 4 x-stride */
-};
-
-#if defined(MTK_CONFIG_OF) && defined(CONFIG_OF)
-int MTKSysGetIRQ(void);
-#else
-/* if *CONFIG_OF is not set, please makesure the following address and IRQ number are right */
-//#error RGX_GPU_please_fill_the_following_defines
-#define SYS_MTK_RGX_REGS_SYS_PHYS_BASE      0x13000000
-#define SYS_MTK_RGX_REGS_SIZE               0xFFFF
-#if defined(CONFIG_ARCH_MT6795)
-/* 6795 */
-#define SYS_MTK_RGX_IRQ                     257 
-#endif
-#if defined(CONFIG_ARCH_MT6595)
-/* 6595 */
-#define SYS_MTK_RGX_IRQ                     249
-#endif
-#endif
+	IMG_DEV_VIRTADDR sDevVAddr;
+	IMG_DEVMEM_SIZE_T uiSize;
+	const IMG_CHAR * puiText;
+} __attribute__((packed)) PVRSRV_BRIDGE_IN_DEVICEMEMHISTORYMAP;
 
 
+/* Bridge out structure for DevicememHistoryMap */
+typedef struct PVRSRV_BRIDGE_OUT_DEVICEMEMHISTORYMAP_TAG
+{
+	PVRSRV_ERROR eError;
+} __attribute__((packed)) PVRSRV_BRIDGE_OUT_DEVICEMEMHISTORYMAP;
 
-/*****************************************************************************
- * system specific data structures
- *****************************************************************************/
+/*******************************************
+            DevicememHistoryUnmap          
+ *******************************************/
 
-#endif	/* __SYSCCONFIG_H__ */
+/* Bridge in structure for DevicememHistoryUnmap */
+typedef struct PVRSRV_BRIDGE_IN_DEVICEMEMHISTORYUNMAP_TAG
+{
+	IMG_DEV_VIRTADDR sDevVAddr;
+	IMG_DEVMEM_SIZE_T uiSize;
+	const IMG_CHAR * puiText;
+} __attribute__((packed)) PVRSRV_BRIDGE_IN_DEVICEMEMHISTORYUNMAP;
+
+
+/* Bridge out structure for DevicememHistoryUnmap */
+typedef struct PVRSRV_BRIDGE_OUT_DEVICEMEMHISTORYUNMAP_TAG
+{
+	PVRSRV_ERROR eError;
+} __attribute__((packed)) PVRSRV_BRIDGE_OUT_DEVICEMEMHISTORYUNMAP;
+
+#endif /* COMMON_DEVICEMEMHISTORY_BRIDGE_H */

@@ -1,8 +1,8 @@
 /*************************************************************************/ /*!
 @File
-@Title          System Description Header
+@Title          Client bridge header for devicememhistory
 @Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-@Description    This header provides system-specific declarations and macros
+@Description    Exports the client bridge functions for devicememhistory
 @License        Dual MIT/GPLv2
 
 The contents of this file are subject to the MIT license as set out below.
@@ -41,49 +41,23 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ /**************************************************************************/
 
-#include "pvrsrv_device.h"
-#include "rgxdevice.h"
+#ifndef CLIENT_DEVICEMEMHISTORY_BRIDGE_H
+#define CLIENT_DEVICEMEMHISTORY_BRIDGE_H
 
-#if !defined(__SYSCCONFIG_H__)
-#define __SYSCCONFIG_H__
+#include "pvr_bridge_client.h"
+#include "pvr_bridge.h"
 
+#include "common_devicememhistory_bridge.h"
 
-#define RGX_HW_CORE_CLOCK_SPEED 455000000
-#define RGX_HW_SYSTEM_NAME "RGX HW"
+IMG_INTERNAL PVRSRV_ERROR IMG_CALLCONV BridgeDevicememHistoryMap(IMG_HANDLE hBridge,
+								 IMG_DEV_VIRTADDR sDevVAddr,
+								 IMG_DEVMEM_SIZE_T uiSize,
+								 const IMG_CHAR *puiText);
 
-#define SYS_RGX_ACTIVE_POWER_LATENCY_MS (3)
-
-
-
-static IMG_UINT32 gauiBIFTilingHeapXStrides[RGXFWIF_NUM_BIF_TILING_CONFIGS] =
-{
-	0, /* BIF tiling heap 1 x-stride */
-	1, /* BIF tiling heap 2 x-stride */
-	2, /* BIF tiling heap 3 x-stride */
-	3  /* BIF tiling heap 4 x-stride */
-};
-
-#if defined(MTK_CONFIG_OF) && defined(CONFIG_OF)
-int MTKSysGetIRQ(void);
-#else
-/* if *CONFIG_OF is not set, please makesure the following address and IRQ number are right */
-//#error RGX_GPU_please_fill_the_following_defines
-#define SYS_MTK_RGX_REGS_SYS_PHYS_BASE      0x13000000
-#define SYS_MTK_RGX_REGS_SIZE               0xFFFF
-#if defined(CONFIG_ARCH_MT6795)
-/* 6795 */
-#define SYS_MTK_RGX_IRQ                     257 
-#endif
-#if defined(CONFIG_ARCH_MT6595)
-/* 6595 */
-#define SYS_MTK_RGX_IRQ                     249
-#endif
-#endif
+IMG_INTERNAL PVRSRV_ERROR IMG_CALLCONV BridgeDevicememHistoryUnmap(IMG_HANDLE hBridge,
+								   IMG_DEV_VIRTADDR sDevVAddr,
+								   IMG_DEVMEM_SIZE_T uiSize,
+								   const IMG_CHAR *puiText);
 
 
-
-/*****************************************************************************
- * system specific data structures
- *****************************************************************************/
-
-#endif	/* __SYSCCONFIG_H__ */
+#endif /* CLIENT_DEVICEMEMHISTORY_BRIDGE_H */

@@ -1,8 +1,8 @@
 /*************************************************************************/ /*!
 @File
-@Title          System Description Header
+@Title          Common memory management definitions
 @Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-@Description    This header provides system-specific declarations and macros
+@Description    Common memory management definitions
 @License        Dual MIT/GPLv2
 
 The contents of this file are subject to the MIT license as set out below.
@@ -41,49 +41,10 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ /**************************************************************************/
 
-#include "pvrsrv_device.h"
-#include "rgxdevice.h"
+#ifndef MM_COMMON_H
+#define MM_COMMON_H
 
-#if !defined(__SYSCCONFIG_H__)
-#define __SYSCCONFIG_H__
+#define DEVICEMEM_HISTORY_TEXT_BUFSZ 40
 
-
-#define RGX_HW_CORE_CLOCK_SPEED 455000000
-#define RGX_HW_SYSTEM_NAME "RGX HW"
-
-#define SYS_RGX_ACTIVE_POWER_LATENCY_MS (3)
-
-
-
-static IMG_UINT32 gauiBIFTilingHeapXStrides[RGXFWIF_NUM_BIF_TILING_CONFIGS] =
-{
-	0, /* BIF tiling heap 1 x-stride */
-	1, /* BIF tiling heap 2 x-stride */
-	2, /* BIF tiling heap 3 x-stride */
-	3  /* BIF tiling heap 4 x-stride */
-};
-
-#if defined(MTK_CONFIG_OF) && defined(CONFIG_OF)
-int MTKSysGetIRQ(void);
-#else
-/* if *CONFIG_OF is not set, please makesure the following address and IRQ number are right */
-//#error RGX_GPU_please_fill_the_following_defines
-#define SYS_MTK_RGX_REGS_SYS_PHYS_BASE      0x13000000
-#define SYS_MTK_RGX_REGS_SIZE               0xFFFF
-#if defined(CONFIG_ARCH_MT6795)
-/* 6795 */
-#define SYS_MTK_RGX_IRQ                     257 
-#endif
-#if defined(CONFIG_ARCH_MT6595)
-/* 6595 */
-#define SYS_MTK_RGX_IRQ                     249
-#endif
 #endif
 
-
-
-/*****************************************************************************
- * system specific data structures
- *****************************************************************************/
-
-#endif	/* __SYSCCONFIG_H__ */

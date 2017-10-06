@@ -59,6 +59,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "trace_events.h"
 #endif
 
+#define tracek(format, ...) trace_printk(format "\n", __VA_ARGS__)
+
 /*
  *  Defines the number of fence updates to record so that future fences in the CCB
  *  can be checked to see if they are already known to be satisfied. The value has
@@ -326,6 +328,8 @@ PVRSRV_ERROR RGXCreateCCB(PVRSRV_DEVICE_NODE	*psDeviceNode,
 				 psClientCCB->szName,
 				 psClientCCB);
 
+	tracek("%s; %p; %u", psClientCCB->szName, psClientCCB, psClientCCB->ui32Size);
+
 	*ppsClientCCB = psClientCCB;
 	*ppsClientCCBMemDesc = psClientCCB->psClientCCBMemDesc;
 	*ppsClientCCBCtrlMemDesc = psClientCCB->psClientCCBCtrlMemDesc;
@@ -348,6 +352,7 @@ fail_alloc:
 
 IMG_VOID RGXDestroyCCB(RGX_CLIENT_CCB *psClientCCB)
 {
+	tracek("%s; %p", psClientCCB->szName, psClientCCB);
 	PDumpUnregisterTransitionCallback(psClientCCB->hTransition);
 	DevmemReleaseCpuVirtAddr(psClientCCB->psClientCCBCtrlMemDesc);
 	DevmemFwFree(psClientCCB->psClientCCBCtrlMemDesc);

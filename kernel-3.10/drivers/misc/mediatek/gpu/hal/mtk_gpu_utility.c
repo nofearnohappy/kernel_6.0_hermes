@@ -442,3 +442,22 @@ bool mtk_gpu_dvfs_clock_switch(bool bSwitch)
     return false;
 }
 EXPORT_SYMBOL(mtk_gpu_dvfs_clock_switch);
+
+//----------------------------------------------------------------------------
+int* (*mtk_get_gpu_cur_owner_fp)(void) = NULL;
+EXPORT_SYMBOL(mtk_get_gpu_cur_owner_fp);
+
+bool mtk_get_gpu_cur_owner(int **ppid)
+{
+    if (NULL != mtk_get_gpu_cur_owner_fp)
+    {
+        if (ppid)
+        {
+            *ppid = mtk_get_gpu_cur_owner_fp();
+            return true;
+        }
+    }
+    return false;
+}
+EXPORT_SYMBOL(mtk_get_gpu_cur_owner);
+
