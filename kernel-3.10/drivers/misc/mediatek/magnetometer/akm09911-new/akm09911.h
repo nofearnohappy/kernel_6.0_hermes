@@ -125,13 +125,6 @@ Defines a read-only address of the fuse ROM of the AK09911.*/
 #define FUSION_DATA_READY   (1<<(FUSION_DATA_FLAG))
 /*! @}*/
 
-//shihaobin add feature for akm09911 20150407 begin
-#define AKM09911_COMPANY_ADDRESS        0x00
-#define AKM09911_DEVICE_ADDRESS         0x01
-#define AKM09911_COMPANY_ID_VALUE       0x48
-#define AKM09911_DEVICE_ID_VALUE        0x05
-//shihaobin add feature for akm09911 20150407 end
-
 // conversion of magnetic data (for AK09911) to uT units
 //#define CONVERT_M                   (1.0f*0.06f)
 // conversion of orientation data to degree units

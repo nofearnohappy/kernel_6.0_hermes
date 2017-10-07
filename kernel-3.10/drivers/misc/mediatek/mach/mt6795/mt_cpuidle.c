@@ -436,6 +436,22 @@ inline int read_id(int *cpu_id, int *cluster_id)
 	return mpidr;
 }
 
+#define read_cpuactlr()								\
+	({									\
+		register unsigned int ret1, ret2;				\
+		__asm__ __volatile__ ("mrrc   p15, 0, %1, %0, c15    \n\t"	\
+				      :"=r"(ret1), "=r"(ret2));			\
+		ret2;								\
+	})
+
+#define write_cpuactlr(val1, val2)				\
+	do {							\
+		__asm__ __volatile__(				\
+			"MCRR p15, 0, %1, %0, c15     \n"	\
+			:					\
+			:"r"(val1), "r"(val2));			\
+	} while (0)
+
 #define system_cluster(system, clusterid)	(&((system_context *)system)->cluster[clusterid])
 #define cluster_core(cluster, cpuid)	(&((cluster_context *)cluster)->core[cpuid])
 
@@ -458,6 +474,25 @@ void *_get_data(int core_or_cluster)
 #define GET_CORE_DATA() ((core_context *)_get_data(0))
 #define GET_CLUSTER_DATA() ((cluster_context *)_get_data(1))
 #define GET_SYSTEM_DATA() ((system_context *)dormant_data)
+
+int workaround_836870(unsigned long mpidr)
+{
+        unsigned int cpuactlr;
+        /** CONFIG_ARM_ERRATA_836870=y (for 6595/6752/6735, prior to r0p4)
+         * Prog CatC,
+         * Non-allocating reads might prevent a store exclusive from passing
+         * worksround: set the CPUACTLR.DTAH bit.
+         * The CPU Auxiliary Control Register can be written only when the system 
+         * is idle. ARM recommends that you write to this register after a powerup 
+         * reset, before the MMU is enabled, and before any ACE or ACP traffic 
+         * begins.
+         **/
+        cpuactlr = read_cpuactlr();
+        cpuactlr = cpuactlr | (1<<24);
+        write_cpuactlr(0, cpuactlr);
+
+        return 0;
+}
 
 /********************/
 /* .global save_vfp */
@@ -2235,6 +2270,7 @@ int mt_cpu_dormant(unsigned long flags)
 
 	// cpu power down and cpu reset flow with idmap. 
 	ret = cpu_suspend(flags, mt_cpu_dormant_reset);
+	workaround_836870(read_mpidr());
 
         TSLOG(core->timestamp[3], read_cntpct());
 		

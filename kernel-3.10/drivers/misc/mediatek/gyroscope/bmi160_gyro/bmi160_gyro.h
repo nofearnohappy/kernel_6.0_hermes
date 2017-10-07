@@ -28,37 +28,37 @@
 /* apply low pass filter on output */
 /* #define CONFIG_BMG_LOWPASS */
 
-#define BMG_AXIS_X				0
-#define BMG_AXIS_Y				1
-#define BMG_AXIS_Z				2
-#define BMG_AXES_NUM				3
-#define BMG_DATA_LEN				6
+#define BMG_AXIS_X        0
+#define BMG_AXIS_Y        1
+#define BMG_AXIS_Z        2
+#define BMG_AXES_NUM        3
+#define BMG_DATA_LEN        6
 
-#define C_MAX_FIR_LENGTH			(32)
-#define MAX_SENSOR_NAME				(32)
+#define C_MAX_FIR_LENGTH      (32)
+#define MAX_SENSOR_NAME       (32)
 
 /* common definition */
 #define BMG_GET_BITSLICE(regvar, bitname)\
-	((regvar & bitname##__MSK) >> bitname##__POS)
+  ((regvar & bitname##__MSK) >> bitname##__POS)
 
 #define BMG_SET_BITSLICE(regvar, bitname, val)\
-	((regvar & ~bitname##__MSK) | ((val<<bitname##__POS)&bitname##__MSK))
+  ((regvar & ~bitname##__MSK) | ((val<<bitname##__POS)&bitname##__MSK))
 
-#define BMG_BUFSIZE				128
+#define BMG_BUFSIZE       128
 
 /*
 *1 rad = PI*degree/180, about 3.1416*degree/180
 *1 degree = rad*180/PI, about rad*180/3.1416
 */
-#define DEGREE_TO_RAD				938
+#define DEGREE_TO_RAD       938
 
 /* -----------------  BMI160 gyro macros  ---------------- */
 #define SW_CALIBRATION
 
-#define BMG_DEV_NAME				"bmi160_gyro"
-#define BMI160_GYRO_I2C_ADDRESS			0x66
+#define BMG_DEV_NAME        "bmi160_gyro"
+#define BMI160_GYRO_I2C_ADDRESS     0x66
 
-#define BMI160_USER_CHIP_ID_ADDR				0x00
+#define BMI160_USER_CHIP_ID_ADDR        0x00
 /* USER DATA REGISTERS DEFINITION START */
 /* Chip ID Description - Reg Addr --> 0x00, Bit --> 0...7 */
 #define BMI160_USER_CHIP_ID__POS             0
@@ -74,15 +74,15 @@
 #define SENSOR_CHIP_REV_ID_BMI (0x00)
 
 /* BMI160 Gyro ODR */
-#define BMI160_GYRO_ODR_RESERVED		0x00
-#define BMI160_GYRO_ODR_25HZ			0x06
-#define BMI160_GYRO_ODR_50HZ			0x07
-#define BMI160_GYRO_ODR_100HZ			0x08
-#define BMI160_GYRO_ODR_200HZ			0x09
-#define BMI160_GYRO_ODR_400HZ			0x0A
-#define BMI160_GYRO_ODR_800HZ			0x0B
-#define BMI160_GYRO_ODR_1600HZ			0x0C
-#define BMI160_GYRO_ODR_3200HZ			0x0D
+#define BMI160_GYRO_ODR_RESERVED    0x00
+#define BMI160_GYRO_ODR_25HZ      0x06
+#define BMI160_GYRO_ODR_50HZ      0x07
+#define BMI160_GYRO_ODR_100HZ     0x08
+#define BMI160_GYRO_ODR_200HZ     0x09
+#define BMI160_GYRO_ODR_400HZ     0x0A
+#define BMI160_GYRO_ODR_800HZ     0x0B
+#define BMI160_GYRO_ODR_1600HZ      0x0C
+#define BMI160_GYRO_ODR_3200HZ      0x0D
 
 #define         C_BMI160_FOURTEEN_U8X                   ((u8)14)
 
@@ -93,12 +93,34 @@
 #define BMI160_USER_GYR_CONF_ODR__MSK               0x0F
 #define BMI160_USER_GYR_CONF_ODR__REG               BMI160_USER_GYR_CONF_ADDR
 
+//shihaobin@yulong.com add for read acc data begin 20150411
+#define BMI160_IOCTL_MAGIC      'd'
+#define GYRO_CALIBRATE   _IOR(BMI160_IOCTL_MAGIC, 7, short)
+
+struct gyro_offset{
+    signed short key;   //calibrate status
+    signed short x;     //x offset
+    signed short y;     //y offset
+    signed short z;     //z offset
+};
+
+#define BMI160_GYRO_DATA_REG_L_X     0x0C
+#define BMI160_GYRO_DATA_REG_H_X     0x0D
+#define BMI160_GYRO_DATA_REG_L_Y     0x0E
+#define BMI160_GYRO_DATA_REG_H_Y     0x0F
+#define BMI160_GYRO_DATA_REG_L_Z     0x10
+#define BMI160_GYRO_DATA_REG_H_Z     0x11
+
+#define BMI160_GYRO_SUCCESS                  0
+#define BMI160_GYRO_ERR_I2C                  -1
+//shihaobin@yulong.com add for read acc data end 20150411
+
 /* range */
-#define BMI160_RANGE_2000			0
-#define BMI160_RANGE_1000			1
-#define BMI160_RANGE_500			2
-#define BMI160_RANGE_250			3
-#define BMI160_RANGE_125			4
+#define BMI160_RANGE_2000     0
+#define BMI160_RANGE_1000     1
+#define BMI160_RANGE_500      2
+#define BMI160_RANGE_250      3
+#define BMI160_RANGE_125      4
 
 #define BMI160_USER_GYR_RANGE_ADDR              0X43
 /* Gyr_Range Description - Reg Addr --> 0x43, Bit --> 0...2 */
@@ -107,12 +129,12 @@
 #define BMI160_USER_GYR_RANGE__MSK               0x07
 #define BMI160_USER_GYR_RANGE__REG               BMI160_USER_GYR_RANGE_ADDR
 
-#define BMI160_CMD_COMMANDS_ADDR				0X7E
+#define BMI160_CMD_COMMANDS_ADDR        0X7E
 /* Command description address - Reg Addr --> 0x7E, Bit -->  0....7 */
 #define BMI160_CMD_COMMANDS__POS              0
 #define BMI160_CMD_COMMANDS__LEN              8
 #define BMI160_CMD_COMMANDS__MSK              0xFF
-#define BMI160_CMD_COMMANDS__REG	 BMI160_CMD_COMMANDS_ADDR
+#define BMI160_CMD_COMMANDS__REG   BMI160_CMD_COMMANDS_ADDR
 
 #define CMD_PMU_GYRO_SUSPEND          0x14
 #define CMD_PMU_GYRO_NORMAL           0x15
@@ -129,7 +151,7 @@
 #define BMI160_SHIFT_12_POSITION                12
 #define BMI160_SHIFT_16_POSITION                16
 
-#define BMI160_USER_DATA_8_ADDR					0X0C
+#define BMI160_USER_DATA_8_ADDR         0X0C
 /* GYR_X (LSB) Description - Reg Addr --> 0x0C, Bit --> 0...7 */
 #define BMI160_USER_DATA_8_GYR_X_LSB__POS           0
 #define BMI160_USER_DATA_8_GYR_X_LSB__LEN           8

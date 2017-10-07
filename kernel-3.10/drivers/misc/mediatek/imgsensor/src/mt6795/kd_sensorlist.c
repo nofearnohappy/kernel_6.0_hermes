@@ -1824,7 +1824,6 @@ inline static int  adopt_CAMERA_HW_FeatureControl(void *pBuf)
 	case SENSOR_FEATURE_GET_PDAF_DATA:
 	case SENSOR_FEATURE_GET_SENSOR_PDAF_CAPACITY:
     case SENSOR_FEATURE_SET_PDAF:
-	case SENSOR_FEATURE_SET_LSC_SWITCH: /*MM-SL-LSCSwitch-00+ */
 	    /*  */
 	    if (copy_from_user((void *)pFeaturePara , (void *) pFeatureCtrl->pFeaturePara, FeatureParaLen)) {
 		kfree(pFeaturePara);
@@ -1939,7 +1938,6 @@ inline static int  adopt_CAMERA_HW_FeatureControl(void *pBuf)
     {
 	case SENSOR_FEATURE_SET_ESHUTTER:
 	case SENSOR_FEATURE_SET_GAIN:
-	case SENSOR_FEATURE_SET_LSC_SWITCH: /*MM-SL-LSCSwitch-00+ */
 	case SENSOR_FEATURE_SET_GAIN_AND_ESHUTTER:
 	case SENSOR_FEATURE_SET_ISP_MASTER_CLOCK_FREQ:
 	case SENSOR_FEATURE_SET_REGISTER:

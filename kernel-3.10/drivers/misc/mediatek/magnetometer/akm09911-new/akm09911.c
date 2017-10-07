@@ -2991,14 +2991,6 @@ static int akm09911_i2c_probe(struct i2c_client *client, const struct i2c_device
     struct mag_control_path ctl={0};
     struct mag_data_path mag_data={0};
 
-    //shihaobin add before 20150316 for auto_detect
-    struct mt_i2c_msg company_msg[2], device_msg[2];
-    uint8_t company_id, device_id;
-    uint8_t company_addr_reg, device_addr_reg;
-    int company_id_err, device_id_err;
-
-    //shihaobin add 20150331
-
     //because we donot use EINT to support low power
     // config to GPIO input mode + PD
 
@@ -3009,78 +3001,6 @@ static int akm09911_i2c_probe(struct i2c_client *client, const struct i2c_device
     msleep(5);
     mt_set_gpio_out(MAG_PIN, 0);
     msleep(5);
-
-    /*mt_set_gpio_mode(3, 0);
-    mt_set_gpio_dir(3, GPIO_DIR_OUT);
-
-    mt_set_gpio_out(3,GPIO_OUT_ONE);
-
-    mdelay(5);
-
-    mt_set_gpio_out(3,GPIO_OUT_ZERO);
-
-    mdelay(20);
-
-    mt_set_gpio_out(3,GPIO_OUT_ONE);*/
-
-    mdelay(20);
-    //SHIHAOBIN ADD
-
-    MAGN_ERR("yl_sensor_debug akm09911_i2c_probe init\n");
-
-    company_addr_reg = AKM09911_COMPANY_ADDRESS;
-    company_msg[0].addr = client->addr;
-    company_msg[0].flags = 0;
-    company_msg[0].len = 1;
-    company_msg[0].buf = &company_addr_reg;
-    company_msg[0].timing = client->timing; //add for mtk i2c
-    company_msg[0].ext_flag = client->ext_flag & I2C_MASK_FLAG;//add for mtk i2c
-    company_msg[1].addr = client->addr;
-    company_msg[1].flags = I2C_M_RD;
-    company_msg[1].len = 1;
-    company_msg[1].buf = &company_id;
-    company_msg[1].timing = client->timing; //add for mtk i2c
-    company_msg[1].ext_flag = client->ext_flag & I2C_MASK_FLAG;//add for mtk i2c
-
-    company_id_err = i2c_transfer(client->adapter, (struct i2c_msg *)company_msg, 2);
-
-    device_addr_reg = AKM09911_DEVICE_ADDRESS;
-    device_msg[0].addr = client->addr;
-    device_msg[0].flags = 0;
-    device_msg[0].len = 1;
-    device_msg[0].buf = &device_addr_reg;
-    device_msg[0].timing = client->timing;  //add for mtk i2c
-    device_msg[0].ext_flag = client->ext_flag & I2C_MASK_FLAG;//add for mtk i2c
-    device_msg[1].addr = client->addr;
-    device_msg[1].flags = I2C_M_RD;
-    device_msg[1].len = 1;
-    device_msg[1].buf = &device_id;
-    device_msg[1].timing = client->timing;  //add for mtk i2c
-    device_msg[1].ext_flag = client->ext_flag & I2C_MASK_FLAG;//add for mtk i2c
-
-    device_id_err = i2c_transfer(client->adapter, (struct i2c_msg *)device_msg, 2);
-
-    MAGN_ERR("yl_sensor_debug akm09911_i2c_probe company_id_err = %d, company_id = %d\n",
-            company_id_err, company_id);
-    MAGN_ERR("yl_sensor_debug akm09911_i2c_probe device_id_err = %d, device_id = %d\n",
-             device_id_err, device_id);
-
-    if((company_id_err != 2) && (device_id_err != 2))
-    {
-        MAGN_ERR("yl_sensor_debug akm09911_i2c_probe i2c_transfer error\n");
-        err = -ENOMEM;
-        goto exit;
-    }
-    else
-    {
-        if((AKM09911_COMPANY_ID_VALUE != company_id) && (AKM09911_DEVICE_ID_VALUE != device_id))
-        {
-            err = -ENOMEM;
-            MAGN_ERR("yl_sensor_debug akm09911_i2c_probe ic is not akm09911\n");
-            goto exit;
-        }
-    }
-    //shihaobin add before 20150316 for auto_detect
 
     MAGN_FUN();
     if(!(data = kzalloc(sizeof(struct akm09911_i2c_data), GFP_KERNEL)))

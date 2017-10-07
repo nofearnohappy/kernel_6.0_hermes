@@ -73,6 +73,20 @@ typedef struct {
 #define GSENSOR_MCUBE_IOCTL_READ_PCODE         _IOR(GSENSOR, 0x12, char)
 #define	GSENSOR_MCUBE_IOCTL_GET_OFLAG          _IOR(GSENSOR, 0x13, short)
 
+#ifdef CONFIG_COMPAT
+#define COMPAT_GSENSOR_MCUBE_IOCTL_READ_RBM_DATA      _IOR(GSENSOR, 0x09, SENSOR_DATA)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_SET_RBM_MODE       _IO(GSENSOR, 0x0a)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_CLEAR_RBM_MODE     _IO(GSENSOR, 0x0b)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_SET_CALI           _IOW(GSENSOR, 0x0c, SENSOR_DATA)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_REGISTER_MAP       _IO(GSENSOR, 0x0d)
+#define COMPAT_GSENSOR_IOCTL_SET_CALI_MODE            _IOW(GSENSOR, 0x0e, compat_int_t)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_READ_PRODUCT_ID    _IOR(GSENSOR, 0x0f, compat_int_t)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_READ_FILEPATH      _IOR(GSENSOR, 0x10, char[256])
+#define COMPAT_GSENSOR_MCUBE_IOCTL_VIRTUAL_Z          _IOR(GSENSOR, 0x11, compat_int_t)
+#define COMPAT_GSENSOR_MCUBE_IOCTL_READ_PCODE         _IOR(GSENSOR, 0x12, char)
+#define	COMPAT_GSENSOR_MCUBE_IOCTL_GET_OFLAG          _IOR(GSENSOR, 0x13, compat_short_t)
+
+#endif
 
 /* IOCTLs for Msensor misc. device library */
 #define MSENSOR						   0x83
@@ -187,6 +201,36 @@ typedef struct {
 #define COMPAT_ECOMPASS_IOC_GET_OPEN_STATUS	   _IOR(MSENSOR, 0x20, compat_int_t)
 #define COMPAT_ECOMPASS_IOC_SET_YPR			   _IOW(MSENSOR, 0x21, compat_int_t[12])
 #define COMPAT_ECOMPASS_IOC_GET_LAYOUT		   _IOR(MSENSOR, 0X22, compat_int_t)
+#endif
+/* IOCTLs for QMCX983 device */
+
+#define QMC_IOCTL_WRITE                 _IOW(MSENSOR, 0x40, char*)
+#define QMC_IOCTL_READ                  _IOWR(MSENSOR, 0x41, char*)
+#define QMC_IOCTL_RESET              	_IO(MSENSOR, 0x42)
+#define QMC_IOCTL_SET_MODE              _IOW(MSENSOR, 0x43, short)
+#define QMC_IOCTL_GETDATA               _IOR(MSENSOR, 0x44, char[SENSOR_DATA_SIZE])
+#define QMC_IOCTL_SET_YPR               _IOW(MSENSOR, 0x45, short[28])
+#define QMC_IOCTL_GET_OPEN_STATUS       _IOR(MSENSOR, 0x46, int)
+#define QMC_IOCTL_GET_CLOSE_STATUS      _IOR(MSENSOR, 0x47, int)
+#define QMC_IOC_GET_MFLAG               _IOR(MSENSOR, 0x48, int)
+#define QMC_IOC_GET_OFLAG               _IOR(MSENSOR, 0x49, int)
+#define QMC_IOCTL_GET_DELAY             _IOR(MSENSOR, 0x4a, short)
+
+#ifdef CONFIG_COMPAT
+/* compat IOCTLs for QMCX983 device */
+
+#define COMPAT_QMC_IOCTL_WRITE                 _IOW(MSENSOR, 0x40, compat_uptr_t)
+#define COMPAT_QMC_IOCTL_READ                  _IOWR(MSENSOR, 0x41, compat_uptr_t)
+#define COMPAT_QMC_IOCTL_RESET              	_IO(MSENSOR, 0x42)
+#define COMPAT_QMC_IOCTL_SET_MODE              _IOW(MSENSOR, 0x43, compat_short_t)
+#define COMPAT_QMC_IOCTL_GETDATA               _IOR(MSENSOR, 0x44, char[SENSOR_DATA_SIZE])
+#define COMPAT_QMC_IOCTL_SET_YPR               _IOW(MSENSOR, 0x45, compat_short_t[28])
+#define COMPAT_QMC_IOCTL_GET_OPEN_STATUS       _IOR(MSENSOR, 0x46, compat_int_t)
+#define COMPAT_QMC_IOCTL_GET_CLOSE_STATUS      _IOR(MSENSOR, 0x47, compat_int_t)
+#define COMPAT_QMC_IOC_GET_MFLAG               _IOR(MSENSOR, 0x48, compat_int_t)
+#define COMPAT_QMC_IOC_GET_OFLAG               _IOR(MSENSOR, 0x49, compat_int_t)
+#define COMPAT_QMC_IOCTL_GET_DELAY             _IOR(MSENSOR, 0x4a, compat_short_t)
+
 #endif
 
 

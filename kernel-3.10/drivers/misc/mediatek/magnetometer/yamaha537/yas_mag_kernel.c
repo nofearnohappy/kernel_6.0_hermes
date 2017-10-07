@@ -949,53 +949,11 @@ static int yas_probe(struct i2c_client *i2c,
     struct mag_data_path mag_data = {0};
 //    char tembuff[50]={0}; //add by shihaobin for device list ,20150319
     int ret;
-    //shihaobin add before
-    struct mt_i2c_msg id_msg[2];
-    uint8_t device_id_buf;
-    int id_err;
-    uint8_t reg;
-    //shihaobin add end
 
     MAGN_ERR("yl_sensor_debug yas_probe begin\n");
 
     MAGN_LOG("[%s]\n", __func__);
     this_client = i2c;
-
-    //shihaobin add before 20150316
-    reg = YAS537_DEVICE_ADDRESS;
-    id_msg[0].addr = this_client->addr;
-    id_msg[0].flags = 0;
-    id_msg[0].len = 1;
-    id_msg[0].buf = &reg;
-    id_msg[0].timing = this_client->timing; //add for mtk i2c
-    id_msg[0].ext_flag = this_client->ext_flag & I2C_MASK_FLAG;//add for mtk i2c
-    id_msg[1].addr = this_client->addr;
-    id_msg[1].flags = I2C_M_RD;
-    id_msg[1].len = 1;
-    id_msg[1].buf = &device_id_buf;
-    id_msg[1].timing = this_client->timing; //add for mtk i2c
-    id_msg[1].ext_flag = this_client->ext_flag & I2C_MASK_FLAG;//add for mtk i2c
-
-    id_err = i2c_transfer(this_client->adapter, (struct i2c_msg *)id_msg, 2);
-
-    MAGN_ERR("yl_sensor_debug device_id_buf = %d \n", (int)device_id_buf);
-
-    if(id_err != 2)
-    {
-        MAGN_ERR("yl_sensor_debug yas_i2c_probe i2c_transfer error\n");
-        ret = -ENOMEM;
-        goto error_ret;
-    }
-    else
-    {
-        if(YAS537_DEVICE_ID_VALUE != device_id_buf)
-        {
-            ret = -ENOMEM;
-            MAGN_ERR("yl_sensor_debug yas_i2c_probe ic is not yamaha537\n");
-            goto error_ret;
-        }
-    }
-    //shihaobin add end 20150316
 
     st = kzalloc(sizeof(struct yas_state), GFP_KERNEL);
     if (!st) {

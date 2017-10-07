@@ -365,11 +365,6 @@
 /*! YAS539 extension command: obtains the hardware offset */
 #define YAS539_GET_HW_OFFSET        (0x00000006)
 
-//shihaobin@yulong.com add feature for yamaha537 20150407 begin
-#define YAS537_DEVICE_ADDRESS         0x80
-#define YAS537_DEVICE_ID_VALUE        0x07
-//shihaobin@yulong.com add feature for yamaha537 20150407 end
-
 /* ----------------------------------------------------------------------------
  *                            Structure definition
  *--------------------------------------------------------------------------- */

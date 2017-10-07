@@ -578,9 +578,9 @@ static int battery_get_property(struct power_supply *psy,
 		val->intval = data->BAT_TECHNOLOGY;
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
-		//val->intval = data->BAT_CAPACITY;
-		val->intval =g_cw2015_capacity;//cw2015_get_capacity();
-		if(val->intval ==0 && BMT_status.charger_exist==KAL_TRUE) val->intval =1;
+		val->intval = data->BAT_CAPACITY;
+		//val->intval =g_cw2015_capacity;//cw2015_get_capacity();
+		//if(val->intval ==0 && BMT_status.charger_exist==KAL_TRUE) val->intval =1;
 		break;
 	case POWER_SUPPLY_PROP_batt_vol:
 		//val->intval = data->BAT_batt_vol;
@@ -1556,7 +1556,7 @@ static void mt_battery_update_EM(struct battery_data *bat_data)
 {
 	bat_data->BAT_CAPACITY = BMT_status.UI_SOC;
 	//-------------add lifei---------------------
-	if(BMT_status.charger_exist == KAL_TRUE  && BMT_status.UI_SOC ==0)bat_data->BAT_CAPACITY =1;
+	//if(BMT_status.charger_exist == KAL_TRUE  && BMT_status.UI_SOC ==0)bat_data->BAT_CAPACITY =1;
 	//----------------------------------------	
 	bat_data->BAT_TemperatureR = BMT_status.temperatureR;	/* API */
 	bat_data->BAT_TempBattVoltage = BMT_status.temperatureV;	/* API */
