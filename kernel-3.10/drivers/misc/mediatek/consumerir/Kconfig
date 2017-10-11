@@ -1,0 +1,3 @@
+config MTK_CONSUMERIR_SUPPORT
+	bool "MediaTek consumer IR transmitter"
+	default n

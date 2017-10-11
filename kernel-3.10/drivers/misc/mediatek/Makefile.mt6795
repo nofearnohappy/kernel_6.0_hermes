@@ -12,7 +12,7 @@ obj-$(CONFIG_ZRAM)	+= mlog/
 obj-$(CONFIG_MTK_ETM)	+= etm/
 
 obj-y	+= lcm/
-obj-$(CONFIG_MTK_IRTX_SUPPORT) += irtx/
+obj-$(CONFIG_MTK_CONSUMERIR_SUPPORT) += consumerir/
 obj-y	+= mach/
 
 obj-y	+= aee/

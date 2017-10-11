@@ -1650,6 +1650,9 @@
 		m_step_c_pl@0 {
 			compatible = "mediatek,m_step_c_pl";
 		};
+		consumerir@0 {
+			compatible = "mediatek,consumerir";
+		}
 		m_baro_pl@0 {
 			compatible = "mediatek,m_baro_pl";
 		};
