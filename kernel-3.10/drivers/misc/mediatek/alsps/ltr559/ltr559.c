@@ -2412,7 +2412,7 @@ static int ltr559_local_uninit(struct platform_device *pdev)
 {
 	struct alsps_hw *hw = ltr559_get_cust_alsps_hw();
 	APS_FUN();    
-	ltr559_power(hw, 0);    
+	//ltr559_power(hw, 0);    
 	i2c_del_driver(&ltr559_i2c_driver);
 	return 0;
 }
