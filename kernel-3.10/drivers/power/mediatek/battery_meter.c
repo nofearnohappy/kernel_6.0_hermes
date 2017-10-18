@@ -79,10 +79,10 @@ static kal_bool g_USE_UI_SOC = KAL_TRUE;
 /* ///////////////////////////////////////////////////////////////////////////////////////// */
 /* // PMIC AUXADC Related Variable */
 /* ///////////////////////////////////////////////////////////////////////////////////////// */
-int g_R_BAT_SENSE = R_BAT_SENSE;
-int g_R_I_SENSE = R_I_SENSE;
-int g_R_CHARGER_1 = R_CHARGER_1;
-int g_R_CHARGER_2 = R_CHARGER_2;
+// int g_R_BAT_SENSE = R_BAT_SENSE;
+// int g_R_I_SENSE = R_I_SENSE;
+// int g_R_CHARGER_1 = R_CHARGER_1;
+// int g_R_CHARGER_2 = R_CHARGER_2;
 
 int fg_qmax_update_for_aging_flag = 1;
 

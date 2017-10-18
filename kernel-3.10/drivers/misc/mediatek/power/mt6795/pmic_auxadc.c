@@ -48,10 +48,10 @@
 // Extern
 //==============================================================================
 extern int Enable_BATDRV_LOG;
-extern int g_R_BAT_SENSE;
-extern int g_R_I_SENSE;
-extern int g_R_CHARGER_1;
-extern int g_R_CHARGER_2;
+// extern int g_R_BAT_SENSE;
+// extern int g_R_I_SENSE;
+// extern int g_R_CHARGER_1;
+// extern int g_R_CHARGER_2;
 extern int g_bat_init_flag;
 
 
