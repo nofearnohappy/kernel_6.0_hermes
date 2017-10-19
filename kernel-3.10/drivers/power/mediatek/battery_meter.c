@@ -2555,7 +2555,6 @@ kal_int32 get_dynamic_period(int first_use, int first_wakeup_time, int battery_c
 /* ============================================================ // */
 kal_int32 battery_meter_get_battery_voltage(kal_bool update)
 {
-#if 1
 	int ret = 0;
 	int val = 5;
 	static int pre_val = -1;
@@ -2578,9 +2577,6 @@ kal_int32 battery_meter_get_battery_voltage(kal_bool update)
 #endif
 
 	return val;
-#else
-	return cw2015_get_voltage();
-#endif
 }
 
 kal_int32 battery_meter_get_charging_current_imm(void)
