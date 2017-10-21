@@ -2828,8 +2828,11 @@ kal_int32 battery_meter_set_columb_interrupt(kal_uint32 val)
 }
 #endif /* #if defined(FG_BAT_INT) */
 
+extern int g_cw2015_capacity ;
+
 kal_int32 battery_meter_get_battery_percentage(void)
 {
+#if 0
 #if defined(CONFIG_POWER_EXT)
 	return 50;
 #else
@@ -2873,6 +2876,9 @@ kal_int32 battery_meter_get_battery_percentage(void)
 #endif
 #endif
 
+#endif
+#else
+	return g_cw2015_capacity;
 #endif
 }
 

@@ -135,9 +135,12 @@ int g_platform_boot_mode = 0;
 struct timespec g_bat_time_before_sleep;
 int g_smartbook_update = 0;
 
-// [LC] ---------[Begin]
-//int FG_charging_status = 0;
-// [LC] ---------[End]
+#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
+#include <mach/cw2015_battery.h>
+///
+int FG_charging_status =0;
+///
+#endif
 
 #if defined(CONFIG_MTK_DUAL_INPUT_CHARGER_SUPPORT)
 kal_bool g_vcdt_irq_delay_flag = 0;
@@ -556,8 +559,6 @@ static int usb_get_property(struct power_supply *psy,
 	return ret;
 }
 
-extern int g_cw2015_capacity ;
-extern int g_cw2015_vol ;
 static int battery_get_property(struct power_supply *psy,
 				enum power_supply_property psp, union power_supply_propval *val)
 {
@@ -578,13 +579,10 @@ static int battery_get_property(struct power_supply *psy,
 		val->intval = data->BAT_TECHNOLOGY;
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
-		//val->intval = data->BAT_CAPACITY;
-		val->intval =g_cw2015_capacity;//cw2015_get_capacity();
-		if(val->intval ==0 && BMT_status.charger_exist==KAL_TRUE) val->intval =1;
+		val->intval = data->BAT_CAPACITY;
 		break;
 	case POWER_SUPPLY_PROP_batt_vol:
-		//val->intval = data->BAT_batt_vol;
-                val->intval =g_cw2015_vol;// cw2015_get_voltage();
+		val->intval = data->BAT_batt_vol;
 		break;
 	case POWER_SUPPLY_PROP_batt_temp:
 		val->intval = data->BAT_batt_temp;
@@ -1553,11 +1551,16 @@ static DEVICE_ATTR(Pump_Express, 0664, show_Pump_Express, store_Pump_Express);
 
 static void mt_battery_update_EM(struct battery_data *bat_data)
 {
-	bat_data->BAT_CAPACITY = BMT_status.UI_SOC;
+	#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
+		printk("mt_battery_update_EM 1 vol = %d,cap = %d\n",BMT_status.bat_vol,BMT_status.UI_SOC);
 
-	//-------------add lifei---------------------
-	if(BMT_status.charger_exist == KAL_TRUE  && BMT_status.UI_SOC ==0)bat_data->BAT_CAPACITY =1;
-	//----------------------------------------	
+        BMT_status.UI_SOC = g_cw2015_capacity;
+        BMT_status.bat_vol = g_cw2015_vol / 1000;
+        bat_data->BAT_batt_vol = BMT_status.bat_vol;
+
+
+	#endif
+	bat_data->BAT_CAPACITY = BMT_status.UI_SOC;
 	bat_data->BAT_TemperatureR = BMT_status.temperatureR;	/* API */
 	bat_data->BAT_TempBattVoltage = BMT_status.temperatureV;	/* API */
 	bat_data->BAT_InstatVolt = BMT_status.bat_vol;	/* VBAT */
@@ -2189,6 +2192,8 @@ void mt_battery_GetBatteryData(void)
 	static kal_int32 batteryTempBuffer[BATTERY_AVERAGE_SIZE];
 	static kal_uint8 batteryIndex = 0;
 	static kal_int32 previous_SOC = -1;
+
+        FG_charging_status = upmu_is_chr_det(); // Hermes
 
 	bat_vol = battery_meter_get_battery_voltage(KAL_TRUE);
 	Vsense = battery_meter_get_VSense();
