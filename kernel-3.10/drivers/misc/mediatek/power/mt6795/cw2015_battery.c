@@ -152,9 +152,14 @@ struct cw_battery {
     int bat_change;
 };
 
+int g_cw2015_capacity = 0;
+int g_cw2015_vol = 0;
+struct cw_battery *cw_bat;
+
 /***************************************
  *      prototypes 
  ***************************************/
+static void cw_get_battery_version(void);
 static int cw_write(struct i2c_client *client, u8 reg, u8 const buf[]);
 static int cw_read(struct i2c_client *client, u8 reg, u8 buf[]);
 static int cw_read_word(struct i2c_client *client, u8 reg, u8 buf[]);
@@ -177,6 +182,7 @@ static int cw2015_i2c_remove(struct i2c_client *client);
 static int cw2015_i2c_detect(struct i2c_client *client, struct i2c_board_info *info);
 static int cw2015_i2c_suspend(struct i2c_client *client, pm_message_t mesg);
 static int cw2015_i2c_resume(struct i2c_client *client);
+int get_capacity();
 
 extern int PMIC_IMM_GetOneChannelValue(int dwChannel, int deCount, int trimd);
 
@@ -184,13 +190,19 @@ extern int PMIC_IMM_GetOneChannelValue(int dwChannel, int deCount, int trimd);
 /***************************************
  *      functions 
  ***************************************/
+int get_capacity() 
+{
+    return cw_bat->capacity;
+}
+
 static int liuchao_test_hmi_battery_version = 1;
 
-static void hmi_get_battery_version()
+static void hmi_get_battery_version(void)
 {
     int i = 1;
     i = simple_strtol(strstr(saved_command_line, "batversion=")+12, 0, 10);
     liuchao_test_hmi_battery_version = i; //COS = 1, DES = 2
+    printk("[CW2015] [hmi_get_battery_version] batversion= %i\n", liuchao_test_hmi_battery_version);
 }
 
 static int cw_write(struct i2c_client *client, u8 reg, u8 const buf[])
@@ -330,7 +342,6 @@ static int cw_init(struct cw_battery *cw_bat)
     int ret;
     int i;
     u8 reg_val = MODE_SLEEP;
-    hmi_get_battery_version();
 
     if ((reg_val & MODE_SLEEP_MASK) == MODE_SLEEP)
     {
@@ -810,7 +821,6 @@ static void cw_bat_work(struct work_struct *work)
 {
     int ret;
     struct delayed_work *delay_work;
-    struct cw_battery *cw_bat;
 
     printk("[CW2015] cw_bat_work started\n");
 
@@ -833,6 +843,8 @@ static void cw_bat_work(struct work_struct *work)
         //printk("[CW2015] power supply changed\n");
         cw_bat->bat_change = 0;
     }
+    g_cw2015_capacity = cw_bat->capacity;
+    g_cw2015_vol = cw_bat->voltage;
 
     queue_delayed_work(cw_bat->battery_workqueue, &cw_bat->battery_delay_work, msecs_to_jiffies(10000));
 
@@ -859,6 +871,7 @@ static int cw2015_i2c_probe(struct i2c_client *client, const struct i2c_device_i
         return -ENOMEM;
     }
 
+    hmi_get_battery_version();
     switch (battery_type_id)
     {
         case 1:
