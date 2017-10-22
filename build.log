@@ -1,0 +1,48 @@
+make: Вход в каталог `/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10'
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/scripts/drvgen/drvgen.mk:188: предупреждение: переопределение команд для цели `/home/nofearnohappy/kernel_6.0_hermes/KERNEL_OBJ/drivers/misc/mediatek/mach/mt6795/hermes/dct/dct/cust_adc.dtsi'
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/scripts/drvgen/drvgen.mk:168: предупреждение: старые команды для цели `/home/nofearnohappy/kernel_6.0_hermes/KERNEL_OBJ/drivers/misc/mediatek/mach/mt6795/hermes/dct/dct/cust_adc.dtsi' игнорируются
+  Using /home/nofearnohappy/kernel_6.0_hermes/kernel-3.10 as source for kernel
+  GEN     /home/nofearnohappy/kernel_6.0_hermes/KERNEL_OBJ/Makefile
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CALL    /home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/scripts/checksyscalls.sh
+  CC      scripts/mod/devicetable-offsets.s
+  GEN     scripts/mod/devicetable-offsets.h
+  HOSTCC  scripts/mod/file2alias.o
+  HOSTLD  scripts/mod/modpost
+  CHK     include/generated/compile.h
+"CONFIG_TRUSTONIC_TEE_SUPPORT = y"
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/connectivity/combo/drv_wlan/Makefile:21: include mt6630
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/fmradio/Makefile:13: feature_option="MT6630_FM"
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/fmradio/Makefile:171: MT6630_FM
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/fmradio/Makefile:195: core/fm_module.o core/fm_main.o core/fm_config.o core/fm_rds_parser.o core/fm_patch.o core/fm_utils.o core/fm_link.o core/fm_eint.o mt6630/pub/mt6630_fm_lib.o mt6630/pub/mt6630_fm_rds.o mt6630/pub/mt6630_fm_cmd.o mt6630/pub/mt6630_fm_config.o
+*MTK_GPU_VERSION 1 = 
+*PLATFORM_NAME is: mt6795
+$CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT is [y]
+imgsensor drv by platform s5k3m2_mipi_raw ov5670_mipi_raw
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/secwidevine/classicdrm/Makefile:6: "custom build secwidevine"
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/secwidevine/classicdrm/Makefile:12: "Build widevine driver"
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/misc/mediatek/secwidevine/classicdrm/Makefile:13: "MTK_PATH_PLATFORM="
+"custom build secwidevinemdw"
+"Build widevine modular drm driver"
+"MTK_PATH_PLATFORM="
+  CC      drivers/power/power_supply_core.o
+  CC      drivers/power/power_supply_sysfs.o
+  CC      drivers/power/power_supply_leds.o
+  LD      drivers/power/power_supply.o
+  CC      drivers/power/mediatek/battery_meter.o
+  CC      drivers/power/mediatek/battery_common.o
+  CC      drivers/power/mediatek/switch_charging.o
+In file included from /home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/drivers/power/mediatek/switch_charging.c:35:0:
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/include/mach/battery_common.h:316:43: warning: 'struct timespec' declared inside parameter list
+ extern void mt_battery_update_time(struct timespec *pre_time, BATTERY_TIME_ENUM duration_type);
+                                           ^
+/home/nofearnohappy/kernel_6.0_hermes/kernel-3.10/include/mach/battery_common.h:316:43: warning: its scope is only this definition or declaration, which is probably not what you want
+  LD      drivers/power/mediatek/built-in.o
+  LD      drivers/power/reset/built-in.o
+  LD      drivers/power/built-in.o
+  LD      drivers/built-in.o
+  CC      net/core/sock.o
+  CC      net/core/request_sock.o
+  CC      net/core/skbuff.o
+  CC      net/core/iovec.o
