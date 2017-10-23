@@ -652,6 +652,10 @@ static int tpd_probe(struct platform_device *pdev)
 	set_bit(BTN_TOUCH, tpd->dev->keybit);
 #endif /* CONFIG_MTK_S3320 */
 	set_bit(INPUT_PROP_DIRECT, tpd->dev->propbit);
+#ifndef CONFIG_MZ_TOUCHSCREEN_GESTURE
+	// add KEY_GESTURE for flyme gesture, wpb@meizu.com
+	input_set_capability(tpd->dev, EV_KEY, KEY_GESTURE);
+#endif
 
 	/* save dev for regulator_get() before tpd_local_init() */
 	tpd->tpd_dev = &pdev->dev;

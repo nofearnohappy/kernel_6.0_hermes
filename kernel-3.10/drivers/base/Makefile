@@ -5,6 +5,7 @@ obj-y			:= core.o bus.o dd.o syscore.o \
 			   cpu.o firmware.o init.o map.o devres.o \
 			   attribute_container.o transport_class.o \
 			   topology.o
+obj-$(CONFIG_MZ_TOUCHSCREEN_GESTURE)	+= meizu-sys.o
 obj-$(CONFIG_DEVTMPFS)	+= devtmpfs.o
 obj-$(CONFIG_CMA) += dma-contiguous.o
 obj-y			+= power/
