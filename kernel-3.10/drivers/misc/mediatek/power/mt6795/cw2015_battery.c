@@ -113,11 +113,12 @@ static u8 config_info_des[SIZE_BATINFO] = {
 
 static int liuchao_test_hmi_battery_version = 1;
 
-static void hmi_get_battery_version()
+static void hmi_get_battery_version(void)
 {
     int i = 1;
     i = simple_strtol(strstr(saved_command_line, "batversion=")+12, 0, 10);
     liuchao_test_hmi_battery_version = i; //COS = 1, DES = 2
+    printk("liuchao_test_hmi_battery_versi %d\n", liuchao_test_hmi_battery_version);
 }
 
 static struct cw_bat_platform_data cw_bat_platdata = {
@@ -460,7 +461,6 @@ static int cw_get_vol(struct cw_battery *cw_bat)
     }
     
     voltage = value16_1 * 312 / 1024;
-    voltage = voltage * 1000;
     FG_CW2015_LOG("cw_get_vol 4444 voltage = %d\n",voltage);
     return voltage;
 }
