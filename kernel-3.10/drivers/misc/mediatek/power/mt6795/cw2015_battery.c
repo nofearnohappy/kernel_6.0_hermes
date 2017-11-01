@@ -111,29 +111,43 @@ static u8 config_info_des[SIZE_BATINFO] = {
     0xB5, 0xC1, 0xA5, 0x42
 };
 
-static int liuchao_test_hmi_battery_version = 1;
+static int liuchao_test_hmi_battery_version;
 
-static void hmi_get_battery_version(void)
-{
-    int i = 1;
-    i = simple_strtol(strstr(saved_command_line, "batversion=")+12, 0, 10);
-    liuchao_test_hmi_battery_version = i; //COS = 1, DES = 2
-    printk("liuchao_test_hmi_battery_versi %d\n", liuchao_test_hmi_battery_version);
+static void hmi_get_battery_version(void) 
+{ 
+    int i; 
+    printk("12345 %s\n", saved_command_line); 
+    printk("12345 %d\n", strstr(saved_command_line, "batversion=")); 
+    i = simple_strtol(strstr(saved_command_line, "batversion=")+11, 0, 10); 
+    liuchao_test_hmi_battery_version = i; //COS = 1, DES = 2 
+    printk("liuchao_test_hmi_battery_version %d\n", liuchao_test_hmi_battery_version); 
 }
 
+struct cw_bat_platform_data {
+    int (*io_init)(void);
+
+    int is_usb_charge;
+    int is_dc_charge;
+    u8 *cw_bat_config_info;
+    u32 irq_flags;
+    u32 dc_det_pin;
+    u32 dc_det_level;
+
+    u32 bat_low_pin;
+    u32 bat_low_level;
+    u32 chg_ok_pin;
+    u32 chg_ok_level;
+    u32 chg_mode_sel_pin;
+    u32 chg_mode_sel_level;
+};
+
 static struct cw_bat_platform_data cw_bat_platdata = {
-    //        .dc_det_pin      = 0,
-    //        .dc_det_level    = 0,
-    
     .bat_low_pin    = 0,
     .bat_low_level  = 0,   
     .chg_ok_pin   = 0,
     .chg_ok_level = 0,
-    
+
     .is_usb_charge = 0,
-    //        .chg_mode_sel_pin = 0,
-    //        .chg_mode_sel_level = 0,
-    
     .cw_bat_config_info     = config_info,
 };
 
@@ -496,8 +510,8 @@ static int cw_update_config_info(struct cw_battery *cw_bat)
     /* update new battery info */
     for (i = 0; i < SIZE_BATINFO; i++) {
         #ifdef FG_CW2015_DEBUG
-        //FG_CW2015_LOG("cw_bat->plat_data->cw_bat_config_info[%d] = 0x%x\n", i, \
-        //                cw_bat->plat_data->cw_bat_config_info[i]);
+        FG_CW2015_LOG("cw_bat->plat_data->cw_bat_config_info[%d] = 0x%x\n", i, \
+                        cw_bat->plat_data->cw_bat_config_info[i]);
         #else
         /*dev_info(&cw_bat->client->dev, "cw_bat->plat_data->cw_bat_config_info[%d] = 0x%x\n", i, \
          *                                cw_bat->plat_data->cw_bat_config_info[i]);*/
@@ -573,7 +587,6 @@ static int cw_init(struct cw_battery *cw_bat)
     int ret;
     int i;
     u8 reg_val = MODE_SLEEP;
-    hmi_get_battery_version();
     
 if ((reg_val & MODE_SLEEP_MASK) == MODE_SLEEP) {
     reg_val = MODE_NORMAL;
@@ -616,20 +629,14 @@ if (!(reg_val & CONFIG_UPDATE_FLG)) {
     if (ret < 0)
         return ret;
 } else {
-    for(i = 0; i < SIZE_BATINFO; i++) { 
-        ret = cw_read(cw_bat->client, (REG_BATINFO + i), &reg_val);
-        if (ret < 0)
-            return ret;
-        
-        if (2 == liuchao_test_hmi_battery_version){
-            if (config_info_des[i] != reg_val)
-                break;
-            
-        }else{
-            if (config_info[i] != reg_val)
-                break;
-        }
-    }
+                for(i = 0; i < SIZE_BATINFO; i++) { 
+                        ret = cw_read(cw_bat->client, (REG_BATINFO + i), &reg_val);
+                        if (ret < 0)
+                                return ret;
+                        
+                        if (config_info[i] != reg_val)
+                                break;
+                }
     
     if (i != SIZE_BATINFO) {
         #ifdef FG_CW2015_DEBUG
@@ -1071,6 +1078,19 @@ static int cw2015_i2c_probe(struct i2c_client *client, const struct i2c_device_i
         //dev_err(&cw_bat->client->dev, "fail to allocate memory\n");
         #endif
         return -ENOMEM;
+    }
+
+    hmi_get_battery_version();        
+    switch (liuchao_test_hmi_battery_version)
+    {
+        case 1:
+            cw_bat_platdata.cw_bat_config_info = config_info;
+            break;
+        case 2:
+            cw_bat_platdata.cw_bat_config_info = config_info_des;
+            break;
+        default:
+        printk("[CW2015] Battery type ID not match\n");
     }
     
     memset(cw_bat, 0, sizeof(*cw_bat));

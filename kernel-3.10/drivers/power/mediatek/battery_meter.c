@@ -40,9 +40,6 @@
 #include <mach/upmu_common.h>
 
 
-#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
-#include <mach/cw2015_battery.h>
-#endif
 /* ============================================================ // */
 /* define */
 /* ============================================================ // */
@@ -2008,8 +2005,8 @@ kal_int32 fgauge_update_dod(void)
 	if (C_FGCurrent != 0)
 		FG_dod_1 =  gFG_DOD0 - ((gFG_columb*100)/gFG_BATT_CAPACITY_aging)*C_0mA/C_FGCurrent;
 
-	bm_print(BM_LOG_CRTI, "[fgauge_update_dod] FG_dod_1=%d, adjust_coulomb_counter=%d, gFG_columb=%d, gFG_DOD0=%d," \
-		"gFG_temp=%d, gFG_BATT_CAPACITY=%d, C_0mA=%d, C_400mA=%d, C_FGCurrent=%d, gFG_current_AVG=%d\n",
+	bm_print(BM_LOG_CRTI, "[fgauge_update_dod] FG_dod_1=%d, adjust_coulomb_counter=%d, gFG_columb=%d, gFG_DOD0=%d,
+		gFG_temp=%d, gFG_BATT_CAPACITY=%d, C_0mA=%d, C_400mA=%d, C_FGCurrent=%d, gFG_current_AVG=%d\n",
 		FG_dod_1, adjust_coulomb_counter, gFG_columb, gFG_DOD0, gFG_temp,
 		gFG_BATT_CAPACITY, C_0mA, C_400mA, C_FGCurrent, gFG_current_AVG);
 #else
@@ -2833,7 +2830,6 @@ kal_int32 battery_meter_set_columb_interrupt(kal_uint32 val)
 
 kal_int32 battery_meter_get_battery_percentage(void)
 {
-#if 0
 #if defined(CONFIG_POWER_EXT)
 	return 50;
 #else
@@ -2877,9 +2873,6 @@ kal_int32 battery_meter_get_battery_percentage(void)
 #endif
 #endif
 
-#endif
-#else
-	return g_cw2015_capacity;
 #endif
 }
 

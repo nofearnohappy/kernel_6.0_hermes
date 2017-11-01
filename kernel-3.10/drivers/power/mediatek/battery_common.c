@@ -1552,13 +1552,7 @@ static DEVICE_ATTR(Pump_Express, 0664, show_Pump_Express, store_Pump_Express);
 static void mt_battery_update_EM(struct battery_data *bat_data)
 {
 	#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
-		printk("mt_battery_update_EM 1 vol = %d,cap = %d\n",BMT_status.bat_vol,BMT_status.UI_SOC);
-
         BMT_status.UI_SOC = g_cw2015_capacity;
-        BMT_status.bat_vol = g_cw2015_vol / 1000;
-        bat_data->BAT_batt_vol = BMT_status.bat_vol;
-
-
 	#endif
 	bat_data->BAT_CAPACITY = BMT_status.UI_SOC;
 	bat_data->BAT_TemperatureR = BMT_status.temperatureR;	/* API */

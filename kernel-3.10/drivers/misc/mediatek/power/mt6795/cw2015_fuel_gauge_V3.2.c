@@ -69,8 +69,6 @@
 #define CW2015_DEV_NAME         "CW2015"
 #define SIZE_BATINFO    64
 
-static int battery_type_id = 1;
-
 static const struct i2c_device_id CW2015_i2c_id[] = {{CW2015_DEV_NAME,0},{}};
 static struct i2c_board_info __initdata i2c_CW2015 = { I2C_BOARD_INFO("CW2015", 0x62)};
 
@@ -150,13 +148,18 @@ struct cw_battery {
 int g_cw2015_capacity = 0;
 int g_cw2015_vol = 0;
 
-static int liuchao_test_hmi_battery_version = 1;
+#define CONFIG_PM
+static int liuchao_test_hmi_battery_version;
+extern char* saved_command_line;
 
-static void hmi_get_battery_version()
+static void hmi_get_battery_version(void)
 {
-    int i = 1;
-    i = simple_strtol(strstr(saved_command_line, "batversion=")+12, 0, 10);
-    liuchao_test_hmi_battery_version = i; //COS = 1, DES = 2
+    int i; 
+    printk("12345 %s\n", saved_command_line); 
+    printk("12345 %d\n", strstr(saved_command_line, "batversion=")); 
+    i = simple_strtol(strstr(saved_command_line, "batversion=")+11, 0, 10); 
+    liuchao_test_hmi_battery_version = i; //COS = 1, DES = 2 
+    printk("liuchao_test_hmi_battery_version %d\n", liuchao_test_hmi_battery_version); 
 }
 
 /*Define CW2015 iic read function*/
@@ -228,6 +231,7 @@ int cw_update_config_info(struct cw_battery *cw_bat)
     
     // make sure no in sleep mode
     ret = cw_read(cw_bat->client, REG_MODE, &reg_val);
+    printk("cw_update_config_info reg_val = 0x%x",reg_val);
     if(ret < 0) {
         return ret;
     }
@@ -311,6 +315,7 @@ static int cw_init(struct cw_battery *cw_bat)
     ret = cw_read(cw_bat->client, REG_CONFIG, &reg_val);
     if (ret < 0)
     	return ret;
+    printk("the new ATHD have not set reg_val = 0x%x\n",reg_val);
 
     if ((reg_val & 0xf8) != ATHD) {
         reg_val &= 0x07;    /* clear ATHD */
@@ -336,16 +341,7 @@ static int cw_init(struct cw_battery *cw_bat)
         ret = cw_read(cw_bat->client, (REG_BATINFO + i), &reg_val);
         if (ret < 0)
             return ret;
-        
-        if (2 == liuchao_test_hmi_battery_version){
-            if (config_info_des[i] != reg_val)
-                break;
-            
-        }else{
-            if (config_info[i] != reg_val)
-                break;
-        }
-    }
+    }        
     
     if (i != SIZE_BATINFO) {
         #ifdef FG_CW2015_DEBUG
@@ -863,7 +859,8 @@ static int cw2015_probe(struct i2c_client *client, const struct i2c_device_id *i
         return -ENOMEM;
     }
 
-    switch (battery_type_id)
+    hmi_get_battery_version();        
+    switch (liuchao_test_hmi_battery_version)
     {
         case 1:
             cw_bat_platdata.cw_bat_config_info = config_info;
@@ -872,8 +869,7 @@ static int cw2015_probe(struct i2c_client *client, const struct i2c_device_id *i
             cw_bat_platdata.cw_bat_config_info = config_info_des;
             break;
         default:
-            printk("[CW2015] Battery type ID not match\n");
-            cw_bat_platdata.cw_bat_config_info = config_info;
+        printk("[CW2015] Battery type ID not match\n");
     }
 
     i2c_set_clientdata(client, cw_bat);

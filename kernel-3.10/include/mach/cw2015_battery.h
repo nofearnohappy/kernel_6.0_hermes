@@ -16,18 +16,6 @@
 #define CW2015_BATTERY_H
 
 #define SIZE_BATINFO    64
-
-struct cw_bat_platform_data {
-
-        int is_dc_charge;
-        int is_usb_charge;
-
-        int bat_low_pin;
-        int bat_low_level;
-        int chg_ok_pin;
-        int chg_ok_level;
-        u8* cw_bat_config_info;
-};
 extern int g_cw2015_capacity;
 extern int g_cw2015_vol;
 #endif
