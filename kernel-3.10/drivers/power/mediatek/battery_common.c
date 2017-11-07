@@ -682,7 +682,7 @@ static struct battery_data battery_main = {
 	.BAT_PRESENT = 1,
 	.BAT_TECHNOLOGY = POWER_SUPPLY_TECHNOLOGY_LION,
 	.BAT_CAPACITY = 100,
-	.BAT_batt_vol = 4200,
+	.BAT_batt_vol = 4442,
 	.BAT_batt_temp = 22,
 	/* Dual battery */
 	.status_smb = POWER_SUPPLY_STATUS_NOT_CHARGING,
@@ -1551,9 +1551,9 @@ static DEVICE_ATTR(Pump_Express, 0664, show_Pump_Express, store_Pump_Express);
 
 static void mt_battery_update_EM(struct battery_data *bat_data)
 {
-	#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
-        BMT_status.UI_SOC = g_cw2015_capacity;
-	#endif
+//	#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
+//        BMT_status.UI_SOC = g_cw2015_capacity;
+//	#endif
 	bat_data->BAT_CAPACITY = BMT_status.UI_SOC;
 	bat_data->BAT_TemperatureR = BMT_status.temperatureR;	/* API */
 	bat_data->BAT_TempBattVoltage = BMT_status.temperatureV;	/* API */
@@ -2399,6 +2399,25 @@ static PMU_STATUS mt_battery_CheckCallState(void)
 }
 #endif
 
+/////my_start//////
+static PMU_STATUS mt_battery_CheckbatVoltage(void)
+{
+	PMU_STATUS status = PMU_STATUS_OK;
+
+#if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
+   if(BMT_status.bat_vol > 4450)
+#else
+    if(BMT_status.bat_vol > 4350)	
+#endif
+	{
+		status = PMU_STATUS_FAIL;
+		battery_log(BAT_LOG_CRTI, "[BATTERY]battery over voltage!!\r\n");
+	}
+
+	return status;
+}
+/////my_end////////
+
 static void mt_battery_CheckBatteryStatus(void)
 {
 	battery_log(BAT_LOG_FULL, "[mt_battery_CheckBatteryStatus] cmd_discharging=(%d)\n",
@@ -2424,6 +2443,12 @@ static void mt_battery_CheckBatteryStatus(void)
 		BMT_status.bat_charging_state = CHR_ERROR;
 		return;
 	}
+/////////my_start//////////////
+	if(mt_battery_CheckbatVoltage() != PMU_STATUS_OK){
+		BMT_status.bat_charging_state = CHR_ERROR;
+		return;
+	}
+/////////my_end///////////////
 #if defined(STOP_CHARGING_IN_TAKLING)
 	if (mt_battery_CheckCallState() != PMU_STATUS_OK) {
 		BMT_status.bat_charging_state = CHR_HOLD;
@@ -3689,7 +3714,7 @@ static int battery_probe(struct platform_device *dev)
 		battery_main.BAT_PRESENT = 1;
 		battery_main.BAT_TECHNOLOGY = POWER_SUPPLY_TECHNOLOGY_LION;
 		battery_main.BAT_CAPACITY = 100;
-		battery_main.BAT_batt_vol = 4200;
+		battery_main.BAT_batt_vol = 4442;
 		battery_main.BAT_batt_temp = 220;
 
 		g_bat_init_flag = KAL_TRUE;

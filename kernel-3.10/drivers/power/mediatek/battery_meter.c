@@ -2837,6 +2837,10 @@ kal_int32 battery_meter_get_battery_percentage(void)
 	if (bat_is_charger_exist() == KAL_FALSE)
 		fg_qmax_update_for_aging_flag = 1;
 
+#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
+//	return g_cw2015_capacity;
+#endif
+
 #if defined(SOC_BY_AUXADC)
 	return auxadc_algo_run();
 #endif
