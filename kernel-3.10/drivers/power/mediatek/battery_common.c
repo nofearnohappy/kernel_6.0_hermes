@@ -2490,7 +2490,12 @@ static void mt_battery_notify_TotalChargingTime_check(void)
 static void mt_battery_notify_VBat_check(void)
 {
 #if defined(BATTERY_NOTIFY_CASE_0004_VBAT)
+#if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
+        if (BMT_status.bat_vol > 4450)
+#else
 	if (BMT_status.bat_vol > 4350)
+#endif
+
 		/* if(BMT_status.bat_vol > 3800) //test */
 	{
 		g_BatteryNotifyCode |= 0x0008;
