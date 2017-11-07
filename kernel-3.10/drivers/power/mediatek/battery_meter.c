@@ -39,7 +39,9 @@
 
 #include <mach/upmu_common.h>
 
-
+#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
+#include <mach/cw2015_battery.h>
+#endif
 /* ============================================================ // */
 /* define */
 /* ============================================================ // */
