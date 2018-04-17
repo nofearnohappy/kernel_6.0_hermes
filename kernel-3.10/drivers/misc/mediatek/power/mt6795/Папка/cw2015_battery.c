@@ -466,7 +466,7 @@ static int cw_update_config_info(struct cw_battery *cw_bat)
 {
 	int ret;
 	u8 reg_val;
-	int i, k = 0;
+	int k = 0;
 	u8 reset_val;
 	u16 value;
 
@@ -484,8 +484,7 @@ static int cw_update_config_info(struct cw_battery *cw_bat)
 
 	/* update new battery info */
 	for(k = 0; k < 0x40; k += 2) {
-//		value = (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + k] << 8) + (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + (k + 1)]);
-                value = (cw_bat->plat_data->cw_bat_config_info[i]);
+		value = (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + k] << 8) + (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + (k + 1)]);
 //#ifdef FG_CW2015_DEBUG
 		FG_CW2015_LOG("cw:value = %0x,swab16(value)=%0x\n", value, swab16(value));
 //#endif
@@ -497,8 +496,7 @@ static int cw_update_config_info(struct cw_battery *cw_bat)
 	}
 	/* readback & check */
 	for(k = 0; k < 0x40; k += 2) {
-//		value = (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + k] << 8) + (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + (k + 1)]);
-                value = (cw_bat->plat_data->cw_bat_config_info[i]);
+		value = (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + k] << 8) + (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + (k + 1)]);
 //#ifdef FG_CW2015_DEBUG
 		FG_CW2015_LOG("cw:value = %0x\n", value);
 //#endif
@@ -595,8 +593,7 @@ static int cw_init(struct cw_battery *cw_bat)
 			return ret;
 	} else {
 		for(k = 0; k < 0x40; k += 2) {
-//			value = (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + k] << 8) + (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + (k + 1)]);
-                        value = (cw_bat->plat_data->cw_bat_config_info[i]);
+			value = (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + k] << 8) + (cw_bat->plat_data->cw_bat_config_info[cw_bat->data_baseaddr + (k + 1)]);
 //#ifdef FG_CW2015_DEBUG
 			FG_CW2015_LOG("cw:value = %0x\n", value);
 //#endif

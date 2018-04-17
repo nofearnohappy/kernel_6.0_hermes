@@ -1,7 +1,6 @@
 #
 # Makefile for the i2c bus drivers.
 #
-include $(srctree)/drivers/misc/mediatek/Makefile.custom
 
 # ACPI drivers
 obj-$(CONFIG_I2C_SCMI)		+= i2c-scmi.o
@@ -93,5 +92,4 @@ obj-$(CONFIG_I2C_SIBYTE)	+= i2c-sibyte.o
 obj-$(CONFIG_SCx200_ACB)	+= scx200_acb.o
 obj-$(CONFIG_SCx200_I2C)	+= scx200_i2c.o
 
-obj-y   +=  i2c-mt65xx.o
 ccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG

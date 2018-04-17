@@ -1027,6 +1027,18 @@ static struct resource mt_resource_i2c3[] = {
     },
 };
 
+static struct resource mt_resource_i2c4[] = {
+    {
+        .start  = IO_VIRT_TO_PHYS(I2C4_BASE),
+        .end    = IO_VIRT_TO_PHYS(I2C4_BASE) + 0x70,
+        .flags  = IORESOURCE_MEM,
+    },
+    {
+        .start  = I2C4_IRQ_BIT_ID,
+        .flags  = IORESOURCE_IRQ,
+    },
+};
+
 static struct platform_device mt_device_i2c[] = {
     {
         .name           = "mt-i2c",
@@ -1051,6 +1063,12 @@ static struct platform_device mt_device_i2c[] = {
         .id             = 3,
         .num_resources  = ARRAY_SIZE(mt_resource_i2c3),
         .resource       = mt_resource_i2c3,
+    },
+    {
+        .name           = "mt-i2c",
+        .id             = 4,
+        .num_resources  = ARRAY_SIZE(mt_resource_i2c4),
+        .resource       = mt_resource_i2c4,
     },
 };
 

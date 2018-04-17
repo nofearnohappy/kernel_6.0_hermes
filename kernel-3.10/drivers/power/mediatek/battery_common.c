@@ -136,8 +136,9 @@ struct timespec g_bat_time_before_sleep;
 int g_smartbook_update = 0;
 
 #if defined(CONFIG_RGK_DRIVER_FG_CW2015)
-#include <mach/cw2015_battery.h>
+//#include <mach/cw2015_battery.h>
 ///
+extern int g_cw2015_capacity;
 int FG_charging_status =0;
 ///
 #endif
@@ -1551,9 +1552,10 @@ static DEVICE_ATTR(Pump_Express, 0664, show_Pump_Express, store_Pump_Express);
 
 static void mt_battery_update_EM(struct battery_data *bat_data)
 {
-//	#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
-//        BMT_status.UI_SOC = g_cw2015_capacity;
-//	#endif
+	#if defined(CONFIG_RGK_DRIVER_FG_CW2015)
+	printk("mt_battery_update_EM 1 UI_SOC = %d\n",BMT_status.UI_SOC);
+        BMT_status.UI_SOC = g_cw2015_capacity;
+	#endif
 	bat_data->BAT_CAPACITY = BMT_status.UI_SOC;
 	bat_data->BAT_TemperatureR = BMT_status.temperatureR;	/* API */
 	bat_data->BAT_TempBattVoltage = BMT_status.temperatureV;	/* API */
@@ -2192,17 +2194,12 @@ void mt_battery_GetBatteryData(void)
 	bat_vol = battery_meter_get_battery_voltage(KAL_TRUE);
 	Vsense = battery_meter_get_VSense();
 	if( upmu_is_chr_det() == KAL_TRUE ) {
-//my edit start
-		//ICharging = battery_meter_get_charging_current();
                 ICharging =  get_bat_charging_current_level();
                 ICharging =  ICharging/100;
 	        charger_vol = battery_meter_get_charger_voltage();
-//my edit end
 	} else {
 		ICharging = 0;
-//my edit start
                 charger_vol = 0;
-//my edit end
 	}
 
 	temperature = battery_meter_get_battery_temperature();
@@ -2211,38 +2208,15 @@ void mt_battery_GetBatteryData(void)
 
 	if (bat_meter_timeout == KAL_TRUE || bat_spm_timeout == TRUE || fg_wake_up_bat== KAL_TRUE) 
 	{
-		SOC = battery_meter_get_battery_percentage();
-		//if (bat_spm_timeout == true)
-			//BMT_status.UI_SOC = battery_meter_get_battery_percentage();
-
+		SOC = g_cw2015_capacity;
 		bat_meter_timeout = KAL_FALSE;
 		bat_spm_timeout = FALSE;
-	} else {
-		if (previous_SOC == -1)
-			SOC = battery_meter_get_battery_percentage();
-		else
-			SOC = previous_SOC;
 	}
-
+	SOC = g_cw2015_capacity;
 	ZCV = battery_meter_get_battery_zcv();
 
-	BMT_status.ICharging =
-	    mt_battery_average_method(BATTERY_AVG_CURRENT, &batteryCurrentBuffer[0], ICharging, &icharging_sum,
-				      batteryIndex);
-
-    
-	if (previous_SOC == -1 && bat_vol <= V_0PERCENT_TRACKING) {
-		battery_log(BAT_LOG_CRTI,
-				    "battery voltage too low, use ZCV to init average data.\n");
-		BMT_status.bat_vol =
-		    mt_battery_average_method(BATTERY_AVG_VOLT, &batteryVoltageBuffer[0], ZCV, &bat_sum,
-					      batteryIndex);
-	} else {
-		BMT_status.bat_vol =
-		    mt_battery_average_method(BATTERY_AVG_VOLT, &batteryVoltageBuffer[0], bat_vol, &bat_sum,
-					      batteryIndex);
-	}
-
+	BMT_status.ICharging = mt_battery_average_method(BATTERY_AVG_CURRENT, &batteryCurrentBuffer[0], ICharging, &icharging_sum, batteryIndex);
+	BMT_status.bat_vol = mt_battery_average_method(BATTERY_AVG_VOLT, &batteryVoltageBuffer[0], ZCV, &bat_sum, batteryIndex);
 
 	if (battery_cmd_thermal_test_mode == 1)
 	{
@@ -2251,9 +2225,7 @@ void mt_battery_GetBatteryData(void)
 	}
 	else
 	{
-	BMT_status.temperature =
-	    mt_battery_average_method(BATTERY_AVG_TEMP, &batteryTempBuffer[0], temperature, &temperature_sum,
-				      batteryIndex);
+	BMT_status.temperature = mt_battery_average_method(BATTERY_AVG_TEMP, &batteryTempBuffer[0], temperature, &temperature_sum, batteryIndex);
 	}
 
 
@@ -2264,15 +2236,6 @@ void mt_battery_GetBatteryData(void)
 	BMT_status.SOC = SOC;
 	BMT_status.ZCV = ZCV;
 
-#if !defined(CUST_CAPACITY_OCV2CV_TRANSFORM)
-	if (BMT_status.charger_exist == KAL_FALSE) {
-		if (BMT_status.SOC > previous_SOC && previous_SOC >= 0)
-			BMT_status.SOC = previous_SOC;
-	}
-#endif
-
-	previous_SOC = BMT_status.SOC;
-
 	batteryIndex++;
 	if (batteryIndex >= BATTERY_AVERAGE_SIZE)
 		batteryIndex = 0;
@@ -2280,13 +2243,6 @@ void mt_battery_GetBatteryData(void)
 
 	if (g_battery_soc_ready == KAL_FALSE)
 		g_battery_soc_ready = KAL_TRUE;
-
-	battery_log(BAT_LOG_CRTI,
-			    "AvgVbat=(%d),bat_vol=(%d),AvgI=(%d),I=(%d),VChr=(%d),AvgT=(%d),T=(%d),pre_SOC=(%d),SOC=(%d),ZCV=(%d)\n",
-			    BMT_status.bat_vol, bat_vol, BMT_status.ICharging, ICharging,
-			    BMT_status.charger_vol, BMT_status.temperature, temperature,
-			    previous_SOC, BMT_status.SOC, BMT_status.ZCV);
-
 
 }
 
@@ -2330,7 +2286,6 @@ static PMU_STATUS mt_battery_CheckBatteryTemp(void)
 
 	return status;
 }
-
 
 static PMU_STATUS mt_battery_CheckChargerVoltage(void)
 {
@@ -2741,8 +2696,10 @@ CHARGER_TYPE mt_charger_type_detection(void)
 			if(BMT_status.nPercent_ZCV == 0)
 				battery_meter_initial();
 					
-			BMT_status.SOC = battery_meter_get_battery_percentage();
+			BMT_status.SOC = g_cw2015_capacity;
 		}
+
+		
 #endif
 	}
 #endif
@@ -2933,7 +2890,7 @@ void do_chrdet_int_task(void)
 			if (BMT_status.nPercent_ZCV == 0)
 				battery_meter_initial();
 
-			BMT_status.SOC = battery_meter_get_battery_percentage();
+			BMT_status.SOC = g_cw2015_capacity;
 		}
 
 //my edit start
@@ -3894,7 +3851,7 @@ static void battery_timer_resume(void)
 	if (g_call_state == CALL_ACTIVE &&
 		(bat_time_after_sleep.tv_sec - g_bat_time_before_sleep.tv_sec >= TALKING_SYNC_TIME)) {
 		/* phone call last than x min */
-		BMT_status.UI_SOC = battery_meter_get_battery_percentage();
+		BMT_status.UI_SOC = g_cw2015_capacity;
 		battery_log(BAT_LOG_CRTI, "Sync UI SOC to SOC immediately\n");
 	}
 

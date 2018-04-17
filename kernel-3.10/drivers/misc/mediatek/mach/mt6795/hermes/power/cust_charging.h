@@ -56,7 +56,7 @@
 #define BATTERY_NOTIFY_CASE_0001_VCHARGER			//checked
 #define BATTERY_NOTIFY_CASE_0002_VBATTEMP			//checked
 //#define BATTERY_NOTIFY_CASE_0003_ICHARGING		//not used
-#define BATTERY_NOTIFY_CASE_0004_VBAT				//not used
+//#define BATTERY_NOTIFY_CASE_0004_VBAT				//not used
 //#define BATTERY_NOTIFY_CASE_0005_TOTAL_CHARGINGTIME 	//not used
 
 /* High battery support */
