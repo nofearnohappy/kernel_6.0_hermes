@@ -671,66 +671,39 @@ static void cw_update_time_member_capacity_change(struct cw_battery *cw_bat)
     cw_bat->sleep_time_capacity_change = new_sleep_time;
 }
 
-static int get_usb_charge_state(struct cw_battery *cw_bat)
+static int rk_usb_update_online(struct cw_battery *cw_bat)
 {
-	int usb_status = 0;
-
-	FG_CW2015_LOG("get_usb_charge_state FG_charging_type:%d,FG_charging_status:%d\n", FG_charging_type, FG_charging_status);
-	if(FG_charging_status != POWER_SUPPLY_STATUS_CHARGING) {
-		usb_status = 0;
-		cw_bat->charger_mode = 0;
-	} else {
-		if(FG_charging_type == POWER_SUPPLY_TYPE_USB) {
-			usb_status = 1;
-			cw_bat->charger_mode = USB_CHARGER_MODE;
-		} else if(FG_charging_type == POWER_SUPPLY_TYPE_MAINS) {
-			usb_status = 2;
-			cw_bat->charger_mode = AC_CHARGER_MODE;
-		}
-	}
-	FG_CW2015_LOG("get_usb_charge_state usb_status = %d,cw_bat->charger_mode = %d\n", usb_status, cw_bat->charger_mode);
-	return usb_status;
-
-}
-
-static int cw_usb_update_online(struct cw_battery *cw_bat)
-{
-	int ret = 0;
-	int usb_status = 0;
-
-
-	FG_CW2015_LOG("usb_update_online FG_charging_status = %d\n", cw_bat->charger_mode);
-	usb_status = get_usb_charge_state(cw_bat);
-	if (usb_status == 2) {
-		if (cw_bat->charger_mode != AC_CHARGER_MODE) {
-			cw_bat->charger_mode = AC_CHARGER_MODE;
-			ret = 1;
-		}
-
-		if (cw_bat->usb_online != 1) {
-			cw_bat->usb_online = 1;
-			cw_update_time_member_charge_start(cw_bat);
-		}
-
-	} else if (usb_status == 1) {
-		if (cw_bat->charger_mode != USB_CHARGER_MODE) {
-			cw_bat->charger_mode = USB_CHARGER_MODE;
-			ret = 1;
-		}
-
-		if (cw_bat->usb_online != 1) {
-			cw_bat->usb_online = 1;
-			cw_update_time_member_charge_start(cw_bat);
-		}
-
-	} else if (usb_status == 0 && cw_bat->usb_online != 0) {
-		cw_bat->charger_mode = 0;
-		cw_update_time_member_charge_start(cw_bat);
-		cw_bat->usb_online = 0;
-		ret = 1;
-	}
-
-	return ret;
+    
+    FG_CW2015_LOG("rk_usb_update_online FG_charging_status = %d\n",FG_charging_status);
+    
+    if (FG_charging_status){
+        
+        if (FG_charging_type == STANDARD_HOST){
+            cw_bat->charger_mode = USB_CHARGER_MODE;
+            if (cw_bat->usb_online != 1){
+                cw_bat->usb_online = 1;
+                cw_update_time_member_charge_start(cw_bat);
+            }
+            return 0;
+        }else{
+            cw_bat->charger_mode = AC_CHARGER_MODE;
+            if (cw_bat->usb_online != 1){
+                cw_bat->usb_online = 1;
+                cw_update_time_member_charge_start(cw_bat);
+            }
+            return 0;
+        }
+    }else{
+        cw_bat->charger_mode = FG_charging_status;
+        
+        if (cw_bat->usb_online = 0) {
+            return 0;
+        }else{
+            cw_update_time_member_charge_start(cw_bat);
+            cw_bat->usb_online = 0;
+            return 1;
+        }
+    }
 }
 
 
@@ -983,16 +956,26 @@ static int cw_get_vol(struct cw_battery *cw_bat)
 
 static void rk_bat_update_capacity(struct cw_battery *cw_bat)
 {
-	int cw_capacity;
-	cw_capacity = cw_get_capacity(cw_bat);
-	FG_CW2015_ERR("cw2015_file_test userdata,	%ld,	%d, %d\n", get_seconds(), cw_capacity, cw_bat->voltage);
-	if ((cw_capacity >= 0) && (cw_capacity <= 100) && (cw_bat->capacity != cw_capacity)) {
-		cw_bat->capacity = cw_capacity;
-		cw_bat->bat_change = 1;
-		cw_update_time_member_capacity_change(cw_bat);
+    int cw_capacity;
+    #ifdef  BAT_CHANGE_ALGORITHM
+    cw_capacity = cw_get_capacity(cw_bat);
+    FG_CW2015_ERR("cw2015_file_test userdata,	%ld,	%d,	%d\n",get_seconds(),cw_capacity,cw_bat->voltage);    
+    #else
+    cw_capacity = cw_get_capacity(cw_bat);
+    #endif
+    if ((cw_capacity >= 0) && (cw_capacity <= 100) && (cw_bat->capacity != cw_capacity)) {
+        cw_bat->capacity = cw_capacity;
+        cw_bat->bat_change = 1;
+        cw_update_time_member_capacity_change(cw_bat);
+        
+        if (cw_bat->capacity == 0)
+        #ifdef FG_CW2015_DEBUG
+            FG_CW2015_LOG("report battery capacity 0 and will shutdown if no changing\n");
 
-	}
-	FG_CW2015_LOG("cw_bat_update_capacity cw_capacity = %d\n", cw_bat->capacity);
+        #endif
+        
+    }
+    FG_CW2015_LOG("rk_bat_update_capacity cw_capacity = %d\n",cw_bat->capacity);
 }
 
 
@@ -1007,6 +990,26 @@ static void rk_bat_update_vol(struct cw_battery *cw_bat)
     }
 }
 
+static void cw_update_status(struct cw_battery *cw_bat)
+{
+	int status;
+
+	rk_usb_update_online(cw_bat);
+	if(cw_bat->charger_mode > 0) {
+		if (cw_bat->capacity >= 100)
+			status = POWER_SUPPLY_STATUS_FULL;
+		else
+			status = POWER_SUPPLY_STATUS_CHARGING;
+	} else {
+		status = POWER_SUPPLY_STATUS_DISCHARGING;
+	}
+
+	if (cw_bat->status != status) {
+		cw_bat->status = status;
+		cw_bat->bat_change = 1;
+	}
+}
+
 static void cw_bat_work(struct work_struct *work)
 {
     struct delayed_work *delay_work;
@@ -1017,13 +1020,22 @@ static void cw_bat_work(struct work_struct *work)
     
     delay_work = container_of(work, struct delayed_work, work);
     cw_bat = container_of(delay_work, struct cw_battery, battery_delay_work);
-    ret = cw_usb_update_online(cw_bat);
+    ret = rk_usb_update_online(cw_bat);
+    if (ret == 1) {
+        printk("cw_bat_work 222\n");
+    }
 
-    if (cw_bat->usb_online == 1)
-		ret = cw_usb_update_online(cw_bat);
+    if (cw_bat->usb_online == 1) {
+        printk("cw_bat_work 444\n");
+        ret = rk_usb_update_online(cw_bat);
+        if (ret == 1) {
+            printk("cw_bat_work 555\n");
+        }
+    }
     
     rk_bat_update_capacity(cw_bat);
     rk_bat_update_vol(cw_bat);
+    cw_update_status(cw_bat);
     g_cw2015_capacity = cw_bat->capacity;
     g_cw2015_vol = cw_bat->voltage;
     printk("cw_bat_work 777 vol = %d,cap = %d\n",cw_bat->voltage,cw_bat->capacity);
@@ -1036,6 +1048,24 @@ static void cw_bat_work(struct work_struct *work)
 	}
 
     queue_delayed_work(cw_bat->battery_workqueue, &cw_bat->battery_delay_work, msecs_to_jiffies(1000));
+}
+
+#define REG_VTEMPL              0xC
+#define REG_VTEMPH              0xD
+int cw2015_read_temp(struct cw_battery *cw_bat)
+{
+	int i=0, ret;
+        u8 reg_templ, reg_temph;
+	while(i++ <4)
+	{
+
+		ret = cw_read(cw_bat->client, REG_VTEMPL, &reg_templ);
+		ret = cw_read(cw_bat->client, REG_VTEMPH, &reg_temph);
+		if(ret >0)break;//return reg_val;
+	}
+	 ret=(25-((reg_temph*256+reg_templ)-3010)/8);
+	//printk("ppppppppp==%d\n",ret);
+	return ret;
 }
 
 #ifdef CW_PROPERTIES
@@ -1051,24 +1081,28 @@ static int cw_battery_get_property(struct power_supply *psy,
     switch (psp) {
     case POWER_SUPPLY_PROP_CAPACITY:
             val->intval = cw_bat->capacity;
+            break;
+    case POWER_SUPPLY_PROP_STATUS:   //Chaman charger ic will give a real value
+            cw_update_status(cw_bat);
+            val->intval = cw_bat->status;
             break;   
     case POWER_SUPPLY_PROP_HEALTH:   //Chaman charger ic will give a real value
             val->intval= POWER_SUPPLY_HEALTH_GOOD;
             break;
     case POWER_SUPPLY_PROP_PRESENT:
             val->intval = cw_bat->voltage <= 0 ? 0 : 1;
-            break;
-            
+            break;     
     case POWER_SUPPLY_PROP_VOLTAGE_NOW:
             val->intval = cw_bat->voltage;
-            break;
-            
+            break;          
     case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
             val->intval = cw_bat->time_to_empty;			
-            break;
-        
+            break;      
     case POWER_SUPPLY_PROP_TECHNOLOGY:  //Chaman this value no need
             val->intval = POWER_SUPPLY_TECHNOLOGY_LION;	
+            break;
+    case POWER_SUPPLY_PROP_TEMP:
+            val->intval = cw2015_read_temp(cw_bat)*10;
             break;
 
     default:
@@ -1079,11 +1113,13 @@ static int cw_battery_get_property(struct power_supply *psy,
 
 static enum power_supply_property cw_battery_properties[] = {
     POWER_SUPPLY_PROP_CAPACITY,
+    POWER_SUPPLY_PROP_STATUS, //check
     POWER_SUPPLY_PROP_HEALTH,
     POWER_SUPPLY_PROP_PRESENT,
     POWER_SUPPLY_PROP_VOLTAGE_NOW,
     POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW,
     POWER_SUPPLY_PROP_TECHNOLOGY,
+    POWER_SUPPLY_PROP_TEMP,  //check
 };
 #endif 
 
