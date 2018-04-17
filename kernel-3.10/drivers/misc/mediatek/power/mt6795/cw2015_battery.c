@@ -205,6 +205,7 @@ struct cw_battery {
 
     bool   filp_open;
     const char* bat_name;
+    int charge_full_design;
 };
 struct cw_battery *pcw_battery;
 
@@ -990,24 +991,25 @@ static void rk_bat_update_vol(struct cw_battery *cw_bat)
     }
 }
 
-static void cw_update_status(struct cw_battery *cw_bat)
+static void rk_bat_update_status(struct cw_battery *cw_bat)
 {
-	int status;
+        int status;
 
-	rk_usb_update_online(cw_bat);
-	if(cw_bat->charger_mode > 0) {
-		if (cw_bat->capacity >= 100)
-			status = POWER_SUPPLY_STATUS_FULL;
-		else
-			status = POWER_SUPPLY_STATUS_CHARGING;
-	} else {
-		status = POWER_SUPPLY_STATUS_DISCHARGING;
-	}
 
-	if (cw_bat->status != status) {
-		cw_bat->status = status;
-		cw_bat->bat_change = 1;
-	}
+        if (cw_bat->charger_mode > 0) {
+                if (cw_bat->capacity >= 100) 
+                        status=POWER_SUPPLY_STATUS_FULL;
+                else
+                        status=POWER_SUPPLY_STATUS_CHARGING;
+        } else {
+                status = POWER_SUPPLY_STATUS_NOT_CHARGING;
+        }
+
+        if (cw_bat->status != status) {
+                cw_bat->status = status;
+                cw_bat->bat_change = 1;
+       
+        } 
 }
 
 static void cw_bat_work(struct work_struct *work)
@@ -1035,7 +1037,7 @@ static void cw_bat_work(struct work_struct *work)
     
     rk_bat_update_capacity(cw_bat);
     rk_bat_update_vol(cw_bat);
-    cw_update_status(cw_bat);
+    rk_bat_update_status(cw_bat);
     g_cw2015_capacity = cw_bat->capacity;
     g_cw2015_vol = cw_bat->voltage;
     printk("cw_bat_work 777 vol = %d,cap = %d\n",cw_bat->voltage,cw_bat->capacity);
@@ -1083,7 +1085,6 @@ static int cw_battery_get_property(struct power_supply *psy,
             val->intval = cw_bat->capacity;
             break;
     case POWER_SUPPLY_PROP_STATUS:   //Chaman charger ic will give a real value
-            cw_update_status(cw_bat);
             val->intval = cw_bat->status;
             break;   
     case POWER_SUPPLY_PROP_HEALTH:   //Chaman charger ic will give a real value
@@ -1094,16 +1095,15 @@ static int cw_battery_get_property(struct power_supply *psy,
             break;     
     case POWER_SUPPLY_PROP_VOLTAGE_NOW:
             val->intval = cw_bat->voltage;
-            break;          
-    case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
-            val->intval = cw_bat->time_to_empty;			
-            break;      
+            break;             
     case POWER_SUPPLY_PROP_TECHNOLOGY:  //Chaman this value no need
             val->intval = POWER_SUPPLY_TECHNOLOGY_LION;	
             break;
     case POWER_SUPPLY_PROP_TEMP:
             val->intval = cw2015_read_temp(cw_bat)*10;
             break;
+    case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
+            val->intval = cw_bat->charge_full_design;
 
     default:
             break;
@@ -1117,9 +1117,9 @@ static enum power_supply_property cw_battery_properties[] = {
     POWER_SUPPLY_PROP_HEALTH,
     POWER_SUPPLY_PROP_PRESENT,
     POWER_SUPPLY_PROP_VOLTAGE_NOW,
-    POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW,
     POWER_SUPPLY_PROP_TECHNOLOGY,
     POWER_SUPPLY_PROP_TEMP,  //check
+    POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
 };
 #endif 
 
@@ -1214,6 +1214,7 @@ static int cw2015_i2c_probe(struct i2c_client *client, const struct i2c_device_i
     cw_bat->status = 0;
     cw_bat->time_to_empty = 0;
     cw_bat->bat_change = 0;
+    cw_bat->charge_full_design = 3020000;
     
     device_create_file(&cw_bat->client->dev, &dev_attr_cw2015_state);
     
